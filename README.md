@@ -1,7 +1,5 @@
 # Gerrit Koele – van YouTube naar bladmuziek
 
-Auteur en contact: Willem M. Otte (<w.m.otte@umcutrecht.nl>)
-
 Scripts die de publieke pianovideo's van [Gerrit Koele](https://www.youtube.com/@GerritKoeleMusicus/videos)
 omzetten naar mp3 en vervolgens naar leesbare, speelbare bladmuziek (MusicXML voor MuseScore) plus MIDI.
 Zie [stijlanalyse.md](stijlanalyse.md) voor een uitgebreide karakterisering van de muzikale stijl en signatuur van Gerrit Koele.
