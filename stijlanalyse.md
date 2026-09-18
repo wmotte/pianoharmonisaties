@@ -8,8 +8,6 @@ en 'U zij de glorie'.
 
 ## 0. Methode en betrouwbaarheid
 
-**Is er extra software nodig?** Nee. Alles is gedaan met wat er al in de `.venv` staat:
-
 | Vraag | Middel |
 |---|---|
 | Akkoorden, trappen, liggingen, cadensen, modulaties | music21 (chordify per tel, sjabloon-matching op 15 akkoordtypen, Romeinse trappen t.o.v. de per-maat gedetecteerde toonsoort) |
