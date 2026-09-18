@@ -13,25 +13,6 @@ controleer_harmonie.py stap 4: formele controle van de zettingen -> midi_control
 corrigeer_harmonie.py  stap 5: binnenstemmen herzetten -> midi_gecorrigeerd/ (gewijzigd groen, rest rood)
 ```
 
-## Mappen en bestanden
-
-| Pad | Inhoud |
-|---|---|
-| `mp3/` | `YYYY-MM-DD - Titel [videoId].mp3`, één per video |
-| `midi_raw/` | `<stem>.transkun.mid` (of `.bytedance.mid`): ruwe transcriptie incl. pedaal |
-| `midi/` | `<stem>.musicxml` (openen in MuseScore) en `<stem>.mid` (afspelen) |
-| `download.log`, `midi.log` | logboek per stap met keuzes per stuk |
-| `archive.txt`, `videos.txt` | yt-dlp archief en index met datum, video-id en titel |
-| `fotos_van_boek/` | foto's van gedrukte bladmuziek (Psalm 85) ter referentie |
-| `analyse_stijl.py`, `stijlanalyse.json`, [`stijlanalyse.md`](stijlanalyse.md) | stijlanalyse (stap 3) en karakterisering van Koeles stijl over alle stukken |
-| `harmonie_regels.py` | gedeelde module voor harmonie-analyse en regels (`--test` voor zelftest) |
-| `midi_controle/` | stap 4: `<stem>.musicxml` met fouten in rood en `<stem>.txt` |
-| `harmonie_controle.json`, `harmonie_controle.md` | stap 4: overzichtsrapport per stuk en per regel |
-| `midi_gecorrigeerd/` | stap 5: `<stem>.musicxml` met gewijzigde noten in groen en restfouten in rood |
-| `harmonie_correctie.json`, `harmonie_correctie.md` | stap 5: effect van herzetting vóór en na |
-| `voorbeelden/` | drie uitgewerkte voorbeelden (Psalm 85, Lofzang van Maria, U zij de glorie) met ongecorrigeerde en gecorrigeerde MusicXML, mp3's en YouTube-links in `readmes/` |
-| `.venv/` | Python 3.11-omgeving met transkun, music21, torch, librosa, pretty_midi |
-
 ## Stap 0 – `download_koele.sh`
 
 Haalt met `yt-dlp` alle video's van het kanaal op als mp3 (beste audiokwaliteit, `--audio-quality 0`).
