@@ -242,24 +242,6 @@ noot en code (een liggende noot wordt niet elke verticaal opnieuw gemeld).
 
 Een deel van de meldingen ontstaat door transcriptie-artefacten (spooknoten, een gemiste stem) of door typische pianozettingen zoals octaven in de melodie en wijde liggingen. De controle toetst uitsluitend aan klassieke koraalregels.
 
-### Resultaten controle over alle 49 stukken
-
-Zie `harmonie_controle.md` en `harmonie_controle.json` voor de volledige tabellen per stuk.
-Over alle 49 stukken en 58.928 verticalen gaf de controle 11.596 meldingen (gemiddeld 19,7 per 100 verticalen):
-
-| Code | Aantal | Per 100 verticalen | Toelichting |
-|---|---|---|---|
-| `LIG` | 2289 | 3.9 | Wijde ligging (> octaaf tussen S-A of A-T), typerend voor pianozetting |
-| `OV` | 1360 | 2.3 | Stemoverlap |
-| `H5` / `H8` | 1982 | 3.4 | Verborgen kwinten (1116) en octaven (866) in buitenstemmen |
-| `SPL` | 1016 | 1.7 | Afwijkende enharmonische spelling |
-| `P8` / `P5` | 1672 | 2.8 | Parallelle octaven (940) en kwinten (732) |
-| `S7` | 813 | 1.4 | Akkoordseptiem lost niet dalend of liggend op |
-| `AP8` / `AP5` | 1215 | 2.1 | Antiparallellen via tegenbeweging |
-| `LT2` / `LT` | 594 | 1.0 | Verdubbelde leidtoon (558) of onopgeloste leidtoon (36) |
-| `A2` | 521 | 0.9 | Overmatige sprong in binnenstem |
-| `KR` | 134 | 0.2 | Stemkruising tussen handen of stemmen |
-
 
 ## Stap 5 – `corrigeer_harmonie.py` (binnenstemmen herzetten)
 
@@ -288,27 +270,6 @@ alleen de toonhoogte wisselt, zodat opmaak, stemmen en rusten intact blijven.
 
 Wat overblijft is vrijwel altijd: verborgen of open kwinten en octaven tussen S en B zelf, een leidtoon in de melodie die niet oplost, en `LIG`-meldingen tussen de handen (rechterhand hoog, linkerhand een octaaf in de bas: pianotextuur, geen koraal). Dat volgt direct uit de keuze om melodie en bas intact te laten.
 
-### Resultaten correctie over alle 49 stukken
-
-Zie `harmonie_correctie.md` en `harmonie_correctie.json` voor de volledige tabellen per stuk.
-Door gemiddeld 1 tot 2% van de noten per stuk aan te passen neemt het aantal stemvoeringsfouten sterk af:
-
-| Code | Meldingen vóór | Meldingen na | Verandering |
-|---|---|---|---|
-| `SPL` (enharmonische spelling) | 1016 | 0 | -100% |
-| `A2` (overmatige sprong binnenstem) | 521 | 181 | -65% |
-| `P5` (parallelle kwinten) | 732 | 335 | -54% |
-| `LT2` (verdubbelde leidtoon) | 558 | 264 | -53% |
-| `P8` (parallelle octaven) | 940 | 454 | -52% |
-| `OV` (stemoverlap) | 1360 | 698 | -49% |
-| `S7` (septiemoplossing) | 813 | 633 | -22% |
-| `AP5` / `AP8` (antiparallellen) | 1215 | 983 | -19% |
-| `KR` (stemkruising) | 134 | 114 | -15% |
-| `LIG` (wijde ligging) | 2289 | 2134 | -7% (inherent aan pianotextuur) |
-| `H5` / `H8` (verborgen kwinten/octaven) | 1982 | 1982 | ongewijzigd (buitenstemmen S en B vast) |
-| `LT` (buitenstem-leidtoon) | 36 | 34 | ongewijzigd (melodie en bas vast) |
-
-Resterende meldingen zitten vrijwel allemaal in de buitenstemmen. Omdat de melodie en baslijn van Koele niet worden gewijzigd, blijven verborgen kwinten en octaven (`H5`/`H8`) en eventuele parallellen tussen sopraan en baslijn behouden.
 
 ## Bekende beperkingen
 
