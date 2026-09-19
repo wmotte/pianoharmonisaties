@@ -8,7 +8,7 @@
   <identification>
     <creator type="composer">Gerrit Koele (automatische transcriptie)</creator>
     <encoding>
-      <encoding-date>2026-09-18</encoding-date>
+      <encoding-date>2026-09-19</encoding-date>
       <software>music21 v.10.5.0</software>
       <supports element="beam" type="yes" />
       <supports element="stem" type="yes" />
@@ -22,21 +22,21 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="Pd8fc405ddc45324820bd3770e26928bf">
+    <score-part id="Pdf3db2850508be2e11f1f80cfdf4882f">
       <part-name>Piano</part-name>
       <part-abbreviation>Pno</part-abbreviation>
-      <score-instrument id="I157eecb6b7572cd2c9a87fac18f3e4a2">
+      <score-instrument id="I26b4be71a7900f7a4ae38950e6f12f4a">
         <instrument-name>Piano</instrument-name>
         <instrument-abbreviation>Pno</instrument-abbreviation>
       </score-instrument>
-      <midi-instrument id="I157eecb6b7572cd2c9a87fac18f3e4a2">
+      <midi-instrument id="I26b4be71a7900f7a4ae38950e6f12f4a">
         <midi-channel>1</midi-channel>
         <midi-program>1</midi-program>
       </midi-instrument>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="Pd8fc405ddc45324820bd3770e26928bf">
+  <part id="Pdf3db2850508be2e11f1f80cfdf4882f">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <attributes>
@@ -1731,7 +1731,7 @@
         <beam number="1">begin</beam>
         <lyric name="1" number="1">
           <syllabic>single</syllabic>
-          <text>OV AP8</text>
+          <text>OV, AP8</text>
         </lyric>
       </note>
       <note color="#E00000">
@@ -3807,15 +3807,15 @@
       </note>
       <note dynamics="61.11">
         <pitch>
-          <step>E</step>
-          <alter>-1</alter>
+          <step>D</step>
+          <alter>1</alter>
           <octave>3</octave>
         </pitch>
         <duration>15120</duration>
         <voice>2</voice>
         <type>quarter</type>
         <dot />
-        <accidental>flat</accidental>
+        <accidental>sharp</accidental>
         <staff>2</staff>
       </note>
     </measure>
@@ -3851,13 +3851,11 @@
       <note color="#E00000" dynamics="65.56">
         <pitch>
           <step>E</step>
-          <alter>0</alter>
           <octave>3</octave>
         </pitch>
         <duration>10080</duration>
         <voice>2</voice>
         <type>quarter</type>
-        <accidental>natural</accidental>
         <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>2</staff>
         <lyric name="1" number="1">
@@ -5976,26 +5974,24 @@
       </note>
       <note dynamics="80.00">
         <pitch>
-          <step>E</step>
-          <alter>-1</alter>
+          <step>D</step>
+          <alter>1</alter>
           <octave>4</octave>
         </pitch>
         <duration>5040</duration>
         <voice>2</voice>
         <type>eighth</type>
-        <accidental>flat</accidental>
+        <accidental>sharp</accidental>
         <staff>1</staff>
       </note>
       <note dynamics="91.11">
         <pitch>
           <step>E</step>
-          <alter>0</alter>
           <octave>4</octave>
         </pitch>
         <duration>10080</duration>
         <voice>2</voice>
         <type>quarter</type>
-        <accidental>natural</accidental>
         <staff>1</staff>
       </note>
       <backup>
@@ -6157,13 +6153,11 @@
       <note dynamics="74.44">
         <pitch>
           <step>E</step>
-          <alter>0</alter>
           <octave>3</octave>
         </pitch>
         <duration>20160</duration>
         <voice>3</voice>
         <type>half</type>
-        <accidental>natural</accidental>
         <staff>2</staff>
       </note>
       <note dynamics="56.67">

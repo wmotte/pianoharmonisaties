@@ -14,4 +14,9 @@
 
 Psalm 85 diende als referentiestuk voor het afstellen van de transcriptiepijplijn (`fotos_van_boek/`).
 
-Bij de formele harmonie-analyse had de initiële transcriptie 33 meldingen op 275 verticalen. Door 4 noten in de binnenstemmen aan te passen en 1 noot correct te herspellen, zijn de stemkruising (`KR`), stemoverlap (`OV`) en de enharmonische spelfout (`SPL`) opgelost. De overblijvende 29 meldingen betreffen verborgen kwinten en octaven (`H5`/`H8`) en wijdere ligging (`LIG`) tussen melodie en baslijn, die bewust ongemoeid zijn gelaten.
+Bij de formele harmonie-analyse had de initiële transcriptie 32 meldingen op 275 verticalen. Door 2 noten in
+de binnenstemmen aan te passen zijn de resterende 31 meldingen vooral verborgen kwinten en octaven
+(`H5`/`H8`) en wijdere ligging (`LIG`) tussen melodie en baslijn, die bewust ongemoeid zijn gelaten. De
+enharmonische spelfout (`SPL`) die de organist opmerkte (een es die dis moest zijn) is in v2 in de transcriptie
+zelf opgelost: de spelling gebeurt per verticaal, dus B+Eb wordt B+D#. Inmiddels staan er in de hele partituur
+geen mollen meer.

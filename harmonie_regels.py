@@ -36,7 +36,7 @@ import numpy as np
 from music21 import chord, converter, interval, key, note, pitch, spanner, stream
 
 from analyse_stijl import TEMPLATES, label_chord
-from transcribe_piano import KEY_PROFILES, fifths_index, spell_pc
+from transcribe_piano import KEY_PROFILES, fifths_index, key_spell_pc, spell_vertical
 
 DIR = Path(__file__).resolve().parent
 RED, GREEN = "#E00000", "#00A000"
@@ -279,11 +279,9 @@ def chord_spelling(v: Vertical) -> dict:
     """pitch class -> verwachte spelling (Pitch zonder octaaf) voor de akkoordtonen van het gelabelde akkoord,
     aangevuld met de toonsoortspelling voor de overige tonen."""
     tonic_idx = v.key.sharps  # midden van de kwintencirkel = de voortekening (mineur: de parallelle majeur)
-    out = {pc: spell_pc(pc, tonic_idx) for pc in range(12)}
-    if v.key.mode == "minor":  # verhoogde 6e en 7e trap (melodisch/harmonisch mineur) altijd als verhoging spellen
-        for deg in (6, 7):
-            p = v.key.tonic.transpose("M6" if deg == 6 else "M7")
-            out[p.pitchClass] = pitch.Pitch(p.name)
+    out = {pc: key_spell_pc(pc, v.key) for pc in range(12)}  # modus-bewust: mineur verhoogde 6e/7e als kruis
+    # de klinkende tonen akkoord-/interval-bewust spellen (B-D#, niet B-Eb), net als stap 2
+    out.update(spell_vertical([r.midi for r in v.notes], v.key))
     root_pc, name, score = v.label
     if score < LABEL_MIN_SCORE or name not in LETTER_STEP:
         return out

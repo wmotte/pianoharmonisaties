@@ -11,7 +11,9 @@
 - Gecorrigeerde partituur: `../gecorrigeerd/2025-11-29 - 'De Lofzang van Maria' ｜ Piano ｜ Adventsmuziek van Gerrit Koele [e8Sz1o3a8pA].musicxml`
 
 ## Toelichting
+In de ongecorrigeerde transcriptie zaten 185 stemvoeringsmeldingen op 882 verticalen. Een belangrijk deel
+hiervan bestond uit parallelle octaven (`P8`: 65 meldingen).
 
-In de ongecorrigeerde transcriptie zaten 217 stemvoeringsmeldingen op 1510 noten. Een belangrijk deel hiervan bestond uit parallelle octaven (`P8`: 65 meldingen) en enharmonische spelfouten (`SPL`: 33 meldingen).
-
-Door 32 binnenstemnoten aan te passen en 36 voortekens te corrigeren, daalde het aantal meldingen van 217 naar 96. Alle 65 parallelle octaven en alle 33 spelfouten zijn hiermee verholpen, terwijl de melodie en baslijn ongewijzigd bleven.
+Door 32 binnenstemnoten aan te passen daalde het aantal meldingen van 185 naar 96. Alle 65 parallelle octaven
+zijn hiermee verholpen, terwijl de melodie en baslijn ongewijzigd bleven. Enharmonische spelfouten (`SPL`) komen
+in v2 niet meer voor: de spelling per verticaal zet ze al goed in de transcriptie zelf.

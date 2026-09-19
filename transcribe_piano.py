@@ -9,8 +9,9 @@ Stap 1: transcriptie naar ruwe MIDI -> midi_raw/
 Stap 2: opschonen voor MuseScore -> midi/*.musicxml en midi/*.mid  (alleen deze stap: --reclean)
         - beat-tracking op de audio (rubato rechtgetrokken), tempo genormaliseerd naar --tempo-range
         - raster automatisch gekozen (8sten / 16den / triolen) of vast via --grid
-        - maatsoort (3/4 of 4/4) via autocorrelatie van het accentpatroon (of vast via --meter); maatstrepen
-          via Viterbi-tracking, incl. opmaat en een enkele langere/kortere maat bij een fermate of vertraging
+        - maatsoort (3/4 of 4/4) via autocorrelatie van het accentpatroon (of vast via --meter); 2/4 en 3/2
+          zijn met --meter 2 resp. --meter 6 te forceren; maatstrepen via Viterbi-tracking, incl. opmaat en
+          een enkele langere/kortere maat bij een fermate of vertraging
         - handverdeling: splitspunt volgt het register (lokale 2-means), per akkoord splitsen bij het grootste
           gat met max. handspanning en max. reikwijdte buiten de eigen balk (--leap); noten gaan naar de
           andere hand als die stil is; spooknoten-filter; sleutelwissel als een hand lang in het andere register speelt
@@ -20,7 +21,9 @@ Stap 2: opschonen voor MuseScore -> midi/*.musicxml en midi/*.mid  (alleen deze 
         - rechterhand ver boven de balk -> 8va
         - slotakkoord tot einde maat + fermate; dynamiek (pp..ff) relatief uit aanslagsterkte (mediaan = mf)
         - coupletherkenning -> herhalingstekens (uit te zetten met --no-repeats)
-        - toonsoort geschat, voortekens passend gespeld; pedaaltekens optioneel (--pedal)
+        - spelling per verticaal: akkoord als stapeling van tertsen (B-D#-F#, niet B-Eb-F#), anders
+          toonsoort/modus (in mineur de verhoogde 6e/7e trap als kruis); pedaaltekens optioneel (--pedal)
+        - log per stuk o.a. maat, maat_hint (3/2?), syncopen (aandeel aanslagen op de halve tel)
 
 Gebruik:  transcribe_piano.py [opties] mp3/*.mp3      (zie --help)
 Open in MuseScore bij voorkeur het .musicxml-bestand (de .mid is voor afspelen).
@@ -299,9 +302,10 @@ def rebalance(hands, split):
 
 # ================================================================ stap 2c: maat, opmaat, couplet
 def detect_meter(hands, grid, forced=0):
-    """(maatsoort-teller, fase in beats van de eerste tel-1).
+    """(maatsoort-teller, accent-signaal, hint).
     Per beat een accent-signaal (aantal aanslagen, nootlengtes, akkoordwisseling); de maatsoort volgt uit
-    de autocorrelatie van dat signaal op 3+6 beats versus 4+8 beats, de fase uit het sterkste accent."""
+    de autocorrelatie van dat signaal op 3+6 beats versus 4+8 beats. De hint is "3/2" als het signaal wel
+    om de 6 tellen maar niet om de 3 tellen terugkomt (koraal in 3/2; met --meter 6 te forceren)."""
     end_units = max(on + dur for g in hands.values() for on, dur, _ in g)
     nb = int(end_units // grid) + 2
     cnt, durs, chroma = np.zeros(nb), np.zeros(nb), np.zeros((nb, 12))
@@ -326,9 +330,16 @@ def detect_meter(hands, grid, forced=0):
 
     if forced:
         m = forced
+        hint = ""
     else:
-        m = 3 if autocorr(3) + autocorr(6) > autocorr(4) + autocorr(8) else 4
-    return m, sig
+        # automatisch alleen 3/4 tegen 4/4 (autocorrelatie op de maat + twee maten). 2/4 en 3/2 zijn via
+        # --meter te forceren: de autocorrelatie alleen is te zwak om die betrouwbaar te onderscheiden.
+        s3, s4 = autocorr(3) + autocorr(6), autocorr(4) + autocorr(8)
+        s6 = autocorr(6) + autocorr(12)
+        m = 3 if s3 > s4 else 4
+        # hint: sterke 6-periodiciteit zonder accent om de 3 tellen wijst op 3/2 (koraal) i.p.v. 3/4
+        hint = "3/2" if s6 > max(s3, s4) + 0.10 and autocorr(3) < 0.05 else ""
+    return m, sig, hint
 
 
 def track_bars(sig, m, penalty=2.5):
@@ -475,6 +486,119 @@ def spell_pc(pc: int, tonic_idx: int) -> pitch.Pitch:
     return min(cands, key=lambda q: (cost(q), abs(fifths_index(q) - tonic_idx)))
 
 
+LETTERS = "CDEFGAB"
+LETTER_STEP = {"maj": (0, 2, 4), "min": (0, 2, 4), "dom7": (0, 2, 4, 6), "maj7": (0, 2, 4, 6),
+               "min7": (0, 2, 4, 6), "dim": (0, 2, 4), "dim7": (0, 2, 4, 6), "m7b5": (0, 2, 4, 6),
+               "sus4": (0, 3, 4), "sus2": (0, 1, 4), "aug": (0, 2, 4)}
+CHORD_TEMPLATES = {"maj": (0, 4, 7), "min": (0, 3, 7), "dom7": (0, 4, 7, 10), "maj7": (0, 4, 7, 11),
+                   "min7": (0, 3, 7, 10), "dim": (0, 3, 6), "dim7": (0, 3, 6, 9), "m7b5": (0, 3, 6, 10),
+                   "sus4": (0, 5, 7), "sus2": (0, 2, 7), "aug": (0, 4, 8)}
+INTERVAL_STEP = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 5, 9: 5, 10: 6, 11: 6}
+
+
+def key_spell_pc(pc: int, k: key.Key) -> pitch.Pitch:
+    """Toonsoort-spelling met modus: in mineur worden de verhoogde 6e en 7e trap (harmonisch/melodisch
+    mineur) als kruis gespeld, zodat de leidtoon niet als mol verschijnt (E mineur: D#, niet Eb)."""
+    if k.mode == "minor":
+        for deg in (6, 7):
+            p = k.tonic.transpose("M6" if deg == 6 else "M7")
+            if p.pitchClass == pc:
+                return pitch.Pitch(p.name)
+    return spell_pc(pc, k.sharps)
+
+
+def _spell_pair(midis, out, k):
+    """Tweeklank als terts/vijfde spellen (B + D#, niet B + Eb). Kandidaten voor beide letters/voortekens;
+    de diatonische toon van de toonsoort telt zwaar, daarna zo weinig mogelijk voortekens en mollen, en een
+    terts boven een sext (zodat B-D# wint van Eb-B). Zijn beide tonen diatonisch, dan blijft de toonsoortspelling."""
+    pcs = sorted({m % 12 for m in midis})
+    if len(pcs) != 2:
+        return
+    scale_pcs = {p.pitchClass for p in k.getScale().getPitches()}
+    if pcs[0] in scale_pcs and pcs[1] in scale_pcs:
+        return  # beide diatonisch: de toonsoortspelling is al goed
+    tonic_idx = k.sharps
+    best = None
+    for lo_pc, hi_pc in (pcs, pcs[::-1]):
+        step = INTERVAL_STEP.get((hi_pc - lo_pc) % 12)
+        if step is None:
+            continue
+        for lo_letter in LETTERS:
+            for lo_alt in (0, -1, 1):
+                if (pitch.Pitch(lo_letter).pitchClass + lo_alt) % 12 != lo_pc:
+                    continue
+                hi_letter = LETTERS[(LETTERS.index(lo_letter) + step) % 7]
+                hi_alt = (hi_pc - pitch.Pitch(hi_letter).pitchClass + 6) % 12 - 6
+                if abs(hi_alt) > 1:
+                    continue
+                lo = pitch.Pitch(lo_letter)
+                if lo_alt:
+                    lo.accidental = pitch.Accidental(lo_alt)
+                hi = pitch.Pitch(hi_letter)
+                if hi_alt:
+                    hi.accidental = pitch.Accidental(hi_alt)
+                diat = int(lo_pc in scale_pcs) + int(hi_pc in scale_pcs)
+                n_acc = abs(lo_alt) + abs(hi_alt)
+                fifths = sum(abs(fifths_index(q) - tonic_idx) + (4 if q.accidental and q.accidental.alter < 0 else 0)
+                             for q in (lo, hi))
+                cost = (-diat, n_acc, fifths, step)
+                if best is None or cost < best[0]:
+                    best = (cost, lo, hi)
+    if best:
+        out[best[1].pitchClass] = best[1]
+        out[best[2].pitchClass] = best[2]
+
+
+def spell_vertical(midis, k: key.Key) -> dict:
+    """Spelling van alle klinkende noten van één verticaal (beide handen samen). Eerst wordt geprobeerd
+    het akkoord als stapeling van tertsen te spellen (B-D#-F#, niet B-Eb-F#); lukt dat niet, dan de
+    toonsoortspelling per toon, en bij een tweeklank de intervalspelling."""
+    pcs = sorted({m % 12 for m in midis})
+    out = {pc: key_spell_pc(pc, k) for pc in pcs}
+    if len(pcs) == 1:
+        return out
+    pcs_set = set(pcs)
+    chord = None
+    for root in pcs:  # de grondtoon moet zelf klinken
+        for name, tpl in CHORD_TEMPLATES.items():
+            tones = [(root + s) % 12 for s in tpl]
+            matched = sum(1 for t in tones if t in pcs_set)
+            if matched < 3 or len(tones) - matched > 1:  # minstens een drieklank, hoogstens één ontbrekende
+                continue
+            score = (matched, -len(tones))
+            if chord is None or score > chord[0]:
+                chord = (score, root, name, tpl)
+    if chord is None:
+        if len(pcs) == 2:
+            _spell_pair(midis, out, k)
+        return out
+    _, root, name, tpl = chord
+    tonic_idx = k.sharps
+    best = None
+    for letter in LETTERS:  # grondtoonspelling met zo min mogelijk voortekens over het hele akkoord
+        if abs((root - pitch.Pitch(letter).pitchClass + 6) % 12 - 6) > 1:
+            continue
+        spelled = []
+        for semi, step in zip(tpl, LETTER_STEP[name]):
+            L = LETTERS[(LETTERS.index(letter) + step) % 7]
+            a = ((root + semi) - pitch.Pitch(L).pitchClass + 6) % 12 - 6
+            p = pitch.Pitch(L)
+            if a:
+                p.accidental = pitch.Accidental(a)
+            spelled.append(p)
+        if any(p.accidental and abs(p.accidental.alter) > 1 for p in spelled):
+            continue
+        n_acc = sum(abs(p.accidental.alter) for p in spelled if p.accidental)
+        root_p = spelled[0]
+        cost = (n_acc, abs(fifths_index(root_p) - tonic_idx) + (4 if root_p.accidental and root_p.accidental.alter < 0 else 0))
+        if best is None or cost < best[0]:
+            best = (cost, spelled)
+    if best:
+        for p in best[1]:
+            out[p.pitchClass] = p
+    return out
+
+
 KEY_PROFILES = {  # Krumhansl-Kessler toonsoortprofielen (zoals music21 ze gebruikt)
     "major": np.array([6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88]),
     "minor": np.array([6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17]),
@@ -534,6 +658,13 @@ def key_segments(hands, grid, bars, window=6, min_len=16):
     return segments
 
 
+def time_signature(length_units, grid):
+    """Maatsoort bij een maatlengte in rastereenheden: 6 tellen = 3/2 (Koele noteert zijn koraal zo),
+    de rest als n/4; een afwijkende maat door een fermate blijft n/4."""
+    n = length_units // grid
+    return "3/2" if n == 6 else f"{n}/4"
+
+
 def build_score(hands, grid, bpm, m, bars, title, pedal_units, verses, fermatas=()):
     """bars: lijst (start_units, lengte_units); de eerste maat mag korter zijn (opmaat)."""
     pickup = bars[0][1] // grid if len(bars) > 1 and bars[0][1] < bars[1][1] else 0
@@ -550,7 +681,7 @@ def build_score(hands, grid, bpm, m, bars, title, pedal_units, verses, fermatas=
         prev = None
         for start, length in bars:  # maatsoort bij elke verandering van maatlengte (opmaat, extra tel bij fermate)
             if length != prev:
-                part.insert(start / grid, meter.TimeSignature(f"{length // grid}/4"))
+                part.insert(start / grid, meter.TimeSignature(time_signature(length, grid)))
                 prev = length
         if hand == "R":
             part.insert(0, tempo.MetronomeMark(number=round(bpm)))
@@ -579,19 +710,31 @@ def build_score(hands, grid, bpm, m, bars, title, pedal_units, verses, fermatas=
     for hand, part in zip(("R", "L"), parts):
         for start, k_ in segments:
             part.insert(start / grid, key.KeySignature(k_.sharps))
+    # spelling per verticaal (alle klinkende noten van beide handen samen): eerst als akkoord (stapeling van
+    # tertsen), anders volgens de toonsoort/modus. Zo wordt een B+D#-tussendominant als terts gespeld en niet
+    # als B+Eb, en verschijnt een verhoogde leidtoon in mineur als kruis.
+    notes_all = []
+    for part in parts:
         for el in part.notes:
-            k_ = segments[max(0, int(np.searchsorted(seg_starts, el.offset * grid, side="right")) - 1)][1]
-            tonic_idx = k_.sharps  # midden van de kwintencirkel = de voortekening (mineur: parallelle majeur)
+            on = float(el.offset) * grid
+            k_ = segments[max(0, int(np.searchsorted(seg_starts, on, side="right")) - 1)][1]
+            notes_all.append((on, on + float(el.quarterLength) * grid, el, k_))
+    for on in sorted({round(a) for a, _, _, _ in notes_all}):
+        sounding = [el for a, b, el, _ in notes_all if a <= on < b]
+        if not sounding:
+            continue
+        k_ = next(k_ for a, _, _, k_ in notes_all if round(a) == on)
+        spelling = spell_vertical([p.midi for el in sounding for p in el.pitches], k_)
+        for el in sounding:
+            if round(float(el.offset) * grid) != on:
+                continue
             for p in el.pitches:
                 if p.accidental is not None and p.accidental.alter == 0:
                     p.accidental = None
-                # spelling: de enharmonische variant die op de kwintencirkel het dichtst bij de voortekening ligt,
-                # met 4 strafpunten voor mollen: verhoogde leidtonen van tussendominanten als kruis (in C: F#, C#, G#
-                # maar Bb en Eb; in G: F#, C#, G#, D# maar Bb; in F: F#, C# maar Eb, Ab; in F# E# i.p.v. F).
-                # Zelfde regel als harmonie_regels.spell_pc; de akkoordgebaseerde spelling doet corrigeer_harmonie.py.
-                best = spell_pc(p.pitchClass, tonic_idx)
+                best = spelling[p.pitchClass]
                 if best.name != p.name:
                     p.step, p.accidental = best.step, best.accidental
+    for hand, part in zip(("R", "L"), parts):
         part.makeVoices(inPlace=True, fillGaps=False)
         part.makeMeasures(inPlace=True, refStreamOrTimeRange=[0, end_ql])
         part.makeTies(inPlace=True)
@@ -690,7 +833,8 @@ def build_score(hands, grid, bpm, m, bars, title, pedal_units, verses, fermatas=
 
 def write_midi(hands, grid, bpm, m, path):
     out = pretty_midi.PrettyMIDI(initial_tempo=bpm, resolution=480)
-    out.time_signature_changes.append(pretty_midi.TimeSignature(m, 4, 0))
+    sig = (3, 2) if m == 6 else (m, 4)  # 6 tellen = 3/2, net als in de partituur
+    out.time_signature_changes.append(pretty_midi.TimeSignature(sig[0], sig[1], 0))
     spu = 60.0 / bpm / grid
     inst = pretty_midi.Instrument(program=0, name="Piano")  # één track: MuseScore maakt er zelf 2 balken van
     for groups in hands.values():
@@ -717,7 +861,7 @@ def clean(mp3: Path, raw_path: Path, args):
     hands = rebalance(hands, args.split)
     if not hands:
         raise RuntimeError("geen noten over na filteren")
-    m, sig = detect_meter(hands, grid, args.meter)
+    m, sig, meter_hint = detect_meter(hands, grid, args.meter)
     downbeats = track_bars(sig, m)
 
     # maten: vanaf de eerste aanslag; wat vóór de eerste tel-1 zit wordt opmaat
@@ -760,9 +904,13 @@ def clean(mp3: Path, raw_path: Path, args):
     score.write("musicxml", fp=str(xml_path))
     xml_path.write_text(xml_path.read_text().replace('<note print-object="no" print-spacing="yes">', "<note>"))
     write_midi(hands, grid, bpm, m, OUT / f"{mp3.stem}.mid")
+    n_groups = sum(len(g) for g in hands.values())
+    offbeat = sum(1 for g in hands.values() for on, _, _ in g if on % grid) / max(n_groups, 1)  # aanslagen op de halve tel
     info = dict(noten=len(notes), R=sum(len(p) for _, _, p in hands.get("R", [])),
                 L=sum(len(p) for _, _, p in hands.get("L", [])), bpm=round(bpm), raster=f"1/{grid * 4}",
-                maat=f"{m}/4", opmaat=pickup, fermates=len(fermatas), afwijkende_maten=irregular, toonsoort=ks,
+                maat=time_signature(m * grid, grid), opmaat=pickup, fermates=len(fermatas),
+                afwijkende_maten=irregular, toonsoort=ks, maat_hint=meter_hint or "-",
+                syncopen=f"{round(100 * offbeat)}%",
                 couplet=f"maat {verses[0] + 1}-{verses[0] + verses[1]} x{verses[2]}" if verses else "-")
     return info
 
@@ -774,7 +922,7 @@ def main():
     ap.add_argument("--grid", type=int, default=0, help="onderverdelingen per beat: 2 = 8sten, 4 = 16den, 3 = triolen (0 = automatisch)")
     ap.add_argument("--split", type=int, default=60, help="basis-toonhoogte voor de handverdeling (60 = centrale C)")
     ap.add_argument("--leap", type=int, default=7, help="max. halve tonen dat een hand buiten zijn eigen notenbalk grijpt (links boven A3, rechts onder E4)")
-    ap.add_argument("--meter", type=int, default=0, choices=[0, 3, 4], help="maatsoort-teller (0 = automatisch)")
+    ap.add_argument("--meter", type=int, default=0, choices=[0, 2, 3, 4, 6], help="maatsoort-teller: 2, 3, 4 of 6 tellen (= 3/2) (0 = automatisch)")
     ap.add_argument("--tempo-range", type=int, nargs=2, default=[60, 120], metavar=("MIN", "MAX"))
     ap.add_argument("--no-repeats", action="store_true", help="geen coupletherkenning / herhalingstekens")
     ap.add_argument("--pedal", action="store_true", help="pedaaltekens uit de transcriptie overnemen")

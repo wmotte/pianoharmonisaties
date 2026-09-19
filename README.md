@@ -13,6 +13,21 @@ controleer_harmonie.py stap 4: formele controle van de zettingen -> midi_control
 corrigeer_harmonie.py  stap 5: binnenstemmen herzetten -> midi_gecorrigeerd/ (gewijzigd groen, rest rood)
 ```
 
+## v2 – wat er is veranderd
+
+Naar aanleiding van de reactie van een organist op de transcriptie van Psalm 85 (veel "onlogische" achtste
+noten en achtste rusten; hier en daar een es die dis moet zijn):
+
+- **Spelling per verticaal** (stap 2): akkoorden worden als stapeling van tertsen gespeld en in mineur worden
+  verhoogde trappen als kruis gespeld. In Psalm 85 verdwenen daarmee alle mollen (3 → 0) en werd B+Eb weer
+  B+D#; over alle 49 stukken gingen ± 770 mollen naar kruis zonder extra voortekens.
+- **`--meter 2` en `--meter 6` (3/2)**: 2/4 en 3/2 worden niet automatisch gekozen, maar zijn te forceren. De
+  log-regel `maat_hint=3/2` wijst stukken aan waar het accentpatroon op 3/2 lijkt (koraal); het script kan
+  maatwisselingen binnen één stuk nog niet automatisch verwerken, dus knip zo'n stuk of forceer de maat.
+- **Diagnostiek in de log**: `syncopen` (aandeel aanslagen op de halve tel) en `maat_hint`. Een hoog
+  `syncopen` duidt op veel achtste noten/rusten – precies wat de organist opviel; zo zijn de stukken die
+  handmatige controle vragen in één oogopslag te vinden.
+
 ## Stap 0 – `download_koele.sh`
 
 Haalt met `yt-dlp` alle video's van het kanaal op als mp3 (beste audiokwaliteit, `--audio-quality 0`).
@@ -39,7 +54,7 @@ Opties (`--help` voor de volledige lijst):
 |---|---|---|
 | `--model transkun\|bytedance` | transkun | transcriptiemodel (zie stap 1) |
 | `--grid 0\|2\|3\|4` | 0 (auto) | onderverdeling per tel: 2 = achtsten, 4 = zestienden, 3 = triolen |
-| `--meter 0\|3\|4` | 0 (auto) | maatsoort forceren (3/4 of 4/4) |
+| `--meter 0\|2\|3\|4\|6` | 0 (auto) | maatsoort forceren: 2/4, 3/4, 4/4 of 3/2 (6 tellen) |
 | `--tempo-range MIN MAX` | 60 120 | toegestaan bereik voor het genoteerde tempo |
 | `--split N` | 60 (C4) | basis-splitspunt tussen de handen |
 | `--leap N` | 7 | max. halve tonen dat een hand buiten zijn eigen balk mag grijpen |
@@ -127,7 +142,10 @@ Het model weet niet welke hand wat speelt; dat moet uit de toonhoogtes worden af
    (cosinusafstand tussen chroma-vectoren van opeenvolgende tellen). Akkoordwisselingen blijken de beste
    aanwijzing voor tel 1.
 2. **Maatsoort**: autocorrelatie van dat signaal; is die op 3 + 6 tellen sterker dan op 4 + 8, dan 3/4, anders
-   4/4 (`--meter` om te forceren). Andere maatsoorten (6/8 e.d.) worden niet herkend.
+   4/4 (`--meter` om te forceren). 2/4 en 3/2 worden niet automatisch gekozen – de autocorrelatie alleen is te
+   zwak om die betrouwbaar te onderscheiden – maar zijn te forceren met `--meter 2` resp. `--meter 6`. De
+   log-regel `maat_hint=3/2` verschijnt als het accentpatroon wel om de 6 maar niet om de 3 tellen terugkomt
+   (bijv. een koraal in 3/2); dat is het signaal om `--meter 6` te proberen.
 3. **Maatstrepen** via **Viterbi-tracking** (`track_bars`): normaal om de m tellen, maar één maat mag m + 1 of
    m − 1 tellen lang zijn tegen een straf (2,5). Zonder dit gooit één fermate of vertraging, waar de
    beat-tracker een tel te veel of te weinig telt, de rest van het stuk uit de maat.
@@ -155,11 +173,13 @@ uitgeschreven.
   (toonklasse-histogram gewogen naar nootlengte, gecorreleerd met de 24 toonsoortprofielen). Runs korter dan
   16 maten worden bij de langste buur gevoegd, zodat alleen echte modulaties (bijv. een couplet in een andere
   toonsoort) een nieuwe voortekening opleveren; in de log staat dan `toonsoort=G major -> C major -> F major`.
-  Zonder dit stond 'U zij de glorie' in C met 68 losse kruisen voor F#. Toonsoortvreemde noten
-  worden enharmonisch gespeld als de variant die op de kwintencirkel het dichtst bij de voortekening ligt, met
-  4 strafpunten voor mollen (verhoogde leidtonen van tussendominanten als kruis): in C dus F#, C#, G# maar
-  Bb en Eb; in G ook D#; in F F# en C# maar Eb en Ab. De akkoordgebaseerde spelling doet stap 5.
-  `makeAccidentals` zet de voortekens per maat.
+  Zonder dit stond 'U zij de glorie' in C met 68 losse kruisen voor F#.
+  De **spelling gebeurt per verticaal** (`spell_vertical`): eerst wordt geprobeerd het akkoord als stapeling van
+  tertsen te spellen (B-D#-F#, niet B-Eb-F#), met de grondtoonspelling die zo weinig mogelijk voortekens kost en
+  het dichtst bij de voortekening ligt; lukt dat niet, dan de toonsoortspelling, en bij een tweeklank de
+  intervalspelling (een terts boven een sext: B-D# wint van Eb-B). In mineur worden de verhoogde 6e en 7e trap
+  (harmonisch/melodisch mineur) als kruis gespeld, zodat de leidtoon D# heet en niet Eb. Zo verdwijnen de
+  es/dis-fouten die een organist in de koraalzetting aanwees. `makeAccidentals` zet de voortekens per maat.
 - **Maatsoorten** bij elke verandering van maatlengte; tempo-aanduiding (♩ = bpm) op de eerste maat.
 - **Stemmen**: `makeVoices`/`makeMeasures`/`makeTies`; een maat met maar één echte stem wordt weer platgeslagen.
   Elke stem wordt over de hele maat met rusten gevuld en die rusten worden op tel-grenzen gehakt (geen
@@ -273,7 +293,9 @@ Wat overblijft is vrijwel altijd: verborgen of open kwinten en octaven tussen S 
 
 ## Bekende beperkingen
 
-- Alleen 3/4 en 4/4; 6/8 of wisselende maatsoorten worden niet herkend (forceren met `--meter`).
+- Automatisch alleen 3/4 en 4/4; 2/4, 3/2 en 6/8 worden niet herkend (forceren met `--meter 2` resp. `--meter 6`).
+  Maatwisselingen binnen één stuk (bijv. een 4/4 voorspel met een 3/2 koraal) worden niet automatisch
+  gedetecteerd; het hele stuk krijgt één maatsoort. Zie `maat_hint` in de log.
 - De verzamelvideo's (bijv. kerstliederen, > 1000 maten) bevatten meerdere stukken in verschillende tempi en
   maatsoorten; die krijgen één maatsoort en één tempo en daardoor veel afwijkende maten. Knip zo'n mp3 bij
   voorkeur eerst in losse stukken.
