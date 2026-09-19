@@ -1,6 +1,6 @@
 # Formele harmonie-correctie
 
-Melodie en bas ongewijzigd; binnenstemmen opnieuw gezet en spelling gecorrigeerd. Per code: aantal meldingen vóór -> na. Wat overblijft zit vrijwel altijd in de buitenstemmen zelf (verborgen/open parallellen tussen melodie en bas, leidtoon in de melodie), of is een transcriptie-artefact.
+Melodie en bas ongewijzigd; binnenstemmen opnieuw gezet en spelling gecorrigeerd. Per code: aantal meldingen vóór -> na. Resterende meldingen kunnen ook binnenstemmen betreffen. De formele controle beoordeelt geen muzikale expressie.
 
 ## Totaal
 

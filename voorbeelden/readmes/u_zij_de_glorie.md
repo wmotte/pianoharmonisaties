@@ -19,5 +19,4 @@ In de oorspronkelijke transcriptie zaten 192 meldingen op 686 verticalen, waaron
 (`LT2`) en 30 stemoverlappen (`OV`). In de controlepartituur (`../controle/`) zijn al deze fouten rood gemarkeerd.
 
 Door herzetting van 44 binnenstemnoten daalde het aantal meldingen naar 123. Verdubbelde leidtonen zijn
-teruggebracht van 31 naar 7; enharmonische spelfouten komen in v2 niet meer voor, omdat de spelling per
-verticaal al in de transcriptie wordt bepaald.
+teruggebracht van 31 naar 7; enharmonische spelfouten zijn in deze partituur niet gemeld. De spelling wordt per verticaal bepaald.

@@ -44,42 +44,20 @@ pip install -r requirements.txt
 brew install ffmpeg yt-dlp
 ```
 
-## v3 – sectiesplitsing & maatconversie (Voorspel → Koraal → Naspel)
+## Secties, maatsoorten en toonsoorten
 
-Naar aanleiding van de vraag hoe maatwisselingen (bijv. 4/4 voorspel → 3/2 koraal → 4/4 naspel) en verzamelvideo's
-zonder procrustesbed verwerkt kunnen worden:
+Met `--split-sections` verwerkt het script voorspel, koraal en naspel afzonderlijk. Elke sectie
+krijgt een eigen tempo en maatsoort. De complete partituur heeft doorlopende maatnummers,
+maatwissels, dubbele maatstrepen en sectieaanduidingen.
 
-- **Automatische stiltedetectie & sectiesplitsing (`--split-sections`)**: detecteert met `librosa` de natuurlijke
-  adempauzes/stiltes (standaard >= 1.0s op -30 dB) tussen voorspel, koraal en naspel.
-- **Per sectie eigen tempo en maatsoort**: elk deel krijgt een eigen beat-tracking en maatsoort. In Psalm 85
-  resulteert dit in een 4/4 voorspel (83 bpm), een 3/2 koraal (108 bpm kwart-eenheden, 3 halve noten per maat),
-  en een 4/4 naspel (86 bpm). Het aantal syncopen in het koraal daalde van 29% naar 2% en het aantal afwijkende
-  maten werd 0! In Psalm 37 resulteert dit in een 3/4 voorspel (66 bpm), 4/4 koraal (112 bpm) en 4/4 naspel (108 bpm).
-- **Naadloos samenvoegen ("vastplakken")**: de losse secties worden samengevoegd tot één complete partituur
-  met doorlopende maatnummering, maatwissels (bijv. 4/4 naar 3/2 of 3/4 naar 4/4), dubbele maatstrepen op de
-  overgangen, tempo-aanduidingen en repetitietekens (`[Voorspel]`, `[Koraal]`, `[Naspel]`).
-- **Losse delen bewaren (`--save-parts`)**: optioneel bewaart het script ook de losse partituren en mp3-secties
-  in `mp3_delen/` en `midi_delen/` (ideaal voor wie alleen de koraalzetting wil).
-- **Handmatige overrides via `splits.json` of CLI**: snijpunten en maatsoorten kunnen nauwkeurig worden afgestemd
-  via `splits.json` of CLI-opties (`--splits 64.18,144.82 --meters 4,6,4`).
-- **Toonsoort en modus forceren (`--key` of `splits.json`)**: voorkomt dat modale stukken zoals Psalm 37 (C-dorisch, koraalboek Gerrit Koele in 2 mollen) onnodig in 3 mollen (C-mineur) belanden met overbodige herstellingstekens voor A♮. Ondersteunt dorische profielen en automatische leidtoon-/tussendominantspelling.
-- **Compilatiesplitser (`splits_compilaties.py`)**: knipt lange verzamelvideo's (zoals "8 Psalmen op Piano")
-  automatisch op in zelfstandige mp3's op basis van lange stiltes (>= 3.0s).
+Stiltes van minstens één seconde vormen de automatische sectiegrenzen. Met `splits.json` of
+`--splits` en `--meters` kun je snijpunten en maatsoorten instellen. `--save-parts` bewaart ook
+de afzonderlijke audiofragmenten en partituren. Voor verzamelvideo's gebruik je
+`splits_compilaties.py`, dat zelfstandige stukken op basis van langere stiltes onderscheidt.
 
-## v2 – wat er eerder is veranderd
-
-Naar aanleiding van de reactie van een organist op de transcriptie van Psalm 85 (veel "onlogische" achtste
-noten en achtste rusten; hier en daar een es die dis moet zijn):
-
-- **Spelling per verticaal** (stap 2): akkoorden worden als stapeling van tertsen gespeld en in mineur worden
-  verhoogde trappen als kruis gespeld. In Psalm 85 verdwenen daarmee alle mollen (3 → 0) en werd B+Eb weer
-  B+D#; over alle 49 stukken gingen ± 770 mollen naar kruis zonder extra voortekens.
-- **`--meter 2` en `--meter 6` (3/2)**: 2/4 en 3/2 worden niet automatisch gekozen, maar zijn te forceren. De
-  log-regel `maat_hint=3/2` wijst stukken aan waar het accentpatroon op 3/2 lijkt (koraal); het script kan
-  maatwisselingen binnen één stuk nog niet automatisch verwerken, dus knip zo'n stuk of forceer de maat.
-- **Diagnostiek in de log**: `syncopen` (aandeel aanslagen op de halve tel) en `maat_hint`. Een hoog
-  `syncopen` duidt op veel achtste noten/rusten – precies wat de organist opviel; zo zijn de stukken die
-  handmatige controle vragen in één oogopslag te vinden.
+Met `--key` of `splits.json` leg je de toonsoort of modus vast, bijvoorbeeld `C dorian` voor
+Psalm 37. De spelling volgt het akkoord en de toonsoort, inclusief verhoogde leidtonen.
+De log vermeldt `syncopen` en `maat_hint` als hulpmiddelen om ritmische notatie te beoordelen.
 
 ## Stap 0 – `download_koele.sh`
 
@@ -88,7 +66,7 @@ Haalt met `yt-dlp` alle video's van het kanaal op als mp3 (beste audiokwaliteit,
 - `--download-archive archive.txt`: een video die al binnen is wordt overgeslagen; het script kan dus gerust
   opnieuw gedraaid worden om nieuwe video's bij te halen.
 - `--ignore-errors`: één mislukte video (privé, verwijderd, geo-blok) stopt de rest niet.
-- `--sleep-interval 2 --max-sleep-interval 6`: kleine pauzes tussen downloads om YouTube niet te irriteren.
+- `--sleep-interval 2 --max-sleep-interval 6`: kleine pauzes tussen downloads tussen opeenvolgende verzoeken.
 - Bestandsnaam bevat uploaddatum, titel en video-id, zodat titels die vaker voorkomen niet botsen.
 - Alles (ook de yt-dlp-uitvoer) gaat naar `download.log`; `videos.txt` krijgt per video een regel.
 
@@ -136,10 +114,9 @@ OK: noten=1708, R=1019, L=689, bpm=92, raster=1/8, maat=4/4, opmaat=0, fermates=
   (`transkun --device mps in.mp3 out.mid`). Op een Mac draait het op de GPU (MPS), anders CPU.
 - **ByteDance** "High-resolution piano transcription" (Kong et al. 2020) als alternatief via `--model bytedance`
   (checkpoint in `~/piano_transcription_inference_data/`).
-- Spotify basic-pitch (eerste poging) is verlaten: te veel ruis en foute octaven voor piano.
 
-Het resultaat is een MIDI met exacte begin-/eindtijden, aanslagsterkte (velocity) en pedaalgebruik. Dat is
-precies wat gespeeld is, maar als bladmuziek onleesbaar: geen maten, rubato, elke noot met zijn eigen lengte,
+Het resultaat is een MIDI met exacte begin-/eindtijden, aanslagsterkte (velocity) en pedaalgebruik. Deze schatting van de uitvoering is
+nog niet geschikt als bladmuziek: geen maten, rubato, elke noot met zijn eigen lengte,
 akkoorden die niet tegelijk beginnen, doorklinkende pedaalnoten. Stap 2 maakt daar notatie van.
 
 ### Stap 2 – opschonen (noten → partituur)
@@ -240,8 +217,7 @@ uitgeschreven.
   tertsen te spellen (B-D#-F#, niet B-Eb-F#), met de grondtoonspelling die zo weinig mogelijk voortekens kost en
   het dichtst bij de voortekening ligt; lukt dat niet, dan de toonsoortspelling, en bij een tweeklank de
   intervalspelling (een terts boven een sext: B-D# wint van Eb-B). In mineur worden de verhoogde 6e en 7e trap
-  (harmonisch/melodisch mineur) als kruis gespeld, zodat de leidtoon D# heet en niet Eb. Zo verdwijnen de
-  es/dis-fouten die een organist in de koraalzetting aanwees. `makeAccidentals` zet de voortekens per maat.
+  (harmonisch/melodisch mineur) als kruis gespeld, zodat de leidtoon D# heet en niet Eb. `makeAccidentals` zet de voortekens per maat.
 - **Maatsoorten** bij elke verandering van maatlengte; tempo-aanduiding (♩ = bpm) op de eerste maat.
 - **Stemmen**: `makeVoices`/`makeMeasures`/`makeTies`; een maat met maar één echte stem wordt weer platgeslagen.
   Elke stem wordt over de hele maat met rusten gevuld en die rusten worden op tel-grenzen gehakt (geen
@@ -347,51 +323,33 @@ Over alle 49 stukken en 58.928 verticalen gaf de controle 11.596 meldingen (gemi
 ## Stap 5 – `corrigeer_harmonie.py` (binnenstemmen herzetten)
 
 ```bash
-python corrigeer_harmonie.py                       # alle stukken (~1 s per stuk)
+python corrigeer_harmonie.py                       # alle stukken (rekentijd afhankelijk van de zetting)
 python corrigeer_harmonie.py --only "Psalm 85" --beam 20 --force
 ```
 
-Maakt de zetting formeel zo kloppend mogelijk zonder aan Koeles melodie en bas te komen: de hoogste noot van
-de rechterhand en de laagste noot van de linkerhand blijven staan (ook hun spelling en ritme), de
-binnenstemmen worden opnieuw gekozen. Noten verhuizen niet van hand of stem en veranderen niet van lengte;
-alleen de toonhoogte wisselt, zodat opmaak, stemmen en rusten intact blijven.
+Herzet de binnenstemmen met behoud van de toonhoogte en het ritme van melodie en bas.
+Ook aangehouden noten die later een buitenstem vormen blijven vast. De handverdeling,
+nootlengtes en rusten blijven behouden. De enharmonische spelling wordt voor alle stemmen gecontroleerd.
 
-1. Dezelfde inlezing als stap 4; kandidaten per nieuw inzettende binnennoot: akkoordtonen van het gelabelde
-   akkoord (bij een onzeker label de oorspronkelijke toonklassen) tussen B en S, binnen handbereik
-   (rechts ≤ een octaaf onder S, links ≤ een none boven B), plus de oorspronkelijke hoogte.
-2. **Bundelzoektocht** (Viterbi met bundelbreedte `--beam`, standaard 12) over alle verticalen; de toestand is
-   de hoogte van alle klinkende binnennoten, zodat een liggende noot over de hele duur dezelfde hoogte houdt.
-   Kosten per stap = gewogen regelovertredingen (P5/P8/P1/AP, H5/H8 blijven per definitie: die zitten in de
-   buitenstemmen) + zetvoorkeuren (terts aanwezig, grondtoon verdubbelen boven kwint boven terts, kleine
-   stappen, geen unisono binnen een akkoord, geen verdubbelde leidtoon) + een straf per gewijzigde noot
-   (behoud van Koele). De gewichten staan in `W` bovenaan het script.
-3. Spelling: alle noten (ook S en B) krijgen de akkoord-/kwintencirkelspelling van stap 4 (`hergespeld=`).
-4. De controle van stap 4 draait opnieuw op het resultaat: gewijzigde noten **groen** met "was …" als tekst,
-   resterende fouten **rood**. Uitvoer in `midi_gecorrigeerd/`, samenvatting in `harmonie_correctie.md`.
+De zoektocht weegt harmonische regels af tegen de melodische lijn van de binnenstemmen.
+Naast parallellen, stemkruisingen en septiemoplossingen beoordeelt het script de contour van
+de oorspronkelijke lijn en stapsgewijs herstel na een sprong over drie opeenvolgende klanken.
+Oorspronkelijke niet-akkoordtonen krijgen extra bescherming, zodat doorgangsnoten en
+voorhoudingen niet zonder meer verdwijnen ten gunste van akkoordtonen.
 
-Wat overblijft is vrijwel altijd: verborgen of open kwinten en octaven tussen S en B zelf, een leidtoon in de melodie die niet oplost, en `LIG`-meldingen tussen de handen (rechterhand hoog, linkerhand een octaaf in de bas: pianotextuur, geen koraal). Dat volgt direct uit de keuze om melodie en bas intact te laten.
+`--beam` bepaalt hoeveel alternatieve zettingen de zoektocht bewaart, standaard 32.
+Een grotere waarde vergroot de zoekruimte en de rekentijd. Het resultaat is deterministisch.
+De methode gebruikt muzikale voorkeuren, maar beoordeelt geen volledige frasen of expressie.
 
-### Resultaten correctie over alle 49 stukken
+Gewijzigde noten verschijnen groen met de oorspronkelijke noot als toelichting.
+Resterende meldingen van de formele controle verschijnen rood. De uitvoer staat in
+`midi_gecorrigeerd/`, met rapporten in `harmonie_correctie.md` en `harmonie_correctie.json`.
+Bij een gewijzigd algoritme of andere bundelbreedte worden bestaande resultaten opnieuw berekend.
 
-Zie `harmonie_correctie.md` en `harmonie_correctie.json` voor de volledige tabellen per stuk.
-Door gemiddeld 1 tot 2% van de noten per stuk aan te passen neemt het aantal stemvoeringsfouten sterk af:
-
-| Code | Meldingen vóór | Meldingen na | Verandering |
-|---|---|---|---|
-| `SPL` (enharmonische spelling) | 1016 | 0 | -100% |
-| `A2` (overmatige sprong binnenstem) | 521 | 181 | -65% |
-| `P5` (parallelle kwinten) | 732 | 335 | -54% |
-| `LT2` (verdubbelde leidtoon) | 558 | 264 | -53% |
-| `P8` (parallelle octaven) | 940 | 454 | -52% |
-| `OV` (stemoverlap) | 1360 | 698 | -49% |
-| `S7` (septiemoplossing) | 813 | 633 | -22% |
-| `AP5` / `AP8` (antiparallellen) | 1215 | 983 | -19% |
-| `KR` (stemkruising) | 134 | 114 | -15% |
-| `LIG` (wijde ligging) | 2289 | 2134 | -7% (inherent aan pianotextuur) |
-| `H5` / `H8` (verborgen kwinten/octaven) | 1982 | 1982 | ongewijzigd (buitenstemmen S en B vast) |
-| `LT` (buitenstem-leidtoon) | 36 | 34 | ongewijzigd (melodie en bas vast) |
-
-Resterende meldingen zitten vrijwel allemaal in de buitenstemmen. Omdat de melodie en baslijn van Koele niet worden gewijzigd, blijven verborgen kwinten en octaven (`H5`/`H8`) en eventuele parallellen tussen sopraan en baslijn behouden.
+De opgeslagen rapporten en voorbeeldpartituren documenteren de bijbehorende berekening.
+Ze worden pas bijgewerkt wanneer de correctie opnieuw wordt uitgevoerd. Een lager aantal
+regelmeldingen is op zichzelf geen maat voor muzikale kwaliteit. Meldingen kunnen ook na
+correctie in binnenstemmen voorkomen, naast de ongewijzigde buitenstemmen.
 
 ## Bekende beperkingen en oplossingen
 

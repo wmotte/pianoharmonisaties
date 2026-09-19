@@ -11,15 +11,15 @@
 - Formele harmoniecontrole (fouten in rood, vóór herzetting): `../controle/2026-04-22 - Psalm 85 ｜ Christelijke pianomuziek van Gerrit Koele [qfzzrg627Ho].musicxml`
 - Gecorrigeerde partituur: `../gecorrigeerd/2026-04-22 - Psalm 85 ｜ Christelijke pianomuziek van Gerrit Koele [qfzzrg627Ho].musicxml`
 
-## Toelichting & Sectiesplitsing (v3)
+## Secties en maatsoorten
 
 ### Maatwisseling: 4/4 Voorspel → 3/2 Koraal → 4/4 Naspel
 
-In de oorspronkelijke v1/v2-transcriptie werd het hele stuk in één 4/4-keurslijf geperst. Omdat het koraal in 3/2 (drie halve noten per maat) staat, leidde dit tot 29% syncopen en onlogische achtste noten en rusten.
+Het voorspel en naspel staan in 4/4. Het koraal staat in 3/2, met drie halve noten per maat. De secties worden daarom afzonderlijk verwerkt.
 
-Met de nieuwe sectiesplitsing (`--split-sections`) worden de duidelijke stiltes rond 64.2s en 144.8s automatisch gedetecteerd:
+Met sectiesplitsing (`--split-sections`) worden de duidelijke stiltes rond 64.2s en 144.8s automatisch gedetecteerd:
 1. **Voorspel (m1–m21):** 4/4, tempo ♩ = 83, 0 afwijkende maten.
-2. **Koraal (m22–m45):** 3/2, tempo ♩ = 108 (3 halve noten per maat), exact 24 maten, 0 afwijkende maten, syncopen gedaald van 29% naar 2%.
+2. **Koraal (m22–m45):** 3/2, tempo ♩ = 108 (3 halve noten per maat), exact 24 maten, 0 afwijkende maten, 2% syncopen.
 3. **Naspel (m46–m53):** 4/4, tempo ♩ = 86, 0 afwijkende maten.
 
 De samengevoegde partituur bevat automatische maatwissels, dubbele maatstrepen op de overgangen en repetitietekens (`[Voorspel]`, `[Koraal]`, `[Naspel]`).

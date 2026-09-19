@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 # Contact: Wim Otte (w.m.otte@umcutrecht.nl)
 """
-Stap 5: de zettingen in midi/ formeel kloppend maken. Melodie (hoogste noot van de rechterhand) en bas
-(laagste noot van de linkerhand) blijven staan; de binnenstemmen worden opnieuw gezet met een Viterbi-
-zoektocht over alle verticalen, die de regels uit harmonie_regels.py als kosten gebruikt (parallellen,
-overlap, kruising, verdubbelde leidtoon, septiemoplossing, ligging) plus stemvoeringsvoorkeuren (kleine
-stappen, terts aanwezig, grondtoon verdubbelen) en een straf per gewijzigde noot, zodat Koeles zetting zo
-veel mogelijk intact blijft. Daarna wordt de spelling van alle noten op het akkoord/de toonsoort gezet.
-Noten verhuizen niet van hand of stem; alleen de toonhoogte verandert.
+Stap 5: binnenstemmen herzetten met behoud van melodie, bas en ritme.
+Een bundelzoektocht combineert harmonische regels met contourbehoud en sprongherstel over drie
+verticalen. Oorspronkelijke niet-akkoordtonen krijgen extra bescherming. Ook aangehouden noten
+die later een buitenstem vormen blijven vast. De enharmonische spelling wordt voor alle stemmen
+bijgewerkt. Noten veranderen niet van hand, notatiestem of duur.
 
 Uitvoer per stuk:
   midi_gecorrigeerd/<stem>.musicxml   gewijzigde noten groen (tekst: 'was <oude noot>'), resterende fouten rood
@@ -15,14 +13,14 @@ Uitvoer per stuk:
 en harmonie_correctie.md / .json: per stuk en per code het aantal vóór -> na.
 
 Gebruik:
-  .venv/bin/python corrigeer_harmonie.py [--only "Psalm 85"] [--beam 12] [--force]
+  .venv/bin/python corrigeer_harmonie.py [--only "Psalm 85"] [--beam 32] [--force]
 """
 import argparse
 import itertools
 import json
 import sys
 import warnings
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
 
 warnings.filterwarnings("ignore")
@@ -34,8 +32,9 @@ from harmonie_regels import (DIR, LABEL_MIN_SCORE, SEVENTH, UNMATCHED, Score, as
                              check, leading_tone_pc, mark, report_lines, summary)
 
 OUT = DIR / "midi_gecorrigeerd"
-W = dict(P5=3.0, P8=3.0, P1=3.0, AP=2.0, OV=0.5, KR=1.5, S7=1.5, A2=1.0, LIG=2.0, LT2=3.0, HAND=1.0,
-         THIRD=2.0, ROOT=1.0, DBL3=0.5, UNIS=0.3, SAME=6.0, STEP=0.15, CHANGE=1.0, DIST=0.05)
+W = dict(P5=6.0, P8=6.0, P1=6.0, AP=3.0, OV=1.0, KR=3.0, S7=3.0, A2=1.0, LIG=2.0, LT2=3.0, HAND=1.0,
+         THIRD=2.0, ROOT=1.0, DBL3=0.5, UNIS=0.3, SAME=6.0, STEP=0.08, CHANGE=0.65, DIST=0.04, CONTOUR=0.7, RECOVERY=1.4, COLOR=2.5)
+ALGORITHM = "contextual-voice-leading-1"
 
 
 # ---- kostenfuncties op eenvoudige tupels (id, midi, staff) ------------------------------------------------
@@ -164,9 +163,33 @@ def transition_cost(prev, cur, prev_label, orig_by_id, decided, new_ids):
     return cost
 
 
+def line_cost(older, prev, cur, orig, decided):
+    """Beoordeel contourbehoud en sprongherstel over drie opeenvolgende klanken."""
+    cost = 0.0
+    incoming = pair_positions(positions(prev), positions(cur))
+    outgoing = pair_positions(positions(older), positions(prev)) if older else []
+    for p, q, ids_p, ids_q in incoming:
+        if not any(i in decided for i in ids_q) or set(ids_p) & set(ids_q):
+            continue
+        movement = q - p
+        original = orig[ids_q[0]] - orig[ids_p[0]]
+        # Een oorspronkelijke bewegende binnenstem mag niet kosteloos verstarren.
+        if original and (movement == 0 or movement * original < 0):
+            cost += W["CONTOUR"]
+        for a, b, _, ids_b in outgoing:
+            if not set(ids_b) & set(ids_p):
+                continue
+            leap = b - a
+            if abs(leap) > 4 and not (0 < abs(movement) <= 2 and leap * movement < 0):
+                cost += W["RECOVERY"] * (abs(leap) - 4) / 3
+    return cost
+
+
 # ---- Viterbi over de verticalen -----------------------------------------------------------------------------
-def revoice(sc: Score, beam: int = 12) -> dict:
+def revoice(sc: Score, beam: int = 32) -> dict:
     """Kiest nieuwe toonhoogtes voor de binnenstemmen; geeft {rec.id: nieuwe midi} voor gewijzigde noten."""
+    if beam < 1:
+        raise ValueError("beam moet minstens 1 zijn")
     vs = sc.verticals
     orig = {r.id: r.midi for r in sc.recs}
     by_id = {r.id: r for r in sc.recs}
@@ -177,11 +200,14 @@ def revoice(sc: Score, beam: int = 12) -> dict:
         for r in v.notes:
             if r.on == v.on and r.id not in outer:
                 decided.add(r.id)
+    # Ook een aangehouden binnennoot die later buitenstem wordt blijft vast.
+    protected = {v.slots[s].id for v in vs for s in ("S", "B") if s in v.slots}
+    decided -= protected
     # kandidaten per besliste noot
     cands = {}
     for v in vs:
         root, name, score = v.label
-        chord_pcs = {(root + x) % 12 for x in TEMPLATES[name]} if score >= LABEL_MIN_SCORE else {r.midi % 12 for r in v.notes}
+        chord_pcs = {(root + x) % 12 for x in TEMPLATES[name]} if score >= LABEL_MIN_SCORE and name in TEMPLATES else {r.midi % 12 for r in v.notes}
         lo = v.slots["B"].midi if "B" in v.slots else None
         hi = v.slots["S"].midi if "S" in v.slots else None
         for r in v.notes:
@@ -196,9 +222,9 @@ def revoice(sc: Score, beam: int = 12) -> dict:
             cs = {m for m in range(l, h + 1) if m % 12 in chord_pcs or m == r.midi}
             cs.add(r.midi)
             # hooguit 8 kandidaten, de dichtstbijzijnde bij het origineel
-            cands[r.id] = sorted(cs, key=lambda m: abs(m - r.midi))[:8]
+            cands[r.id] = sorted(cs, key=lambda m: (abs(m - r.midi), m))[:8]
     # Viterbi met bundel
-    states = [({}, 0.0, None)]  # (toewijzing id->midi van klinkende besliste noten, kosten, backpointer)
+    states = [({}, 0.0, None, [])]  # (klinkende toewijzingen, kosten, backpointer, vorige klank)
     history = []
 
     def prev_notes(pv, assign):
@@ -214,20 +240,31 @@ def revoice(sc: Score, beam: int = 12) -> dict:
         combos = list(itertools.product(*[cands[i] for i in new_ids])) if new_ids else [()]
         gap = vi > 0 and all(r.end < v.on - 1e-6 for r in vs[vi - 1].notes)
         new_states = {}
-        for si, (assign, cost0, _) in enumerate(states):
+        for si, (assign, cost0, _, older) in enumerate(states):
+            previous = prev_notes(vs[vi - 1], assign) if vi > 0 and not gap else []
             held = {i: assign.get(i, orig[i]) for i in held_ids}
             for combo in combos:
                 cur_assign = dict(held)
                 cur_assign.update(zip(new_ids, combo))
                 cur = fixed + [(i, m, by_id[i].staff) for i, m in cur_assign.items()]
-                c = cost0 + vertical_cost(cur, lt, v.label, orig_pcs, decided, set(new_ids))
+                # Behoud de kleur van oorspronkelijke niet-akkoordtonen, inclusief
+                # doorgangen en voorhoudingen die het akkoordsjabloon niet beschrijft.
+                root, name, confidence = v.label
+                color_cost = 0.0
+                if confidence >= LABEL_MIN_SCORE and name in TEMPLATES:
+                    pcs = {(root + x) % 12 for x in TEMPLATES[name]}
+                    color_cost = W["COLOR"] * sum(
+                        orig[i] % 12 not in pcs and cur_assign[i] % 12 != orig[i] % 12
+                        for i in new_ids)
+                c = cost0 + color_cost + vertical_cost(cur, lt, v.label, orig_pcs, decided, set(new_ids))
                 if vi > 0 and not gap:
-                    c += transition_cost(prev_notes(vs[vi - 1], assign), cur, vs[vi - 1].label, orig, decided, set(new_ids))
+                    c += transition_cost(previous, cur, vs[vi - 1].label, orig, decided, set(new_ids))
+                    c += line_cost(older, previous, cur, orig, decided)
                 else:
                     c += sum(W["CHANGE"] for i in new_ids if cur_assign[i] != orig[i])
-                key_ = tuple(sorted(cur_assign.items()))
+                key_ = (tuple(sorted(cur_assign.items())), tuple(previous))
                 if key_ not in new_states or c < new_states[key_][1]:
-                    new_states[key_] = (cur_assign, c, si)
+                    new_states[key_] = (cur_assign, c, si, previous)
         ranked = sorted(new_states.values(), key=lambda x: x[1])[:beam]
         history.append(ranked)
         states = ranked
@@ -235,7 +272,7 @@ def revoice(sc: Score, beam: int = 12) -> dict:
     result = {}
     bi = 0
     for ranked in reversed(history):
-        assign, cost, back = ranked[bi]
+        assign, cost, back, _ = ranked[bi]
         for i, m in assign.items():
             result.setdefault(i, m)
         bi = back if back is not None else 0
@@ -276,9 +313,11 @@ def apply(sc: Score, changes: dict):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--only", help="alleen stukken waarvan de bestandsnaam dit bevat")
-    ap.add_argument("--beam", type=int, default=12, help="bundelbreedte van de zoektocht")
+    ap.add_argument("--beam", type=int, default=32, help="bundelbreedte van de zoektocht")
     ap.add_argument("--force", action="store_true")
     args = ap.parse_args()
+    if args.beam < 1:
+        ap.error("--beam moet minstens 1 zijn")
     OUT.mkdir(exist_ok=True)
     files = sorted((DIR / "midi").glob("*.musicxml"))
     if args.only:
@@ -289,7 +328,7 @@ def main():
     results = {k: v for k, v in results.items() if k in stems}  # verdwenen stukken niet blijven meeslepen
     for f in files:
         out_xml = OUT / f.name
-        if not args.force and out_xml.exists() and out_xml.stat().st_mtime > f.stat().st_mtime and f.stem in results:
+        if not args.force and out_xml.exists() and out_xml.stat().st_mtime > f.stat().st_mtime and results.get(f.stem, {}).get("instellingen") == dict(algoritme=ALGORITHM, beam=args.beam):
             continue
         sc = Score(f)
         before = summary(check(sc), len(sc.verticals))
@@ -311,7 +350,7 @@ def main():
         sc.write(out_xml, " – gecorrigeerd")
         (OUT / f"{f.stem}.txt").write_text("\n".join(report_lines(findings)) + "\n")
         n_notes = len(sc.recs)
-        results[f.stem] = dict(noten=n_notes, gewijzigd=len(changes), hergespeld=n_spel, voor=before, na=after)
+        results[f.stem] = dict(instellingen=dict(algoritme=ALGORITHM, beam=args.beam), noten=n_notes, gewijzigd=len(changes), hergespeld=n_spel, voor=before, na=after)
         print(f"{f.stem[:55]:55s} noten={n_notes:5d} gewijzigd={len(changes):4d} ({100 * len(changes) / n_notes:4.1f}%) "
               f"hergespeld={n_spel:3d} fouten {before['totaal']:4d} -> {after['totaal']:4d}")
         jpath.write_text(json.dumps(results, indent=1, ensure_ascii=False))
@@ -330,8 +369,8 @@ def write_md(results: dict):
         tot_a.update(r["na"]["codes"])
     lines = ["# Formele harmonie-correctie", "",
              "Melodie en bas ongewijzigd; binnenstemmen opnieuw gezet en spelling gecorrigeerd. Per code: aantal "
-             "meldingen vóór -> na. Wat overblijft zit vrijwel altijd in de buitenstemmen zelf (verborgen/open "
-             "parallellen tussen melodie en bas, leidtoon in de melodie), of is een transcriptie-artefact.", "",
+             "meldingen vóór -> na. Resterende meldingen kunnen ook binnenstemmen betreffen. "
+             "De formele controle beoordeelt geen muzikale expressie.", "",
              "## Totaal", "", "| code | vóór | na |", "|---|---|---|"]
     for c in codes:
         lines.append(f"| {c} | {tot_b[c]} | {tot_a[c]} |")
