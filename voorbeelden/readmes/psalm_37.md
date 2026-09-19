@@ -38,3 +38,10 @@ spelling die aansluit bij hun harmonische functie.
 Bij de formele harmonie-analyse heeft de samengevoegde partituur 53 meldingen op 348 verticalen (15.2 per 100).
 - In de controlepartituur (`../controle/`) zijn al deze 53 meldingen rood gemarkeerd met de bijbehorende regelcode (`LIG`, `H8`, `OV`, `S7`, etc.).
 - In stap 5 (`../gecorrigeerd/`) zijn 11 binnenstemnoten (1,4%) herzet, waardoor het aantal fouten daalt van 53 naar 43. De formele controle omvat ook meldingen over de buitenstemmen en de wijde pianoligging.
+
+## Hypercorrectie
+
+De [hypercorrectie](../hypercorrectie/2026-01-19%20-%20Psalm%2037%20%EF%BD%9C%20Christelijke%20pianomuziek%20van%20Gerrit%20Koele%20%5Bb9ReiRKeBxg%5D.musicxml) behoudt de melodie en herzet ook de bas.
+Aangehouden binnenstemmen kunnen gericht opnieuw worden aangeslagen om de stemvoering te verbeteren.
+Het [rapport](../hypercorrectie/hypercorrectie.md) vermeldt het resultaat van de volledige
+regelcontrole en de vergelijking van klankvariatie en harmonische verwantschap.

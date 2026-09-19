@@ -20,3 +20,10 @@ In de oorspronkelijke transcriptie zaten 192 meldingen op 686 verticalen, waaron
 
 Door herzetting van 42 binnenstemnoten daalde het aantal meldingen naar 129. Verdubbelde leidtonen zijn
 teruggebracht van 31 naar 6; enharmonische spelfouten zijn in deze partituur niet gemeld. De spelling wordt per verticaal bepaald.
+
+## Hypercorrectie
+
+De [hypercorrectie](../hypercorrectie/2026-04-04%20-%20%27U%20zij%20de%20glorie%27%20%EF%BD%9C%20Christelijke%20pianomuziek%20van%20Gerrit%20Koele%20%5Bi7hRZbaeYpw%5D.musicxml) behoudt de melodie en herzet ook de bas.
+Aangehouden binnenstemmen kunnen gericht opnieuw worden aangeslagen om de stemvoering te verbeteren.
+Het [rapport](../hypercorrectie/hypercorrectie.md) vermeldt het resultaat van de volledige
+regelcontrole en de vergelijking van klankvariatie en harmonische verwantschap.

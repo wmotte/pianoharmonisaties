@@ -11,6 +11,7 @@ transcribe_piano.py    het eigenlijke werk; transcribe_midi.sh is alleen een wra
 analyse_stijl.py       stap 3: stijlanalyse over alle stukken -> stijlanalyse.json / stijlanalyse.md
 controleer_harmonie.py stap 4: formele controle van de zettingen -> midi_controle/ (foute noten rood)
 corrigeer_harmonie.py  stap 5: binnenstemmen herzetten -> midi_gecorrigeerd/ (gewijzigd groen, rest rood)
+hypercorrectie.py     stap 6: bas en binnenstemmen herzetten met vaste melodie -> midi_hypercorrectie/
 ```
 
 ## Installatie
@@ -354,6 +355,51 @@ De vier voorbeeldpartituren zijn met deze correctiemethode berekend. De overige 
 het verzamelrapport betreffen de eerder opgeslagen berekeningen. Een lager aantal
 regelmeldingen is op zichzelf geen maat voor muzikale kwaliteit. Meldingen kunnen ook na
 correctie in binnenstemmen voorkomen, naast de ongewijzigde buitenstemmen.
+
+## Hypercorrectie: vaste melodie, vrije bas en binnenstemmen
+
+`hypercorrectie.py` zoekt een zetting zonder meldingen van de volledige standaardcontrole uit
+`harmonie_regels.py`. De hoogste klinkende rechterhandnoot geldt als melodie. Die blijft vast,
+inclusief spelling, duur en bindingen. Een linkerhandnoot die de melodie kruist, blijft bewerkbaar.
+
+```bash
+python hypercorrectie.py --input-dir voorbeelden/ongecorrigeerd --output-dir voorbeelden/hypercorrectie --seconds 300
+python hypercorrectie.py --input-dir voorbeelden/ongecorrigeerd --output-dir voorbeelden/hypercorrectie --only "Psalm 85" --resume --seconds 300
+```
+
+De zoektocht gebruikt de bestaande regelcontrole rechtstreeks. Zij probeert andere basnoten,
+omkeringen en liggingen, en kan meerdere noten gezamenlijk wijzigen. Bij een te grote afstand
+onder de melodie mogen aangehouden binnenstemmen gericht opnieuw worden aangeslagen. De
+klinkende stemdichtheid en totale tijdsdekking per hand blijven behouden. Er verdwijnen geen
+stemmen of passages om aan de regels te voldoen.
+
+De muzikale voorkeuren bewaken de oorspronkelijke toonklassen, akkoordidentiteit, bascontour en
+harmonische wisselingen. Herhaalde aanslagen zijn beperkt tot aangehouden binnenstemmen bij
+liggingsproblemen. De zoekfunctie gebruikt geen willekeurige versieringen. `--seed` bestuurt
+alleen het verkennen van alternatieve oplossingen wanneer lokale wijzigingen vastlopen.
+
+Na export wordt de MusicXML opnieuw ingelezen en gecontroleerd. De status `volledig` vereist
+nul formele meldingen én geslaagde controles op melodie, tijdsdekking en variatie. Bij onvoldoende
+zoekruimte, rekentijd of onverenigbare eisen wordt de status `onvolledig` en eindigt het script met
+exitcode 2. De melodie wordt nooit vrijgegeven om toch een succesmelding te kunnen geven.
+De optionele toets aan zangomvangen (`OMV`) valt buiten deze standaardcontrole van pianozettingen.
+
+| Optie | Standaard | Betekenis |
+|---|---:|---|
+| `--seconds` | 300 | zoektijd per stuk, exclusief inlezen en exporteren |
+| `--rounds` | 100 | maximaal aantal zoekrondes |
+| `--radius` | 36 | maximale afwijking in halve tonen per bewerkbare noot |
+| `--seed` | 0 | startwaarde voor het verkennen van alternatieven |
+| `--resume` | uit | hervat de opgeslagen toonkeuzes bij exact dezelfde bron en voorbereiding |
+
+Een ruim toonhoogtebereik maakt andere liggingen mogelijk. De muzikale kosten geven de voorkeur
+aan kleinere wijzigingen. Hervatten controleert bron- en voorbereidingsvingerafdrukken en weigert
+wijzigingen buiten de gekozen zoekruimte. Door de tijdslimiet kan het resultaat per machine verschillen.
+
+De vier uitvoeringen staan in [`voorbeelden/hypercorrectie/`](voorbeelden/hypercorrectie/).
+Het [hypercorrectierapport](voorbeelden/hypercorrectie/hypercorrectie.md) vermeldt de foutaantallen
+en metingen van rijkheid en variatie. Het behoud van meetbare kenmerken garandeert niet dat iedere
+muzikale keuze overtuigt. De partituren moeten ook op gehoor worden beoordeeld.
 
 ## Bekende beperkingen en oplossingen
 

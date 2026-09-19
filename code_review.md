@@ -49,3 +49,24 @@ Uitvoeren:
 python -m unittest discover -s tests -v
 python corrigeer_harmonie.py --input-dir voorbeelden/ongecorrigeerd --output-dir voorbeelden/gecorrigeerd --force
 ```
+
+## Hypercorrectie
+
+De aanvullende review controleert dat de zoektocht dezelfde regelcontrole gebruikt als de
+exportvalidatie, inclusief spelling en liggende noten. Het nieuwe `include_ids`-argument voegt
+alleen nootidentificaties toe en wijzigt de bestaande meldingen niet.
+
+Gerichte tests behandelen een linkerhand boven de melodie, een aangehouden melodienoot,
+een onoplosbare verdubbelde leidtoon in vaste melodienoten, proefwijzigingen zonder blijvende
+mutaties, herarticulatie zonder gaten, enharmonische octaafgrenzen en behoud van toonklasdichtheid.
+Ook de gecoördineerde herzetting rond een liggende basnoot moet haar proefwijzigingen volledig
+terugdraaien voordat een voorstel wordt geaccepteerd.
+
+De exporttest leest alle vier hypercorrecties opnieuw in, vereist nul meldingen en vergelijkt
+iedere oorspronkelijke melodienoot op toonhoogte, spelling, inzet en einde. De bronpartituren
+en gewone correcties worden niet door hypercorrectie overschreven. Hervatten vereist dezelfde
+bron en dezelfde voorbereide notenstructuur.
+
+De zoektocht is begrensd en heuristisch. Een onvolledig resultaat blijft herkenbaar als
+`onvolledig`, ook wanneer alleen een behoudscriterium faalt. De acceptatiecriteria beoordelen
+meetbare kenmerken van rijkheid en variatie. Een luisterbeoordeling blijft afzonderlijk nodig.

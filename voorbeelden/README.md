@@ -14,3 +14,10 @@ Deze map bevat vier representatieve voorbeelden (pianomuziek van Gerrit Koele):
 - `ongecorrigeerd/`: de rechtstreekse MusicXML-uitvoer van de transcriptie (stap 2).
 - `controle/`: de MusicXML-uitvoer van de formele harmonie-controle (stap 4), waarin alle regelovertredingen/fouten rood zijn gemarkeerd met hun foutcode onder de noot, maar nog vóór de correcties.
 - `gecorrigeerd/`: de MusicXML-uitvoer na herzetting van de binnenstemmen (stap 5), met gewijzigde noten in groen ("was ...") en restfouten in rood.
+
+## Hypercorrectie
+
+In [`hypercorrectie/`](hypercorrectie/) staan aparte zettingen waarin de melodie vastligt en ook
+de bas mag veranderen. De correctie bewaakt akkoordkleur, klankdichtheid en variatie en controleert
+de geëxporteerde partituren opnieuw. Het [rapport](hypercorrectie/hypercorrectie.md) bevat de
+resultaten en acceptatiecriteria. De gewone correcties blijven beschikbaar in `gecorrigeerd/`.

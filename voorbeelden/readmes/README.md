@@ -22,3 +22,9 @@ In deze map staan vier representatieve voorbeelden uit het repertoire van Gerrit
 - `ongecorrigeerd/`: MusicXML-bestanden direct na transcriptie en opschoning (stap 2).
 - `controle/`: MusicXML-bestanden van de formele harmonie-controle (stap 4), waarin alle regelovertredingen rood zijn gemarkeerd vóór de herzetting.
 - `gecorrigeerd/`: MusicXML-bestanden waarin de binnenstemmen volgens klassieke harmonieleerregels zijn herzet (stap 5, gewijzigde noten groen gemarkeerd).
+
+## Hypercorrectie
+
+De [hypercorrecties](../hypercorrectie/) houden de melodie vast en herzetten ook de bas.
+Zie het [gezamenlijke rapport](../hypercorrectie/hypercorrectie.md) voor de formele controle
+en de vergelijking van rijkheid en variatie.

@@ -333,7 +333,7 @@ def leading_tone_pc(k: key.Key) -> int:
     return (k.tonic.pitchClass + 11) % 12
 
 
-def check(sc: Score, omvang: bool = False) -> list:
+def check(sc: Score, omvang: bool = False, *, include_ids: bool = False) -> list:
     """Alle regels toetsen; markeert rec.codes en geeft een lijst meldingen terug."""
     findings = []
 
@@ -343,6 +343,8 @@ def check(sc: Score, omvang: bool = False) -> list:
         rec.codes.append(code)
         findings.append(dict(measure=v.measure, beat=v.beat, code=code, note=rec.spitch.nameWithOctave,
                              staff=rec.staff, detail=detail))
+        if include_ids:
+            findings[-1]["note_id"] = rec.id
 
     vs = sc.verticals
     for i, v in enumerate(vs):
