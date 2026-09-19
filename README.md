@@ -73,7 +73,7 @@ noten en achtste rusten; hier en daar een es die dis moet zijn):
 | `harmonie_controle.json`, `harmonie_controle.md` | stap 4: overzichtsrapport per stuk en per regel |
 | `midi_gecorrigeerd/` | stap 5: `<stem>.musicxml` met gewijzigde noten in groen en restfouten in rood |
 | `harmonie_correctie.json`, `harmonie_correctie.md` | stap 5: effect van herzetting vóór en na |
-| `voorbeelden/` | drie uitgewerkte voorbeelden (Psalm 85, Lofzang van Maria, U zij de glorie) met ongecorrigeerde, controle- (fouten in rood) en gecorrigeerde MusicXML, mp3's en YouTube-links in `readmes/` |
+| `voorbeelden/` | vier uitgewerkte voorbeelden (Psalm 85, Psalm 37, Lofzang van Maria, U zij de glorie) met ongecorrigeerde, controle- (fouten in rood) en gecorrigeerde MusicXML, mp3's en YouTube-links in `readmes/` |
 | `.venv/` | Python 3.11-omgeving met transkun, music21, torch, librosa, pretty_midi |
 
 ## Stap 0 – `download_koele.sh`
@@ -422,8 +422,9 @@ MuseScore print op stderr meldingen van de crash reporter; die kunnen genegeerd 
 
 ## Voorbeelden
 
-In de map [`voorbeelden/`](voorbeelden/) staan drie uitgewerkte stukken:
+In de map [`voorbeelden/`](voorbeelden/) staan vier uitgewerkte stukken:
 - **Psalm 85** (de referentiezetting, inclusief automatische 4/4 → 3/2 → 4/4 sectiesplitsing)
+- **Psalm 37** (met automatische 3/4 → 4/4 → 4/4 sectiesplitsing en maatwissels)
 - **De Lofzang van Maria** (65 opgeloste parallelle octaven)
 - **U zij de glorie** (toonsoortwisselingen en opgeloste leidtoonverdubbelingen)
 

@@ -1,10 +1,11 @@
-# Voorbeelden van transcripties en harmonie-correcties
+# Voorbeelden: Gerrit Koele transcripties
 
-Deze map bevat drie representatieve voorbeelden (pianomuziek van Gerrit Koele):
+Deze map bevat vier representatieve voorbeelden (pianomuziek van Gerrit Koele):
 
 1. **Psalm 85** (met automatische sectiesplitsing en maatwissels: 4/4 Voorspel → 3/2 Koraal → 4/4 Naspel)
-2. **De Lofzang van Maria** (65 opgeloste parallelle octaven)
-3. **U zij de glorie** (toonsoortwisselingen en opgeloste leidtoonverdubbelingen)
+2. **Psalm 37** (met automatische sectiesplitsing en maatwissels: 3/4 Voorspel → 4/4 Koraal → 4/4 Naspel)
+3. **De Lofzang van Maria** (65 opgeloste parallelle octaven)
+4. **U zij de glorie** (toonsoortwisselingen en opgeloste leidtoonverdubbelingen)
 
 ## Inhoud van deze map
 
