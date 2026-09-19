@@ -1,5 +1,7 @@
 # Gerrit Koele – van YouTube naar bladmuziek
 
+Auteur en contact: Willem M. Otte (<w.m.otte@umcutrecht.nl>)
+
 Scripts die de publieke pianovideo's van [Gerrit Koele](https://www.youtube.com/@GerritKoeleMusicus/videos)
 omzetten naar mp3 en vervolgens naar leesbare, speelbare bladmuziek (MusicXML voor MuseScore) plus MIDI.
 Zie [stijlanalyse.md](stijlanalyse.md) voor een uitgebreide karakterisering van de muzikale stijl en signatuur van Gerrit Koele.
@@ -13,7 +15,28 @@ controleer_harmonie.py stap 4: formele controle van de zettingen -> midi_control
 corrigeer_harmonie.py  stap 5: binnenstemmen herzetten -> midi_gecorrigeerd/ (gewijzigd groen, rest rood)
 ```
 
-## v2 – wat er is veranderd
+## v3 – sectiesplitsing & maatconversie (Voorspel → Koraal → Naspel)
+
+Naar aanleiding van de vraag hoe maatwisselingen (bijv. 4/4 voorspel → 3/2 koraal → 4/4 naspel) en verzamelvideo's
+zonder procrustesbed verwerkt kunnen worden:
+
+- **Automatische stiltedetectie & sectiesplitsing (`--split-sections`)**: detecteert met `librosa` de natuurlijke
+  adempauzes/stiltes (standaard >= 1.0s op -30 dB) tussen voorspel, koraal en naspel.
+- **Per sectie eigen tempo en maatsoort**: elk deel krijgt een eigen beat-tracking en maatsoort. In Psalm 85
+  resulteert dit in een 4/4 voorspel (83 bpm), een 3/2 koraal (108 bpm kwart-eenheden, 3 halve noten per maat),
+  en een 4/4 naspel (86 bpm). Het aantal syncopen in het koraal daalde van 29% naar 2% en het aantal afwijkende
+  maten werd 0!
+- **Naadloos samenvoegen ("vastplakken")**: de losse secties worden samengevoegd tot één complete partituur
+  in `midi/<stem>.musicxml` en `midi/<stem>.mid` met doorlopende maatnummering, maatwissels (bijv. 4/4 naar 3/2),
+  dubbele maatstrepen op de overgangen, tempo-aanduidingen en repetitietekens (`[Voorspel]`, `[Koraal]`, `[Naspel]`).
+- **Losse delen bewaren (`--save-parts`)**: schrijft de losse mp3's naar `mp3_delen/<stem>/` en de afzonderlijke
+  partituren naar `midi_delen/<stem>/` (ideaal voor organisten die alleen de koraalzetting willen).
+- **Handmatige overrides via `splits.json` of CLI**: snijpunten en maatsoorten kunnen nauwkeurig worden afgestemd
+  via `splits.json` of CLI-opties (`--splits 64.18,144.82 --meters 4,6,4`).
+- **Compilatiesplitser (`splits_compilaties.py`)**: knipt lange verzamelvideo's (zoals "8 Psalmen op Piano")
+  automatisch op in zelfstandige mp3's in `mp3/` op basis van lange stiltes (>= 3.0s).
+
+## v2 – wat er eerder is veranderd
 
 Naar aanleiding van de reactie van een organist op de transcriptie van Psalm 85 (veel "onlogische" achtste
 noten en achtste rusten; hier en daar een es die dis moet zijn):
@@ -28,6 +51,31 @@ noten en achtste rusten; hier en daar een es die dis moet zijn):
   `syncopen` duidt op veel achtste noten/rusten – precies wat de organist opviel; zo zijn de stukken die
   handmatige controle vragen in één oogopslag te vinden.
 
+## Mappen en bestanden
+
+| Pad | Inhoud |
+|---|---|
+| `mp3/` | `YYYY-MM-DD - Titel [videoId].mp3`, één per video |
+| `midi_raw/` | `<stem>.transkun.mid` (of `.bytedance.mid`): ruwe transcriptie incl. pedaal |
+| `midi/` | `<stem>.musicxml` (openen in MuseScore) en `<stem>.mid` (afspelen) |
+| `mp3_delen/` | losse mp3-secties (`01_Voorspel.mp3`, `02_Koraal.mp3`, etc.) bij `--save-parts` |
+| `midi_delen/` | losse partituren per sectie (`Voorspel.musicxml`, etc.) bij `--save-parts` |
+| `splits.json` | configuratiebestand met handmatige snijpunten en maatsoorten per stuk |
+| `audio_segmentatie.py` | stiltedetectie via librosa en snijdtools voor audio en MIDI |
+| `plak_partituren.py` | samenvoegengine voor MusicXML (music21) en MIDI (pretty_midi) |
+| `splits_compilaties.py` | tool om compilatie-video's ("8 Psalmen op Piano") op te knippen in `mp3/` |
+| `download.log`, `midi.log` | logboek per stap met keuzes per stuk |
+| `archive.txt`, `videos.txt` | yt-dlp archief en index met datum, video-id en titel |
+| `fotos_van_boek/` | foto's van gedrukte bladmuziek (Psalm 85) ter referentie |
+| `analyse_stijl.py`, `stijlanalyse.json`, `stijlanalyse.md` | stijlanalyse (stap 3) over alle stukken |
+| `harmonie_regels.py` | gedeelde module voor harmonie-analyse en regels (`--test` voor zelftest) |
+| `midi_controle/` | stap 4: `<stem>.musicxml` met fouten in rood en `<stem>.txt` |
+| `harmonie_controle.json`, `harmonie_controle.md` | stap 4: overzichtsrapport per stuk en per regel |
+| `midi_gecorrigeerd/` | stap 5: `<stem>.musicxml` met gewijzigde noten in groen en restfouten in rood |
+| `harmonie_correctie.json`, `harmonie_correctie.md` | stap 5: effect van herzetting vóór en na |
+| `voorbeelden/` | drie uitgewerkte voorbeelden (Psalm 85, Lofzang van Maria, U zij de glorie) met ongecorrigeerde, controle- (fouten in rood) en gecorrigeerde MusicXML, mp3's en YouTube-links in `readmes/` |
+| `.venv/` | Python 3.11-omgeving met transkun, music21, torch, librosa, pretty_midi |
+
 ## Stap 0 – `download_koele.sh`
 
 Haalt met `yt-dlp` alle video's van het kanaal op als mp3 (beste audiokwaliteit, `--audio-quality 0`).
@@ -41,11 +89,12 @@ Haalt met `yt-dlp` alle video's van het kanaal op als mp3 (beste audiokwaliteit,
 
 ## Stap 1+2 – `transcribe_midi.sh` / `transcribe_piano.py`
 
-```
+```bash
 ./transcribe_midi.sh                         # alle mp3's; bestaande midi/*.musicxml worden overgeslagen
+./transcribe_midi.sh --split-sections        # met automatische voorspel/koraal/naspel splitsing en maatwissels
 ./transcribe_midi.sh --reclean               # alleen stap 2 opnieuw (na een scriptwijziging), ruwe midi hergebruiken
 ./transcribe_midi.sh --force                 # alles opnieuw, ook de transcriptie
-.venv/bin/python transcribe_piano.py --reclean --meter 3 "mp3/…één stuk….mp3"
+.venv/bin/python transcribe_piano.py --reclean --split-sections --save-parts "mp3/…één stuk….mp3"
 ```
 
 Opties (`--help` voor de volledige lijst):
@@ -53,6 +102,12 @@ Opties (`--help` voor de volledige lijst):
 | Optie | Standaard | Betekenis |
 |---|---|---|
 | `--model transkun\|bytedance` | transkun | transcriptiemodel (zie stap 1) |
+| `--split-sections` | uit | splits automatisch op stiltes in voorspel/koraal/naspel en voeg samen met maatwissels |
+| `--min-silence SEC` | 1.0 | minimale stilte in seconden voor een sectiegrens |
+| `--silence-db DB` | 30.0 | stilte-drempel in dB onder audiopiek |
+| `--splits T1,T2` | | handmatige snijpunten in seconden (bijv. `64.18,144.82`) |
+| `--meters M1,M2,M3` | | handmatige maatsoorten per sectie (bijv. `4,6,4` voor 4/4 -> 3/2 -> 4/4) |
+| `--save-parts` | uit | bewaar ook de losse mp3's in `mp3_delen/` en partituren in `midi_delen/` |
 | `--grid 0\|2\|3\|4` | 0 (auto) | onderverdeling per tel: 2 = achtsten, 4 = zestienden, 3 = triolen |
 | `--meter 0\|2\|3\|4\|6` | 0 (auto) | maatsoort forceren: 2/4, 3/4, 4/4 of 3/2 (6 tellen) |
 | `--tempo-range MIN MAX` | 60 120 | toegestaan bereik voor het genoteerde tempo |
@@ -61,6 +116,7 @@ Opties (`--help` voor de volledige lijst):
 | `--no-repeats` | | geen coupletherkenning / herhalingstekens |
 | `--pedal` | | pedaaltekens uit de transcriptie overnemen |
 | `--reclean` / `--force` | | zie hierboven |
+
 
 Elke mislukking wordt gelogd (`FOUT: …` + traceback) en de rest gaat door. De log-regel per stuk ziet er zo uit:
 
@@ -205,7 +261,7 @@ verdeelt die zelf weer over twee balken, maar mist dan alle notatiekeuzes – ge
 
 ## Stap 3 – `analyse_stijl.py` (stijlanalyse)
 
-```
+```bash
 .venv/bin/python analyse_stijl.py        # leest midi/*.musicxml + midi_raw/*.transkun.mid, schrijft stijlanalyse.json (~2 min)
 ```
 
@@ -214,7 +270,8 @@ Romeinse trap, ligging), vormdelen (voorspel / koraal / tussenspel / naspel op b
 een couplet is een passage waarvan de intervalreeks ≥ 32 tellen verderop bijna letterlijk terugkomt), per
 vormdeel textuur/register/dynamiek/akkoordstatistiek, cadensen op fermates, basbeweging, orgelpunten,
 octaafverdubbelingen, en uit de ruwe MIDI pedaalgebruik, legato, gebroken akkoorden en het slot-ritenuto.
-Titels uit `COMPILATIONS` (verzamelvideo's) doen niet mee aan de vorm-statistiek.
+Titels uit `COMPILATIONS` (verzamelvideo's) doen niet mee aan de vorm-statistiek. De duiding staat in
+`stijlanalyse.md`; §0 daarvan zegt welke cijfers betrouwbaar zijn en welke niet.
 
 ### De stijl van Gerrit Koele
 
@@ -230,7 +287,7 @@ Zie [stijlanalyse.md](stijlanalyse.md) voor de gedetailleerde analyse, frequenti
 
 ## Stap 4 – `controleer_harmonie.py` (formele controle)
 
-```
+```bash
 .venv/bin/python controleer_harmonie.py                      # alle stukken (~1 min); overslaan als uitvoer nieuwer is
 .venv/bin/python controleer_harmonie.py --only "Psalm 85" --force
 .venv/bin/python controleer_harmonie.py --omvang             # ook de zangomvang van S/A/T/B toetsen (OMV)
@@ -262,10 +319,28 @@ noot en code (een liggende noot wordt niet elke verticaal opnieuw gemeld).
 
 Een deel van de meldingen ontstaat door transcriptie-artefacten (spooknoten, een gemiste stem) of door typische pianozettingen zoals octaven in de melodie en wijde liggingen. De controle toetst uitsluitend aan klassieke koraalregels.
 
+### Resultaten controle over alle 49 stukken
+
+Zie `harmonie_controle.md` en `harmonie_controle.json` voor de volledige tabellen per stuk.
+Over alle 49 stukken en 58.928 verticalen gaf de controle 11.596 meldingen (gemiddeld 19,7 per 100 verticalen):
+
+| Code | Aantal | Per 100 verticalen | Toelichting |
+|---|---|---|---|
+| `LIG` | 2289 | 3.9 | Wijde ligging (> octaaf tussen S-A of A-T), typerend voor pianozetting |
+| `OV` | 1360 | 2.3 | Stemoverlap |
+| `H5` / `H8` | 1982 | 3.4 | Verborgen kwinten (1116) en octaven (866) in buitenstemmen |
+| `SPL` | 1016 | 1.7 | Afwijkende enharmonische spelling |
+| `P8` / `P5` | 1672 | 2.8 | Parallelle octaven (940) en kwinten (732) |
+| `S7` | 813 | 1.4 | Akkoordseptiem lost niet dalend of liggend op |
+| `AP8` / `AP5` | 1215 | 2.1 | Antiparallellen via tegenbeweging |
+| `LT2` / `LT` | 594 | 1.0 | Verdubbelde leidtoon (558) of onopgeloste leidtoon (36) |
+| `A2` | 521 | 0.9 | Overmatige sprong in binnenstem |
+| `KR` | 134 | 0.2 | Stemkruising tussen handen of stemmen |
+
 
 ## Stap 5 – `corrigeer_harmonie.py` (binnenstemmen herzetten)
 
-```
+```bash
 .venv/bin/python corrigeer_harmonie.py                       # alle stukken (~1 s per stuk)
 .venv/bin/python corrigeer_harmonie.py --only "Psalm 85" --beam 20 --force
 ```
@@ -290,15 +365,38 @@ alleen de toonhoogte wisselt, zodat opmaak, stemmen en rusten intact blijven.
 
 Wat overblijft is vrijwel altijd: verborgen of open kwinten en octaven tussen S en B zelf, een leidtoon in de melodie die niet oplost, en `LIG`-meldingen tussen de handen (rechterhand hoog, linkerhand een octaaf in de bas: pianotextuur, geen koraal). Dat volgt direct uit de keuze om melodie en bas intact te laten.
 
+### Resultaten correctie over alle 49 stukken
 
-## Bekende beperkingen
+Zie `harmonie_correctie.md` en `harmonie_correctie.json` voor de volledige tabellen per stuk.
+Door gemiddeld 1 tot 2% van de noten per stuk aan te passen neemt het aantal stemvoeringsfouten sterk af:
 
-- Automatisch alleen 3/4 en 4/4; 2/4, 3/2 en 6/8 worden niet herkend (forceren met `--meter 2` resp. `--meter 6`).
-  Maatwisselingen binnen één stuk (bijv. een 4/4 voorspel met een 3/2 koraal) worden niet automatisch
-  gedetecteerd; het hele stuk krijgt één maatsoort. Zie `maat_hint` in de log.
-- De verzamelvideo's (bijv. kerstliederen, > 1000 maten) bevatten meerdere stukken in verschillende tempi en
-  maatsoorten; die krijgen één maatsoort en één tempo en daardoor veel afwijkende maten. Knip zo'n mp3 bij
-  voorkeur eerst in losse stukken.
+| Code | Meldingen vóór | Meldingen na | Verandering |
+|---|---|---|---|
+| `SPL` (enharmonische spelling) | 1016 | 0 | -100% |
+| `A2` (overmatige sprong binnenstem) | 521 | 181 | -65% |
+| `P5` (parallelle kwinten) | 732 | 335 | -54% |
+| `LT2` (verdubbelde leidtoon) | 558 | 264 | -53% |
+| `P8` (parallelle octaven) | 940 | 454 | -52% |
+| `OV` (stemoverlap) | 1360 | 698 | -49% |
+| `S7` (septiemoplossing) | 813 | 633 | -22% |
+| `AP5` / `AP8` (antiparallellen) | 1215 | 983 | -19% |
+| `KR` (stemkruising) | 134 | 114 | -15% |
+| `LIG` (wijde ligging) | 2289 | 2134 | -7% (inherent aan pianotextuur) |
+| `H5` / `H8` (verborgen kwinten/octaven) | 1982 | 1982 | ongewijzigd (buitenstemmen S en B vast) |
+| `LT` (buitenstem-leidtoon) | 36 | 34 | ongewijzigd (melodie en bas vast) |
+
+Resterende meldingen zitten vrijwel allemaal in de buitenstemmen. Omdat de melodie en baslijn van Koele niet worden gewijzigd, blijven verborgen kwinten en octaven (`H5`/`H8`) en eventuele parallellen tussen sopraan en baslijn behouden.
+
+## Bekende beperkingen en oplossingen
+
+- **Maatwisselingen binnen één stuk (bijv. 4/4 voorspel → 3/2 koraal → 4/4 naspel)**:
+  Wanneer een stuk als één geheel wordt gedraaid, kiest het script één maatsoort voor het hele stuk.
+  **Oplossing:** gebruik `--split-sections` (of configureer `splits.json`). Het script knipt het stuk automatisch op
+  bij de stiltes, kent per sectie een eigen maatsoort en tempo toe, en plakt ze naadloos aan elkaar met maatwissels.
+- **Verzamelvideo's (bijv. "8 Psalmen op Piano", kerstliederen, > 1000 maten)**:
+  Bevatten meerdere stukken in verschillende tempi en maatsoorten.
+  **Oplossing:** gebruik `splits_compilaties.py "mp3/<compilatie>.mp3" --split`. Dit splitst de opname direct
+  op in genummerde losse mp3-tracks in `mp3/`, die vervolgens regulier (en optioneel met `--split-sections`) verwerkt worden.
 - Het genoteerde tempo is het gespeelde tempo (uit beat-tracking), niet de metronoomaanduiding uit het boek.
 - Akkoorden zijn blokakkoorden; een vierstemmige koraalzetting met liggende binnenstemmen wordt versimpeld
   tot maximaal twee stemmen per balk.
@@ -325,12 +423,13 @@ MuseScore print op stderr meldingen van de crash reporter; die kunnen genegeerd 
 ## Voorbeelden
 
 In de map [`voorbeelden/`](voorbeelden/) staan drie uitgewerkte stukken:
-- **Psalm 85** (de referentiezetting)
+- **Psalm 85** (de referentiezetting, inclusief automatische 4/4 → 3/2 → 4/4 sectiesplitsing)
 - **De Lofzang van Maria** (65 opgeloste parallelle octaven)
 - **U zij de glorie** (toonsoortwisselingen en opgeloste leidtoonverdubbelingen)
 
 Elk voorbeeld bevat:
 - De gedownloade audio in `voorbeelden/mp3/`
-- De ongecorrigeerde MusicXML-partituur in `voorbeelden/ongecorrigeerd/`
-- De gecorrigeerde MusicXML-partituur in `voorbeelden/gecorrigeerd/`
+- De ongecorrigeerde MusicXML-partituur in `voorbeelden/ongecorrigeerd/` (stap 2)
+- De formele harmoniecontrole in `voorbeelden/controle/` (stap 4, fouten rood gemarkeerd met regelcode, nog vóór herzetting)
+- De gecorrigeerde MusicXML-partituur in `voorbeelden/gecorrigeerd/` (stap 5, gewijzigde binnenstemmen groen)
 - Een toelichting met de directe link naar de originele YouTube-uitvoering in [`voorbeelden/readmes/`](voorbeelden/readmes/)

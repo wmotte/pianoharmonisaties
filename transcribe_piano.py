@@ -40,9 +40,15 @@ import librosa
 import numpy as np
 import pretty_midi
 import torch
+import json
+import re
 from music21 import (bar, chord, clef, dynamics, expressions, instrument, interval, key, layout, metadata, meter,
                      note,
                      pitch, spanner, stream, tempo)
+from audio_segmentatie import (compute_cut_points, detect_silence_gaps,
+                               split_audio_file, standard_section_labels)
+from plak_partituren import stitch_midi, stitch_scores
+
 
 DIR = Path(__file__).resolve().parent
 RAW = DIR / "midi_raw"
@@ -845,12 +851,7 @@ def write_midi(hands, grid, bpm, m, path):
     out.write(str(path))
 
 
-def clean(mp3: Path, raw_path: Path, args):
-    pm = pretty_midi.PrettyMIDI(str(raw_path))
-    notes = [n for inst in pm.instruments for n in inst.notes]
-    if not notes:
-        raise RuntimeError("geen noten in transcriptie")
-    audio, sr = librosa.load(str(mp3), sr=22050, mono=True)
+def clean_section(audio, sr, notes, args, forced_meter=0, title="Deel", pedal_events=None):
     onsets = np.array(sorted(n.start for n in notes))
     beats, bpm = beat_grid(audio, sr, onsets, max(n.end for n in notes), args.tempo_range)
     idx = np.arange(len(beats), dtype=float)
@@ -861,7 +862,7 @@ def clean(mp3: Path, raw_path: Path, args):
     hands = rebalance(hands, args.split)
     if not hands:
         raise RuntimeError("geen noten over na filteren")
-    m, sig, meter_hint = detect_meter(hands, grid, args.meter)
+    m, sig, meter_hint = detect_meter(hands, grid, forced=forced_meter)
     downbeats = track_bars(sig, m)
 
     # maten: vanaf de eerste aanslag; wat vóór de eerste tel-1 zit wordt opmaat
@@ -873,13 +874,12 @@ def clean(mp3: Path, raw_path: Path, args):
         edges.append(edges[-1] + m)
     shift = -first_beat * grid
     bars = [((a - first_beat) * grid, (b - a) * grid) for a, b in zip(edges, edges[1:])]
-    irregular = sum(1 for _, ln in bars[1:] if ln != m * grid)
-    pickup = bars[0][1] // grid if len(bars) > 1 and bars[0][1] < bars[1][1] else 0
     for g in hands.values():
         for grp in g:
             grp[0] += shift
     fermatas, warp = normalise_bars(hands, bars, grid, m)  # fermate i.p.v. afwijkende maat waar dat kan
     irregular = sum(1 for _, ln in bars[1:] if ln != m * grid)
+    pickup = bars[0][1] // grid if len(bars) > 1 and bars[0][1] < bars[1][1] else 0
 
     def to_units(t):  # seconde -> rastereenheid in de partituur
         u = float(np.interp(t, beats, idx)) * grid + shift
@@ -888,9 +888,9 @@ def clean(mp3: Path, raw_path: Path, args):
         return u
 
     pedal_units = None
-    if args.pedal:
+    if args.pedal and pedal_events:
         pedal_units, down = [], None
-        for cc in sorted((c for i in pm.instruments for c in i.control_changes if c.number == 64), key=lambda c: c.time):
+        for cc in sorted(pedal_events, key=lambda c: c.time):
             if cc.value >= 64 and down is None:
                 down = cc.time
             elif cc.value < 64 and down is not None:
@@ -898,12 +898,7 @@ def clean(mp3: Path, raw_path: Path, args):
                 down = None
     verses = None if args.no_repeats else find_verses(hands, [b[0] for b in bars])
 
-    title = clean_title(mp3.stem)
     score, ks = build_score(hands, grid, bpm, m, bars, title, pedal_units, verses, fermatas)
-    xml_path = OUT / f"{mp3.stem}.musicxml"
-    score.write("musicxml", fp=str(xml_path))
-    xml_path.write_text(xml_path.read_text().replace('<note print-object="no" print-spacing="yes">', "<note>"))
-    write_midi(hands, grid, bpm, m, OUT / f"{mp3.stem}.mid")
     n_groups = sum(len(g) for g in hands.values())
     offbeat = sum(1 for g in hands.values() for on, _, _ in g if on % grid) / max(n_groups, 1)  # aanslagen op de halve tel
     info = dict(noten=len(notes), R=sum(len(p) for _, _, p in hands.get("R", [])),
@@ -912,7 +907,146 @@ def clean(mp3: Path, raw_path: Path, args):
                 afwijkende_maten=irregular, toonsoort=ks, maat_hint=meter_hint or "-",
                 syncopen=f"{round(100 * offbeat)}%",
                 couplet=f"maat {verses[0] + 1}-{verses[0] + verses[1]} x{verses[2]}" if verses else "-")
-    return info
+    return {
+        "score": score,
+        "bpm": bpm,
+        "m": m,
+        "grid": grid,
+        "hands": hands,
+        "ks": ks,
+        "bars": bars,
+        "fermatas": fermatas,
+        "info": info,
+    }
+
+
+def clean(mp3: Path, raw_path: Path, args):
+    pm = pretty_midi.PrettyMIDI(str(raw_path))
+    notes = [n for inst in pm.instruments for n in inst.notes]
+    if not notes:
+        raise RuntimeError("geen noten in transcriptie")
+    audio, sr = librosa.load(str(mp3), sr=22050, mono=True)
+    audio_dur = len(audio) / sr
+
+    # Controleer splits.json configuratie
+    splits_cfg = None
+    cfg_path = DIR / "splits.json"
+    if cfg_path.exists():
+        try:
+            all_splits = json.loads(cfg_path.read_text())
+            for k, v in all_splits.items():
+                if k in mp3.name:
+                    splits_cfg = v
+                    break
+        except Exception as e:
+            log.warning("Kon splits.json niet laden: %s", e)
+
+    should_split = getattr(args, "split_sections", False) or bool(getattr(args, "splits", "")) or (splits_cfg is not None and getattr(args, "split_sections", False))
+
+    sections = None
+    labels = None
+    meters = None
+
+    if should_split:
+        if getattr(args, "splits", ""):
+            cuts = [float(x.strip()) for x in args.splits.split(",") if x.strip()]
+            edges = [0.0] + cuts + [round(audio_dur, 3)]
+            sections = [(edges[i], edges[i + 1]) for i in range(len(edges) - 1)]
+        elif splits_cfg and "splits" in splits_cfg:
+            cuts = [float(x) for x in splits_cfg["splits"]]
+            edges = [0.0] + cuts + [round(audio_dur, 3)]
+            sections = [(edges[i], edges[i + 1]) for i in range(len(edges) - 1)]
+            labels = splits_cfg.get("labels")
+            meters = splits_cfg.get("meters")
+        else:
+            min_silence = getattr(args, "min_silence", 1.0)
+            silence_db = getattr(args, "silence_db", 30.0)
+            min_dur = getattr(args, "min_dur", 10.0)
+            gaps, dur = detect_silence_gaps(mp3, min_silence=min_silence, top_db=silence_db)
+            sections = compute_cut_points(gaps, dur, min_section_dur=min_dur)
+
+        if getattr(args, "meters", ""):
+            meters = [int(x.strip()) for x in re.split(r"[, ]+", args.meters.strip()) if x.strip()]
+
+    # Indien meerdere secties gevonden: verwerk per sectie en voeg samen
+    if should_split and sections and len(sections) > 1:
+        if labels is None or len(labels) != len(sections):
+            labels = standard_section_labels(len(sections))
+        if meters is None or len(meters) != len(sections):
+            meters = [args.meter] * len(sections)
+
+        log.info("   -> Opsplitsing in %d secties (%s)", len(sections), ", ".join(labels))
+        sections_info = []
+        for idx, ((st, et), lbl, m_forced) in enumerate(zip(sections, labels, meters)):
+            sec_audio = audio[int(st * sr):int(et * sr)]
+            sec_notes = [
+                pretty_midi.Note(velocity=n.velocity, pitch=n.pitch, start=n.start - st, end=n.end - st)
+                for n in notes if st <= n.start < et
+            ]
+            if not sec_notes:
+                log.warning("      Geen noten in sectie %s (%.1f-%.1fs), overgeslagen", lbl, st, et)
+                continue
+
+            pedal_ev = [
+                pretty_midi.ControlChange(number=c.number, value=c.value, time=c.time - st)
+                for i in pm.instruments for c in i.control_changes
+                if c.number == 64 and st <= c.time < et
+            ] if args.pedal else None
+
+            sec_res = clean_section(
+                sec_audio, sr, sec_notes, args,
+                forced_meter=m_forced, title=lbl, pedal_events=pedal_ev
+            )
+            sec_res["label"] = lbl
+            sections_info.append(sec_res)
+            log.info(
+                "      Sectie %s: %s, bpm=%d, syncopen=%s, afwijkende_maten=%d",
+                lbl, sec_res["info"]["maat"], sec_res["info"]["bpm"],
+                sec_res["info"]["syncopen"], sec_res["info"]["afwijkende_maten"]
+            )
+
+        if getattr(args, "save_parts", False):
+            mp3_out = DIR / "mp3_delen" / mp3.stem
+            split_audio_file(mp3, sections, mp3_out, labels)
+            xml_out = DIR / "midi_delen" / mp3.stem
+            xml_out.mkdir(parents=True, exist_ok=True)
+            for s_info in sections_info:
+                s_xml = xml_out / f"{s_info['label']}.musicxml"
+                s_info["score"].write("musicxml", fp=str(s_xml))
+
+        title = clean_title(mp3.stem)
+        combined_score = stitch_scores(sections_info, title)
+        xml_path = OUT / f"{mp3.stem}.musicxml"
+        combined_score.write("musicxml", fp=str(xml_path))
+        xml_path.write_text(xml_path.read_text().replace('<note print-object="no" print-spacing="yes">', "<note>"))
+
+        stitch_midi(sections_info, OUT / f"{mp3.stem}.mid")
+
+        total_notes = sum(s["info"]["noten"] for s in sections_info)
+        total_fermatas = sum(s["info"]["fermates"] for s in sections_info)
+        total_irreg = sum(s["info"]["afwijkende_maten"] for s in sections_info)
+        sec_summary = " -> ".join(f"{s['label']} ({s['info']['maat']})" for s in sections_info)
+        info = dict(
+            secties=len(sections_info),
+            vorm=sec_summary,
+            noten=total_notes,
+            fermates=total_fermatas,
+            afwijkende_maten=total_irreg,
+        )
+        return info
+
+    # Reguliere verwerking (geen splitsing)
+    pedal_ev = [
+        c for i in pm.instruments for c in i.control_changes if c.number == 64
+    ] if args.pedal else None
+
+    title = clean_title(mp3.stem)
+    res = clean_section(audio, sr, notes, args, forced_meter=args.meter, title=title, pedal_events=pedal_ev)
+    xml_path = OUT / f"{mp3.stem}.musicxml"
+    res["score"].write("musicxml", fp=str(xml_path))
+    xml_path.write_text(xml_path.read_text().replace('<note print-object="no" print-spacing="yes">', "<note>"))
+    write_midi(res["hands"], res["grid"], res["bpm"], res["m"], OUT / f"{mp3.stem}.mid")
+    return res["info"]
 
 
 def main():
@@ -926,6 +1060,13 @@ def main():
     ap.add_argument("--tempo-range", type=int, nargs=2, default=[60, 120], metavar=("MIN", "MAX"))
     ap.add_argument("--no-repeats", action="store_true", help="geen coupletherkenning / herhalingstekens")
     ap.add_argument("--pedal", action="store_true", help="pedaaltekens uit de transcriptie overnemen")
+    ap.add_argument("--split-sections", action="store_true", help="automatisch stiltes detecteren en opsplitsen in voorspel/koraal/naspel")
+    ap.add_argument("--min-silence", type=float, default=1.0, help="minimale stilte in sec voor sectiegrens (standaard: 1.0)")
+    ap.add_argument("--silence-db", type=float, default=30.0, help="stilte-drempel in dB onder piek (standaard: 30)")
+    ap.add_argument("--min-dur", type=float, default=10.0, help="minimale sectieduur in sec (standaard: 10)")
+    ap.add_argument("--splits", type=str, default="", help="handmatige snijpunten in seconden (bijv. '64.18,144.82')")
+    ap.add_argument("--meters", type=str, default="", help="handmatige maatsoorten per sectie (bijv. '4,6,4')")
+    ap.add_argument("--save-parts", action="store_true", help="sla ook de losse mp3's en partituren op in mp3_delen/ en midi_delen/")
     ap.add_argument("--force", action="store_true", help="alles opnieuw maken (ook de ruwe transcriptie)")
     ap.add_argument("--reclean", action="store_true", help="alleen stap 2 opnieuw doen, ruwe transcriptie hergebruiken")
     args = ap.parse_args()

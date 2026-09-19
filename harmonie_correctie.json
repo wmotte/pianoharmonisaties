@@ -1,0 +1,1961 @@
+{
+ "2026-04-22 - Psalm 85 ｜ Christelijke pianomuziek van Gerrit Koele [qfzzrg627Ho]": {
+  "noten": 583,
+  "gewijzigd": 2,
+  "hergespeld": 0,
+  "voor": {
+   "n_verticalen": 271,
+   "totaal": 33,
+   "per_100": 12.2,
+   "codes": {
+    "H5": 10,
+    "H8": 6,
+    "LIG": 6,
+    "S7": 4,
+    "AP8": 2,
+    "OV": 2,
+    "P8": 2,
+    "KR": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 271,
+   "totaal": 32,
+   "per_100": 11.8,
+   "codes": {
+    "H5": 10,
+    "H8": 6,
+    "LIG": 6,
+    "S7": 3,
+    "AP8": 2,
+    "OV": 2,
+    "P8": 2,
+    "KR": 1
+   }
+  }
+ },
+ "2026-03-25 - 'Ik wil mij gaan vertroosten' ｜ Christelijke pianomuziek van Gerrit Koele [YobPUaNLhpM]": {
+  "noten": 937,
+  "gewijzigd": 49,
+  "hergespeld": 6,
+  "voor": {
+   "n_verticalen": 446,
+   "totaal": 218,
+   "per_100": 48.9,
+   "codes": {
+    "LIG": 50,
+    "OV": 41,
+    "P5": 36,
+    "P8": 18,
+    "AP5": 14,
+    "H5": 14,
+    "H8": 12,
+    "S7": 11,
+    "A2": 9,
+    "SPL": 7,
+    "AP8": 4,
+    "LT2": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 446,
+   "totaal": 116,
+   "per_100": 26.0,
+   "codes": {
+    "LIG": 45,
+    "H5": 14,
+    "H8": 12,
+    "OV": 11,
+    "AP5": 10,
+    "S7": 8,
+    "P8": 6,
+    "AP8": 4,
+    "P5": 4,
+    "A2": 2
+   }
+  }
+ },
+ "2025-11-29 - 'De Lofzang van Maria' ｜ Piano ｜ Adventsmuziek van Gerrit Koele [e8Sz1o3a8pA]": {
+  "noten": 1510,
+  "gewijzigd": 32,
+  "hergespeld": 36,
+  "voor": {
+   "n_verticalen": 882,
+   "totaal": 217,
+   "per_100": 24.6,
+   "codes": {
+    "P8": 65,
+    "SPL": 33,
+    "H5": 30,
+    "LIG": 22,
+    "AP8": 18,
+    "AP5": 12,
+    "OV": 11,
+    "S7": 8,
+    "H8": 8,
+    "A2": 5,
+    "P5": 4,
+    "KR": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 882,
+   "totaal": 96,
+   "per_100": 10.9,
+   "codes": {
+    "H5": 30,
+    "LIG": 22,
+    "AP8": 14,
+    "AP5": 10,
+    "H8": 8,
+    "S7": 7,
+    "P5": 2,
+    "OV": 2,
+    "KR": 1
+   }
+  }
+ },
+ "'De Lofzang van Maria' ｜ Piano ｜ Adventsmuziek van Gerrit Koele": {
+  "noten": 1510,
+  "gewijzigd": 32,
+  "hergespeld": 36,
+  "voor": {
+   "n_verticalen": 882,
+   "totaal": 217,
+   "per_100": 24.6,
+   "codes": {
+    "P8": 65,
+    "SPL": 33,
+    "H5": 30,
+    "LIG": 22,
+    "AP8": 18,
+    "AP5": 12,
+    "OV": 11,
+    "S7": 8,
+    "H8": 8,
+    "A2": 5,
+    "P5": 4,
+    "KR": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 882,
+   "totaal": 96,
+   "per_100": 10.9,
+   "codes": {
+    "H5": 30,
+    "LIG": 22,
+    "AP8": 14,
+    "AP5": 10,
+    "H8": 8,
+    "S7": 7,
+    "P5": 2,
+    "OV": 2,
+    "KR": 1
+   }
+  }
+ },
+ "2025-03-21 - 'De weg naar Golgotha' ｜ Lijdenstijd ｜ Christelijke pianomuziek van Gerrit Koele [uK85eM10yzU]": {
+  "noten": 2732,
+  "gewijzigd": 47,
+  "hergespeld": 28,
+  "voor": {
+   "n_verticalen": 1496,
+   "totaal": 224,
+   "per_100": 15.0,
+   "codes": {
+    "LIG": 63,
+    "H5": 38,
+    "OV": 29,
+    "SPL": 27,
+    "H8": 14,
+    "S7": 12,
+    "AP5": 12,
+    "P5": 8,
+    "LT2": 8,
+    "P8": 6,
+    "KR": 3,
+    "A2": 3,
+    "LT": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 1496,
+   "totaal": 141,
+   "per_100": 9.4,
+   "codes": {
+    "LIG": 58,
+    "H5": 38,
+    "H8": 14,
+    "AP5": 12,
+    "OV": 7,
+    "P5": 4,
+    "KR": 3,
+    "S7": 2,
+    "LT2": 2,
+    "A2": 1
+   }
+  }
+ },
+ "2025-05-22 - Psalm 130 ｜ Christelijke pianomuziek van Gerrit Koele [R5RXDWDHYP0]": {
+  "noten": 1571,
+  "gewijzigd": 16,
+  "hergespeld": 22,
+  "voor": {
+   "n_verticalen": 1020,
+   "totaal": 161,
+   "per_100": 15.8,
+   "codes": {
+    "H5": 50,
+    "LIG": 30,
+    "OV": 23,
+    "SPL": 21,
+    "H8": 16,
+    "S7": 6,
+    "AP8": 4,
+    "AP5": 4,
+    "A2": 3,
+    "LT2": 3,
+    "KR": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 1020,
+   "totaal": 121,
+   "per_100": 11.9,
+   "codes": {
+    "H5": 50,
+    "LIG": 28,
+    "H8": 16,
+    "OV": 10,
+    "S7": 5,
+    "AP8": 4,
+    "AP5": 4,
+    "LT2": 3,
+    "KR": 1
+   }
+  }
+ },
+ "2025-05-23 - Out of the Depths (Psalm 130) – Christian piano music by Gerrit Koele [uQLjt8TcLpA]": {
+  "noten": 1571,
+  "gewijzigd": 14,
+  "hergespeld": 26,
+  "voor": {
+   "n_verticalen": 1019,
+   "totaal": 159,
+   "per_100": 15.6,
+   "codes": {
+    "H5": 48,
+    "LIG": 26,
+    "SPL": 23,
+    "OV": 23,
+    "H8": 14,
+    "S7": 7,
+    "AP8": 6,
+    "A2": 5,
+    "AP5": 4,
+    "LT2": 3
+   }
+  },
+  "na": {
+   "n_verticalen": 1019,
+   "totaal": 119,
+   "per_100": 11.7,
+   "codes": {
+    "H5": 48,
+    "LIG": 26,
+    "H8": 14,
+    "OV": 11,
+    "AP8": 6,
+    "S7": 6,
+    "AP5": 4,
+    "LT2": 3,
+    "KR": 1
+   }
+  }
+ },
+ "2025-05-30 - 'I need Thee every hour' ｜ Christelijke pianomuziek van Gerrit Koele [yFJiUsmyAjk]": {
+  "noten": 684,
+  "gewijzigd": 6,
+  "hergespeld": 0,
+  "voor": {
+   "n_verticalen": 401,
+   "totaal": 51,
+   "per_100": 12.7,
+   "codes": {
+    "LIG": 10,
+    "S7": 8,
+    "OV": 8,
+    "AP5": 6,
+    "H5": 4,
+    "AP8": 4,
+    "LT2": 4,
+    "KR": 3,
+    "A2": 2,
+    "H8": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 401,
+   "totaal": 44,
+   "per_100": 11.0,
+   "codes": {
+    "LIG": 10,
+    "S7": 7,
+    "OV": 7,
+    "H5": 4,
+    "AP8": 4,
+    "AP5": 4,
+    "KR": 3,
+    "H8": 2,
+    "LT2": 2,
+    "A2": 1
+   }
+  }
+ },
+ "2025-06-06 - 'What a friend we have in Jesus' ｜ Christelijke pianomuziek van Gerrit Koele [rSTksY_haj4]": {
+  "noten": 871,
+  "gewijzigd": 6,
+  "hergespeld": 2,
+  "voor": {
+   "n_verticalen": 524,
+   "totaal": 43,
+   "per_100": 8.2,
+   "codes": {
+    "H5": 20,
+    "LIG": 5,
+    "P5": 4,
+    "S7": 4,
+    "KR": 3,
+    "OV": 3,
+    "AP5": 2,
+    "SPL": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 524,
+   "totaal": 37,
+   "per_100": 7.1,
+   "codes": {
+    "H5": 20,
+    "LIG": 5,
+    "P5": 4,
+    "KR": 3,
+    "AP5": 2,
+    "S7": 2,
+    "OV": 1
+   }
+  }
+ },
+ "2025-06-13 - 'Turn your eyes upon Jesus' ｜ Christelijke pianomuziek van Gerrit Koele [JsFwUbS9mJk]": {
+  "noten": 536,
+  "gewijzigd": 4,
+  "hergespeld": 0,
+  "voor": {
+   "n_verticalen": 327,
+   "totaal": 21,
+   "per_100": 6.4,
+   "codes": {
+    "H8": 6,
+    "AP5": 6,
+    "LT2": 4,
+    "LIG": 3,
+    "S7": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 327,
+   "totaal": 15,
+   "per_100": 4.6,
+   "codes": {
+    "AP5": 6,
+    "H8": 4,
+    "LIG": 3,
+    "S7": 2
+   }
+  }
+ },
+ "2025-06-20 - 'It is well with my soul' ｜ Christelijke pianomuziek van Gerrit Koele [4hQ2uhoTwas]": {
+  "noten": 1080,
+  "gewijzigd": 7,
+  "hergespeld": 8,
+  "voor": {
+   "n_verticalen": 666,
+   "totaal": 77,
+   "per_100": 11.6,
+   "codes": {
+    "LT2": 18,
+    "AP8": 12,
+    "OV": 12,
+    "SPL": 9,
+    "LIG": 6,
+    "H8": 4,
+    "P8": 4,
+    "AP5": 4,
+    "S7": 3,
+    "H5": 2,
+    "A2": 2,
+    "KR": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 666,
+   "totaal": 59,
+   "per_100": 8.9,
+   "codes": {
+    "AP8": 12,
+    "LT2": 11,
+    "OV": 11,
+    "LIG": 7,
+    "H8": 4,
+    "P8": 4,
+    "AP5": 4,
+    "S7": 3,
+    "H5": 2,
+    "KR": 1
+   }
+  }
+ },
+ "2025-07-11 - Psalm 100 ｜ Christelijke pianomuziek van Gerrit Koele [1X5UV_AdTEY]": {
+  "noten": 980,
+  "gewijzigd": 4,
+  "hergespeld": 26,
+  "voor": {
+   "n_verticalen": 705,
+   "totaal": 74,
+   "per_100": 10.5,
+   "codes": {
+    "SPL": 24,
+    "LIG": 16,
+    "H8": 10,
+    "H5": 10,
+    "P8": 4,
+    "A2": 2,
+    "S7": 2,
+    "AP5": 2,
+    "P5": 2,
+    "KR": 1,
+    "OV": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 705,
+   "totaal": 45,
+   "per_100": 6.4,
+   "codes": {
+    "LIG": 15,
+    "H8": 10,
+    "H5": 10,
+    "P8": 4,
+    "S7": 2,
+    "AP5": 2,
+    "KR": 1,
+    "OV": 1
+   }
+  }
+ },
+ "2025-07-18 - Psalm 19 ｜ Christelijke pianomuziek van Gerrit Koele [p9RA3WBMukQ]": {
+  "noten": 1696,
+  "gewijzigd": 30,
+  "hergespeld": 0,
+  "voor": {
+   "n_verticalen": 930,
+   "totaal": 163,
+   "per_100": 17.5,
+   "codes": {
+    "OV": 36,
+    "LIG": 28,
+    "H5": 22,
+    "H8": 18,
+    "P5": 12,
+    "AP5": 12,
+    "S7": 8,
+    "LT2": 8,
+    "KR": 7,
+    "P8": 4,
+    "A2": 4,
+    "AP8": 4
+   }
+  },
+  "na": {
+   "n_verticalen": 930,
+   "totaal": 132,
+   "per_100": 14.2,
+   "codes": {
+    "LIG": 27,
+    "H5": 22,
+    "OV": 21,
+    "H8": 18,
+    "AP5": 8,
+    "S7": 8,
+    "LT2": 8,
+    "KR": 7,
+    "P5": 4,
+    "P8": 4,
+    "AP8": 4,
+    "A2": 1
+   }
+  }
+ },
+ "2025-10-15 - 'Holy, holy, holy' ｜ Piano ｜ Christelijke pianomuziek van Gerrit Koele [EXU8oCFJxAo]": {
+  "noten": 928,
+  "gewijzigd": 28,
+  "hergespeld": 11,
+  "voor": {
+   "n_verticalen": 483,
+   "totaal": 127,
+   "per_100": 26.3,
+   "codes": {
+    "OV": 27,
+    "H5": 18,
+    "LIG": 14,
+    "AP8": 12,
+    "SPL": 11,
+    "AP5": 10,
+    "P8": 10,
+    "A2": 8,
+    "H8": 6,
+    "S7": 5,
+    "LT2": 4,
+    "P5": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 483,
+   "totaal": 73,
+   "per_100": 15.1,
+   "codes": {
+    "H5": 18,
+    "LIG": 17,
+    "AP5": 10,
+    "AP8": 10,
+    "H8": 6,
+    "OV": 5,
+    "LT2": 2,
+    "S7": 2,
+    "P8": 2,
+    "A2": 1
+   }
+  }
+ },
+ "2025-10-22 - 'Amazing grace' ｜ Piano ｜ Christelijke pianomuziek van Gerrit Koele [36JOpqVa5LY]": {
+  "noten": 994,
+  "gewijzigd": 21,
+  "hergespeld": 11,
+  "voor": {
+   "n_verticalen": 532,
+   "totaal": 113,
+   "per_100": 21.2,
+   "codes": {
+    "P8": 20,
+    "OV": 19,
+    "LT2": 14,
+    "LIG": 14,
+    "A2": 11,
+    "SPL": 9,
+    "AP5": 6,
+    "AP8": 6,
+    "P5": 5,
+    "H8": 4,
+    "S7": 3,
+    "H5": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 532,
+   "totaal": 62,
+   "per_100": 11.7,
+   "codes": {
+    "LIG": 14,
+    "OV": 11,
+    "AP5": 6,
+    "A2": 6,
+    "P8": 6,
+    "H8": 4,
+    "LT2": 4,
+    "AP8": 4,
+    "S7": 3,
+    "H5": 2,
+    "P5": 2
+   }
+  }
+ },
+ "2025-10-28 - Psalm 119 ｜ Piano ｜ Christelijke pianomuziek van Gerrit Koele [sDR7FFLsX4c]": {
+  "noten": 1060,
+  "gewijzigd": 16,
+  "hergespeld": 2,
+  "voor": {
+   "n_verticalen": 555,
+   "totaal": 107,
+   "per_100": 19.3,
+   "codes": {
+    "AP5": 18,
+    "H5": 16,
+    "H8": 16,
+    "P8": 16,
+    "AP8": 10,
+    "LIG": 10,
+    "LT2": 6,
+    "OV": 5,
+    "A2": 4,
+    "S7": 3,
+    "SPL": 2,
+    "KR": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 555,
+   "totaal": 79,
+   "per_100": 14.2,
+   "codes": {
+    "H5": 16,
+    "AP5": 16,
+    "H8": 16,
+    "LIG": 11,
+    "AP8": 8,
+    "P8": 4,
+    "S7": 3,
+    "OV": 3,
+    "KR": 1,
+    "A2": 1
+   }
+  }
+ },
+ "2025-11-05 - 'Great is thy faithfulness' ｜ Christelijke pianomuziek van Gerrit Koele [Wsc3ProaqO0]": {
+  "noten": 1138,
+  "gewijzigd": 15,
+  "hergespeld": 3,
+  "voor": {
+   "n_verticalen": 566,
+   "totaal": 97,
+   "per_100": 17.1,
+   "codes": {
+    "LIG": 23,
+    "AP8": 16,
+    "H5": 14,
+    "OV": 13,
+    "S7": 9,
+    "LT2": 6,
+    "H8": 6,
+    "AP5": 4,
+    "P8": 2,
+    "A2": 2,
+    "SPL": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 566,
+   "totaal": 74,
+   "per_100": 13.1,
+   "codes": {
+    "LIG": 21,
+    "AP8": 14,
+    "H5": 14,
+    "S7": 9,
+    "H8": 6,
+    "OV": 4,
+    "LT2": 4,
+    "AP5": 2
+   }
+  }
+ },
+ "2025-11-12 - Psalm 86 ｜ Christelijke pianomuziek van Gerrit Koele [Mit76lyMD7M]": {
+  "noten": 847,
+  "gewijzigd": 5,
+  "hergespeld": 15,
+  "voor": {
+   "n_verticalen": 526,
+   "totaal": 48,
+   "per_100": 9.1,
+   "codes": {
+    "SPL": 14,
+    "LIG": 11,
+    "S7": 4,
+    "H5": 4,
+    "OV": 3,
+    "H8": 2,
+    "P5": 2,
+    "P8": 2,
+    "AP5": 2,
+    "AP8": 2,
+    "A2": 1,
+    "KR": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 526,
+   "totaal": 28,
+   "per_100": 5.3,
+   "codes": {
+    "LIG": 11,
+    "S7": 4,
+    "H5": 4,
+    "H8": 2,
+    "OV": 2,
+    "AP5": 2,
+    "AP8": 2,
+    "KR": 1
+   }
+  }
+ },
+ "2025-11-19 - 'Just as I am' ｜ Christelijke pianomuziek van Gerrit Koele [uPt3J7_wFXc]": {
+  "noten": 928,
+  "gewijzigd": 5,
+  "hergespeld": 1,
+  "voor": {
+   "n_verticalen": 555,
+   "totaal": 72,
+   "per_100": 13.0,
+   "codes": {
+    "H5": 18,
+    "LT2": 13,
+    "LIG": 10,
+    "P8": 6,
+    "AP8": 6,
+    "OV": 5,
+    "H8": 4,
+    "S7": 4,
+    "AP5": 2,
+    "SPL": 2,
+    "KR": 1,
+    "A2": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 555,
+   "totaal": 61,
+   "per_100": 11.0,
+   "codes": {
+    "H5": 18,
+    "LIG": 11,
+    "LT2": 8,
+    "OV": 5,
+    "P8": 4,
+    "H8": 4,
+    "S7": 4,
+    "AP8": 4,
+    "AP5": 2,
+    "KR": 1
+   }
+  }
+ },
+ "2025-11-26 - 'Nu daagt het in het oosten' ｜ Advent｜ Christelijke pianomuziek van Gerrit Koele [HvY5-olOxFw]": {
+  "noten": 514,
+  "gewijzigd": 9,
+  "hergespeld": 0,
+  "voor": {
+   "n_verticalen": 240,
+   "totaal": 54,
+   "per_100": 22.5,
+   "codes": {
+    "H5": 18,
+    "P5": 6,
+    "OV": 6,
+    "P8": 6,
+    "AP5": 6,
+    "LT2": 4,
+    "S7": 3,
+    "AP8": 2,
+    "H8": 2,
+    "LIG": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 240,
+   "totaal": 36,
+   "per_100": 15.0,
+   "codes": {
+    "H5": 18,
+    "S7": 3,
+    "LT2": 3,
+    "OV": 3,
+    "P5": 2,
+    "AP8": 2,
+    "H8": 2,
+    "P8": 2,
+    "LIG": 1
+   }
+  }
+ },
+ "2025-12-02 - 'Wij trekken in een lange stoet' ｜ Advent ｜ Christelijke pianomuziek van Gerrit Koele [-YkuBtBUZ-0]": {
+  "noten": 1106,
+  "gewijzigd": 18,
+  "hergespeld": 19,
+  "voor": {
+   "n_verticalen": 567,
+   "totaal": 105,
+   "per_100": 18.5,
+   "codes": {
+    "SPL": 19,
+    "OV": 15,
+    "H5": 14,
+    "P8": 12,
+    "S7": 11,
+    "LIG": 8,
+    "P5": 6,
+    "A2": 5,
+    "LT2": 4,
+    "AP8": 4,
+    "KR": 3,
+    "H8": 2,
+    "AP5": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 567,
+   "totaal": 66,
+   "per_100": 11.6,
+   "codes": {
+    "H5": 14,
+    "OV": 10,
+    "LIG": 8,
+    "S7": 6,
+    "P8": 6,
+    "P5": 4,
+    "LT2": 4,
+    "AP8": 4,
+    "KR": 3,
+    "A2": 3,
+    "H8": 2,
+    "AP5": 2
+   }
+  }
+ },
+ "2025-12-06 - De mooiste kerstliederen op piano ｜ kerstmuziek van Gerrit Koele [sV3fRCVA6hg]": {
+  "noten": 11104,
+  "gewijzigd": 183,
+  "hergespeld": 89,
+  "voor": {
+   "n_verticalen": 5114,
+   "totaal": 1066,
+   "per_100": 20.8,
+   "codes": {
+    "LIG": 238,
+    "OV": 108,
+    "S7": 85,
+    "H5": 84,
+    "P8": 82,
+    "SPL": 82,
+    "H8": 78,
+    "P5": 75,
+    "AP8": 67,
+    "AP5": 54,
+    "A2": 52,
+    "LT2": 44,
+    "KR": 13,
+    "LT": 4
+   }
+  },
+  "na": {
+   "n_verticalen": 5114,
+   "totaal": 752,
+   "per_100": 14.7,
+   "codes": {
+    "LIG": 220,
+    "H5": 84,
+    "H8": 78,
+    "S7": 69,
+    "OV": 60,
+    "AP8": 57,
+    "P8": 52,
+    "AP5": 42,
+    "P5": 40,
+    "LT2": 20,
+    "A2": 17,
+    "KR": 9,
+    "LT": 4
+   }
+  }
+ },
+ "2025-12-09 - 'Hoe zal ik U ontvangen' ｜ Advent ｜ Christelijke pianomuziek van Gerrit Koele [68fWgtfwD9U]": {
+  "noten": 779,
+  "gewijzigd": 15,
+  "hergespeld": 2,
+  "voor": {
+   "n_verticalen": 386,
+   "totaal": 76,
+   "per_100": 19.7,
+   "codes": {
+    "H8": 16,
+    "H5": 14,
+    "P8": 10,
+    "OV": 9,
+    "AP8": 8,
+    "AP5": 6,
+    "S7": 4,
+    "LIG": 4,
+    "SPL": 2,
+    "P5": 2,
+    "KR": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 386,
+   "totaal": 61,
+   "per_100": 15.8,
+   "codes": {
+    "H8": 16,
+    "H5": 14,
+    "AP8": 6,
+    "AP5": 6,
+    "P8": 6,
+    "OV": 4,
+    "S7": 3,
+    "LIG": 3,
+    "P5": 2,
+    "KR": 1
+   }
+  }
+ },
+ "2025-12-11 - Beautiful Christmas Songs ｜ Piano [HSnmY6xL46U]": {
+  "noten": 6650,
+  "gewijzigd": 172,
+  "hergespeld": 46,
+  "voor": {
+   "n_verticalen": 2632,
+   "totaal": 743,
+   "per_100": 28.2,
+   "codes": {
+    "LIG": 185,
+    "OV": 118,
+    "S7": 66,
+    "P5": 58,
+    "P8": 54,
+    "SPL": 43,
+    "H8": 38,
+    "A2": 38,
+    "AP8": 36,
+    "AP5": 34,
+    "H5": 34,
+    "LT2": 25,
+    "KR": 9,
+    "LT": 5
+   }
+  },
+  "na": {
+   "n_verticalen": 2632,
+   "totaal": 490,
+   "per_100": 18.6,
+   "codes": {
+    "LIG": 169,
+    "OV": 54,
+    "S7": 46,
+    "H8": 38,
+    "P8": 34,
+    "P5": 34,
+    "H5": 34,
+    "AP8": 22,
+    "AP5": 18,
+    "LT2": 17,
+    "A2": 12,
+    "KR": 7,
+    "LT": 5
+   }
+  }
+ },
+ "2025-12-13 - ‘Eer zij God in onze dagen’ ｜ Piano ｜ Kerstmuziek van Gerrit Koele [Z1CKaFrs4Nk]": {
+  "noten": 982,
+  "gewijzigd": 22,
+  "hergespeld": 0,
+  "voor": {
+   "n_verticalen": 379,
+   "totaal": 70,
+   "per_100": 18.5,
+   "codes": {
+    "LIG": 20,
+    "OV": 10,
+    "S7": 6,
+    "P5": 6,
+    "H8": 6,
+    "A2": 6,
+    "P8": 6,
+    "AP8": 4,
+    "AP5": 4,
+    "H5": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 379,
+   "totaal": 55,
+   "per_100": 14.5,
+   "codes": {
+    "LIG": 22,
+    "H8": 6,
+    "OV": 5,
+    "S7": 5,
+    "AP8": 4,
+    "AP5": 4,
+    "A2": 3,
+    "P5": 2,
+    "H5": 2,
+    "P8": 2
+   }
+  }
+ },
+ "2025-12-15 - De Mooiste Christelijke Kerstliederen op Piano ｜ Kerstmuziek van Gerrit Koele [CCoOpc0ZFqk]": {
+  "noten": 11104,
+  "gewijzigd": 188,
+  "hergespeld": 86,
+  "voor": {
+   "n_verticalen": 5114,
+   "totaal": 1080,
+   "per_100": 21.1,
+   "codes": {
+    "LIG": 234,
+    "OV": 113,
+    "S7": 88,
+    "H5": 86,
+    "H8": 84,
+    "P8": 82,
+    "SPL": 80,
+    "P5": 75,
+    "AP8": 67,
+    "A2": 57,
+    "AP5": 52,
+    "LT2": 44,
+    "KR": 14,
+    "LT": 4
+   }
+  },
+  "na": {
+   "n_verticalen": 5114,
+   "totaal": 763,
+   "per_100": 14.9,
+   "codes": {
+    "LIG": 218,
+    "H5": 86,
+    "H8": 84,
+    "S7": 69,
+    "OV": 64,
+    "AP8": 57,
+    "P8": 52,
+    "AP5": 42,
+    "P5": 36,
+    "LT2": 20,
+    "A2": 20,
+    "KR": 11,
+    "LT": 4
+   }
+  }
+ },
+ "2025-12-16 - 'O little town of Bethlehem' ｜ Kerst ｜ Christelijke pianomuziek van Gerrit Koele [CuLkJIzmnko]": {
+  "noten": 659,
+  "gewijzigd": 21,
+  "hergespeld": 5,
+  "voor": {
+   "n_verticalen": 313,
+   "totaal": 63,
+   "per_100": 20.1,
+   "codes": {
+    "LIG": 23,
+    "S7": 9,
+    "LT2": 7,
+    "A2": 5,
+    "SPL": 5,
+    "P5": 4,
+    "OV": 2,
+    "KR": 2,
+    "H8": 2,
+    "AP8": 2,
+    "H5": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 313,
+   "totaal": 41,
+   "per_100": 13.1,
+   "codes": {
+    "LIG": 23,
+    "LT2": 7,
+    "S7": 6,
+    "H8": 2,
+    "H5": 2,
+    "A2": 1
+   }
+  }
+ },
+ "2025-12-17 - De mooiste kerstliederen op piano ｜ Kerstmuziek van Gerrit Koele [AyhB4PKeq2M]": {
+  "noten": 22369,
+  "gewijzigd": 368,
+  "hergespeld": 180,
+  "voor": {
+   "n_verticalen": 10291,
+   "totaal": 2144,
+   "per_100": 20.8,
+   "codes": {
+    "LIG": 479,
+    "OV": 234,
+    "S7": 175,
+    "SPL": 169,
+    "P8": 168,
+    "H8": 166,
+    "H5": 164,
+    "P5": 141,
+    "AP8": 130,
+    "A2": 115,
+    "AP5": 94,
+    "LT2": 72,
+    "KR": 29,
+    "LT": 8
+   }
+  },
+  "na": {
+   "n_verticalen": 10291,
+   "totaal": 1510,
+   "per_100": 14.7,
+   "codes": {
+    "LIG": 443,
+    "H8": 166,
+    "H5": 164,
+    "S7": 138,
+    "OV": 132,
+    "AP8": 110,
+    "P8": 104,
+    "AP5": 76,
+    "P5": 68,
+    "A2": 42,
+    "LT2": 36,
+    "KR": 23,
+    "LT": 8
+   }
+  }
+ },
+ "2025-12-18 - 't Is geboren het Godd'lijk Kind' ｜ Kerst ｜ Pianomuziek van Gerrit Koele [vof3u1Ozuq4]": {
+  "noten": 1157,
+  "gewijzigd": 17,
+  "hergespeld": 25,
+  "voor": {
+   "n_verticalen": 469,
+   "totaal": 134,
+   "per_100": 28.6,
+   "codes": {
+    "P5": 22,
+    "SPL": 20,
+    "H8": 18,
+    "P8": 18,
+    "OV": 13,
+    "LIG": 11,
+    "H5": 8,
+    "AP8": 8,
+    "LT2": 6,
+    "S7": 6,
+    "A2": 3,
+    "KR": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 469,
+   "totaal": 81,
+   "per_100": 17.3,
+   "codes": {
+    "H8": 18,
+    "P8": 10,
+    "AP8": 10,
+    "P5": 8,
+    "H5": 8,
+    "OV": 8,
+    "S7": 6,
+    "LIG": 5,
+    "LT2": 4,
+    "A2": 3,
+    "KR": 1
+   }
+  }
+ },
+ "2025-12-19 - 'God rest ye merry gentlemen' ｜ Piano ｜ Advent music by Gerrit Koele [tT5b2fCBKnA]": {
+  "noten": 1098,
+  "gewijzigd": 41,
+  "hergespeld": 18,
+  "voor": {
+   "n_verticalen": 422,
+   "totaal": 152,
+   "per_100": 36.0,
+   "codes": {
+    "OV": 30,
+    "LIG": 23,
+    "SPL": 19,
+    "S7": 13,
+    "AP5": 12,
+    "P8": 12,
+    "P5": 10,
+    "A2": 8,
+    "H5": 8,
+    "AP8": 8,
+    "LT2": 4,
+    "H8": 4,
+    "KR": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 422,
+   "totaal": 84,
+   "per_100": 19.9,
+   "codes": {
+    "LIG": 19,
+    "OV": 14,
+    "AP5": 12,
+    "H5": 8,
+    "S7": 6,
+    "P5": 6,
+    "AP8": 6,
+    "A2": 4,
+    "P8": 4,
+    "H8": 4,
+    "KR": 1
+   }
+  }
+ },
+ "2025-12-20 - De mooiste kerstliederen op piano ｜ Kerstmuziek van Gerrit Koele [UTwIlbeh40o]": {
+  "noten": 11104,
+  "gewijzigd": 188,
+  "hergespeld": 86,
+  "voor": {
+   "n_verticalen": 5114,
+   "totaal": 1080,
+   "per_100": 21.1,
+   "codes": {
+    "LIG": 234,
+    "OV": 113,
+    "S7": 88,
+    "H5": 86,
+    "H8": 84,
+    "P8": 82,
+    "SPL": 80,
+    "P5": 75,
+    "AP8": 67,
+    "A2": 57,
+    "AP5": 52,
+    "LT2": 44,
+    "KR": 14,
+    "LT": 4
+   }
+  },
+  "na": {
+   "n_verticalen": 5114,
+   "totaal": 763,
+   "per_100": 14.9,
+   "codes": {
+    "LIG": 218,
+    "H5": 86,
+    "H8": 84,
+    "S7": 69,
+    "OV": 64,
+    "AP8": 57,
+    "P8": 52,
+    "AP5": 42,
+    "P5": 36,
+    "LT2": 20,
+    "A2": 20,
+    "KR": 11,
+    "LT": 4
+   }
+  }
+ },
+ "2025-12-22 - 'Stille nacht' ｜ Piano ｜ Kerstmuziek van Gerrit Koele [vfrs1zk0J5g]": {
+  "noten": 363,
+  "gewijzigd": 4,
+  "hergespeld": 4,
+  "voor": {
+   "n_verticalen": 206,
+   "totaal": 34,
+   "per_100": 16.5,
+   "codes": {
+    "LIG": 19,
+    "SPL": 4,
+    "H8": 4,
+    "S7": 2,
+    "OV": 2,
+    "P5": 2,
+    "LT": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 206,
+   "totaal": 28,
+   "per_100": 13.6,
+   "codes": {
+    "LIG": 18,
+    "H8": 4,
+    "S7": 2,
+    "P5": 2,
+    "OV": 1,
+    "LT": 1
+   }
+  }
+ },
+ "2026-01-06 - Psalm 1 ｜ Christelijke pianomuziek van Gerrit Koele [GPzC5g_Kyog]": {
+  "noten": 782,
+  "gewijzigd": 9,
+  "hergespeld": 0,
+  "voor": {
+   "n_verticalen": 385,
+   "totaal": 56,
+   "per_100": 14.5,
+   "codes": {
+    "H5": 18,
+    "LIG": 9,
+    "AP5": 8,
+    "S7": 8,
+    "H8": 8,
+    "P5": 4,
+    "A2": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 385,
+   "totaal": 51,
+   "per_100": 13.2,
+   "codes": {
+    "H5": 18,
+    "AP5": 8,
+    "LIG": 8,
+    "H8": 8,
+    "S7": 4,
+    "P5": 4,
+    "A2": 1
+   }
+  }
+ },
+ "2026-01-09 - Psalm 13 ｜ Christelijke pianomuziek van Gerrit Koele [8LYNz_8na5U]": {
+  "noten": 754,
+  "gewijzigd": 6,
+  "hergespeld": 39,
+  "voor": {
+   "n_verticalen": 311,
+   "totaal": 83,
+   "per_100": 26.7,
+   "codes": {
+    "SPL": 35,
+    "LIG": 11,
+    "S7": 8,
+    "H5": 8,
+    "A2": 7,
+    "H8": 6,
+    "OV": 4,
+    "AP8": 2,
+    "P5": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 311,
+   "totaal": 44,
+   "per_100": 14.1,
+   "codes": {
+    "LIG": 11,
+    "S7": 8,
+    "H5": 8,
+    "H8": 6,
+    "A2": 5,
+    "OV": 2,
+    "AP8": 2,
+    "P5": 2
+   }
+  }
+ },
+ "2026-01-14 - Psalm 25 ｜ Heer', ai, maak mij Uwe wegen [cSMWXibtIDQ]": {
+  "noten": 577,
+  "gewijzigd": 12,
+  "hergespeld": 1,
+  "voor": {
+   "n_verticalen": 298,
+   "totaal": 53,
+   "per_100": 17.8,
+   "codes": {
+    "LIG": 11,
+    "LT2": 11,
+    "OV": 6,
+    "H8": 6,
+    "H5": 6,
+    "P5": 4,
+    "S7": 4,
+    "A2": 2,
+    "P8": 2,
+    "SPL": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 298,
+   "totaal": 32,
+   "per_100": 10.7,
+   "codes": {
+    "LIG": 11,
+    "H8": 6,
+    "H5": 6,
+    "OV": 3,
+    "LT2": 2,
+    "P8": 2,
+    "S7": 1,
+    "A2": 1
+   }
+  }
+ },
+ "2026-01-19 - Psalm 37 ｜ Christelijke pianomuziek van Gerrit Koele [b9ReiRKeBxg]": {
+  "noten": 554,
+  "gewijzigd": 11,
+  "hergespeld": 14,
+  "voor": {
+   "n_verticalen": 259,
+   "totaal": 69,
+   "per_100": 26.6,
+   "codes": {
+    "SPL": 18,
+    "LIG": 16,
+    "OV": 11,
+    "A2": 5,
+    "AP5": 4,
+    "H8": 4,
+    "KR": 3,
+    "LT": 2,
+    "S7": 2,
+    "AP8": 2,
+    "P5": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 259,
+   "totaal": 27,
+   "per_100": 10.4,
+   "codes": {
+    "LIG": 9,
+    "H8": 4,
+    "KR": 3,
+    "LT": 2,
+    "AP8": 2,
+    "A2": 2,
+    "OV": 2,
+    "AP5": 2,
+    "S7": 1
+   }
+  }
+ },
+ "2026-01-28 - Psalm 49 ｜ Christelijke pianomuziek van Gerrit Koele [6459w6239Xw]": {
+  "noten": 868,
+  "gewijzigd": 8,
+  "hergespeld": 2,
+  "voor": {
+   "n_verticalen": 426,
+   "totaal": 38,
+   "per_100": 8.9,
+   "codes": {
+    "P5": 6,
+    "AP8": 6,
+    "LIG": 5,
+    "OV": 5,
+    "H8": 4,
+    "P8": 4,
+    "A2": 2,
+    "H5": 2,
+    "AP5": 2,
+    "SPL": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 426,
+   "totaal": 26,
+   "per_100": 6.1,
+   "codes": {
+    "P5": 6,
+    "LIG": 5,
+    "AP8": 4,
+    "H8": 4,
+    "OV": 2,
+    "H5": 2,
+    "P8": 2,
+    "A2": 1
+   }
+  }
+ },
+ "2026-02-05 - Psalm 61 ｜ Christelijke pianomuziek van Gerrit Koele [IxpCWjPVD44]": {
+  "noten": 673,
+  "gewijzigd": 7,
+  "hergespeld": 16,
+  "voor": {
+   "n_verticalen": 375,
+   "totaal": 83,
+   "per_100": 22.1,
+   "codes": {
+    "H8": 20,
+    "SPL": 16,
+    "P8": 12,
+    "H5": 10,
+    "LIG": 7,
+    "OV": 6,
+    "AP8": 4,
+    "AP5": 4,
+    "P5": 2,
+    "A2": 1,
+    "S7": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 375,
+   "totaal": 59,
+   "per_100": 15.7,
+   "codes": {
+    "H8": 20,
+    "H5": 10,
+    "LIG": 9,
+    "OV": 6,
+    "P8": 4,
+    "AP8": 4,
+    "AP5": 4,
+    "A2": 1,
+    "S7": 1
+   }
+  }
+ },
+ "2026-02-11 - Psalm 73 ｜ Christelijke pianomuziek van Gerrit Koele [kE69OrFFMxA]": {
+  "noten": 806,
+  "gewijzigd": 11,
+  "hergespeld": 1,
+  "voor": {
+   "n_verticalen": 410,
+   "totaal": 89,
+   "per_100": 21.7,
+   "codes": {
+    "H5": 20,
+    "LIG": 16,
+    "H8": 14,
+    "AP8": 8,
+    "P5": 8,
+    "OV": 6,
+    "P8": 4,
+    "AP5": 4,
+    "S7": 3,
+    "A2": 2,
+    "LT": 2,
+    "SPL": 1,
+    "KR": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 410,
+   "totaal": 75,
+   "per_100": 18.3,
+   "codes": {
+    "H5": 20,
+    "LIG": 15,
+    "H8": 14,
+    "P5": 8,
+    "AP8": 6,
+    "S7": 3,
+    "P8": 2,
+    "OV": 2,
+    "LT": 2,
+    "AP5": 2,
+    "KR": 1
+   }
+  }
+ },
+ "2026-02-19 - 'Jezus, leven van mijn leven' ｜ Christelijke pianomuziek van Gerrit Koele [kNH0T81LXBo]": {
+  "noten": 1142,
+  "gewijzigd": 18,
+  "hergespeld": 28,
+  "voor": {
+   "n_verticalen": 565,
+   "totaal": 113,
+   "per_100": 20.0,
+   "codes": {
+    "SPL": 25,
+    "H8": 18,
+    "LT2": 14,
+    "LIG": 13,
+    "AP5": 8,
+    "P8": 8,
+    "S7": 7,
+    "H5": 6,
+    "OV": 6,
+    "A2": 3,
+    "AP8": 2,
+    "P5": 2,
+    "LT": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 565,
+   "totaal": 65,
+   "per_100": 11.5,
+   "codes": {
+    "H8": 18,
+    "LIG": 9,
+    "LT2": 7,
+    "S7": 6,
+    "H5": 6,
+    "AP5": 6,
+    "P8": 4,
+    "OV": 3,
+    "AP8": 2,
+    "P5": 2,
+    "A2": 1,
+    "LT": 1
+   }
+  }
+ },
+ "2026-02-26 - Heer, uw bloed dat reinigt mij ｜ Christelijke pianomuziek van Gerrit Koele [Dvz_syQDLEU]": {
+  "noten": 730,
+  "gewijzigd": 9,
+  "hergespeld": 0,
+  "voor": {
+   "n_verticalen": 427,
+   "totaal": 36,
+   "per_100": 8.4,
+   "codes": {
+    "H5": 8,
+    "LT2": 8,
+    "OV": 7,
+    "LIG": 6,
+    "H8": 2,
+    "A2": 2,
+    "P8": 2,
+    "S7": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 427,
+   "totaal": 24,
+   "per_100": 5.6,
+   "codes": {
+    "H5": 8,
+    "LIG": 6,
+    "OV": 4,
+    "H8": 2,
+    "P8": 2,
+    "LT2": 2
+   }
+  }
+ },
+ "2026-03-05 - 'Hij kwam bij ons, heel gewoon' ｜ Christelijke pianomuziek van Gerrit Koele [WAdhQMmWpC4]": {
+  "noten": 777,
+  "gewijzigd": 4,
+  "hergespeld": 5,
+  "voor": {
+   "n_verticalen": 436,
+   "totaal": 51,
+   "per_100": 11.7,
+   "codes": {
+    "OV": 13,
+    "LIG": 9,
+    "P8": 8,
+    "H8": 4,
+    "LT2": 4,
+    "P5": 4,
+    "SPL": 4,
+    "H5": 2,
+    "S7": 2,
+    "KR": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 436,
+   "totaal": 39,
+   "per_100": 8.9,
+   "codes": {
+    "OV": 10,
+    "LIG": 9,
+    "P8": 6,
+    "H8": 4,
+    "P5": 4,
+    "S7": 3,
+    "H5": 2,
+    "KR": 1
+   }
+  }
+ },
+ "2026-03-11 - Pianomuziek voor de lijdenstijd  ｜  Gerrit Koele [bHySbjb-hpk]": {
+  "noten": 5473,
+  "gewijzigd": 112,
+  "hergespeld": 43,
+  "voor": {
+   "n_verticalen": 2806,
+   "totaal": 586,
+   "per_100": 20.9,
+   "codes": {
+    "LIG": 95,
+    "OV": 95,
+    "P8": 62,
+    "P5": 54,
+    "H8": 52,
+    "H5": 48,
+    "LT2": 46,
+    "SPL": 41,
+    "S7": 35,
+    "AP5": 24,
+    "A2": 22,
+    "AP8": 10,
+    "LT": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 2806,
+   "totaal": 365,
+   "per_100": 13.0,
+   "codes": {
+    "LIG": 81,
+    "H8": 52,
+    "OV": 49,
+    "H5": 48,
+    "P8": 30,
+    "S7": 28,
+    "LT2": 25,
+    "P5": 16,
+    "AP5": 16,
+    "A2": 10,
+    "AP8": 8,
+    "LT": 2
+   }
+  }
+ },
+ "2026-03-17 - 'Mijn Jezus, ik hou van U' ｜ Christelijke pianomuziek van Gerrit Koele [QZGqaKV16po]": {
+  "noten": 789,
+  "gewijzigd": 12,
+  "hergespeld": 2,
+  "voor": {
+   "n_verticalen": 403,
+   "totaal": 61,
+   "per_100": 15.1,
+   "codes": {
+    "LT2": 12,
+    "LIG": 11,
+    "OV": 9,
+    "S7": 8,
+    "SPL": 4,
+    "P5": 4,
+    "P8": 4,
+    "A2": 3,
+    "H5": 2,
+    "H8": 2,
+    "AP5": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 403,
+   "totaal": 45,
+   "per_100": 11.2,
+   "codes": {
+    "LIG": 12,
+    "S7": 8,
+    "OV": 7,
+    "LT2": 6,
+    "A2": 2,
+    "H5": 2,
+    "P5": 2,
+    "P8": 2,
+    "H8": 2,
+    "AP5": 2
+   }
+  }
+ },
+ "2026-03-31 - 'Op die heuvel daarginds' ｜ Christelijke pianomuziek van Gerrit Koele [XO5E9pao_Mk]": {
+  "noten": 958,
+  "gewijzigd": 20,
+  "hergespeld": 1,
+  "voor": {
+   "n_verticalen": 430,
+   "totaal": 95,
+   "per_100": 22.1,
+   "codes": {
+    "LIG": 21,
+    "P8": 20,
+    "H8": 14,
+    "OV": 13,
+    "P5": 8,
+    "S7": 7,
+    "AP8": 4,
+    "LT2": 4,
+    "AP5": 2,
+    "KR": 1,
+    "A2": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 430,
+   "totaal": 68,
+   "per_100": 15.8,
+   "codes": {
+    "LIG": 20,
+    "H8": 14,
+    "OV": 9,
+    "P8": 8,
+    "S7": 6,
+    "AP8": 4,
+    "LT2": 4,
+    "P5": 2,
+    "A2": 1
+   }
+  }
+ },
+ "2026-04-04 - 'U zij de glorie' ｜ Christelijke pianomuziek van Gerrit Koele [i7hRZbaeYpw]": {
+  "noten": 1708,
+  "gewijzigd": 44,
+  "hergespeld": 8,
+  "voor": {
+   "n_verticalen": 686,
+   "totaal": 201,
+   "per_100": 29.3,
+   "codes": {
+    "LIG": 34,
+    "LT2": 31,
+    "OV": 30,
+    "H5": 22,
+    "AP8": 18,
+    "S7": 14,
+    "A2": 12,
+    "AP5": 8,
+    "P5": 8,
+    "P8": 8,
+    "SPL": 8,
+    "H8": 6,
+    "LT": 2
+   }
+  },
+  "na": {
+   "n_verticalen": 686,
+   "totaal": 123,
+   "per_100": 17.9,
+   "codes": {
+    "LIG": 30,
+    "H5": 22,
+    "OV": 15,
+    "P8": 12,
+    "S7": 11,
+    "LT2": 7,
+    "H8": 6,
+    "P5": 6,
+    "AP8": 6,
+    "AP5": 4,
+    "A2": 3,
+    "LT": 1
+   }
+  }
+ },
+ "2026-04-11 - Bekende christelijke hymnes op piano ｜ Amazing grace, Holy holy holy & meer ｜ Gerrit Koele [Hjoc2ayW3eg]": {
+  "noten": 3986,
+  "gewijzigd": 78,
+  "hergespeld": 80,
+  "voor": {
+   "n_verticalen": 2141,
+   "totaal": 485,
+   "per_100": 22.7,
+   "codes": {
+    "SPL": 83,
+    "OV": 64,
+    "LIG": 57,
+    "H5": 54,
+    "LT2": 50,
+    "AP8": 42,
+    "A2": 39,
+    "P8": 34,
+    "AP5": 20,
+    "S7": 20,
+    "H8": 16,
+    "P5": 5,
+    "KR": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 2141,
+   "totaal": 275,
+   "per_100": 12.8,
+   "codes": {
+    "LIG": 58,
+    "H5": 54,
+    "AP8": 34,
+    "OV": 26,
+    "LT2": 25,
+    "AP5": 20,
+    "S7": 17,
+    "H8": 16,
+    "A2": 11,
+    "P8": 10,
+    "P5": 3,
+    "KR": 1
+   }
+  }
+ },
+ "2026-04-29 - 8 Psalmen op Piano ｜ Rustgevende Christelijke Muziek ｜ Gerrit Koele [MWaC1dKCBsQ]": {
+  "noten": 4112,
+  "gewijzigd": 53,
+  "hergespeld": 38,
+  "voor": {
+   "n_verticalen": 2639,
+   "totaal": 309,
+   "per_100": 11.7,
+   "codes": {
+    "LIG": 88,
+    "P5": 54,
+    "SPL": 31,
+    "OV": 26,
+    "H8": 20,
+    "LT2": 17,
+    "H5": 16,
+    "P8": 14,
+    "AP5": 14,
+    "S7": 11,
+    "KR": 10,
+    "AP8": 8
+   }
+  },
+  "na": {
+   "n_verticalen": 2639,
+   "totaal": 193,
+   "per_100": 7.3,
+   "codes": {
+    "LIG": 82,
+    "H8": 20,
+    "H5": 18,
+    "P5": 14,
+    "OV": 12,
+    "KR": 10,
+    "AP5": 10,
+    "S7": 9,
+    "P8": 8,
+    "AP8": 8,
+    "LT2": 2
+   }
+  }
+ },
+ "2026-06-07 - Bekende christelijke hymnes op piano ｜ What a friend we have in Jesus & meer ｜ Gerrit Koele [o3vxuszaA28]": {
+  "noten": 3169,
+  "gewijzigd": 18,
+  "hergespeld": 3,
+  "voor": {
+   "n_verticalen": 1894,
+   "totaal": 165,
+   "per_100": 8.7,
+   "codes": {
+    "LIG": 32,
+    "H5": 24,
+    "AP5": 18,
+    "S7": 16,
+    "AP8": 16,
+    "OV": 14,
+    "LT2": 14,
+    "H8": 8,
+    "A2": 6,
+    "KR": 5,
+    "P5": 4,
+    "SPL": 4,
+    "P8": 4
+   }
+  },
+  "na": {
+   "n_verticalen": 1894,
+   "totaal": 142,
+   "per_100": 7.5,
+   "codes": {
+    "LIG": 33,
+    "H5": 24,
+    "AP5": 16,
+    "AP8": 14,
+    "S7": 13,
+    "OV": 11,
+    "H8": 8,
+    "LT2": 6,
+    "KR": 5,
+    "A2": 4,
+    "P5": 4,
+    "P8": 4
+   }
+  }
+ }
+}

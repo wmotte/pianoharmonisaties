@@ -8,15 +8,22 @@
 
 - Audio: `../mp3/2026-04-22 - Psalm 85 ｜ Christelijke pianomuziek van Gerrit Koele [qfzzrg627Ho].mp3`
 - Ongecorrigeerde partituur: `../ongecorrigeerd/2026-04-22 - Psalm 85 ｜ Christelijke pianomuziek van Gerrit Koele [qfzzrg627Ho].musicxml`
+- Formele harmoniecontrole (fouten in rood, vóór herzetting): `../controle/2026-04-22 - Psalm 85 ｜ Christelijke pianomuziek van Gerrit Koele [qfzzrg627Ho].musicxml`
 - Gecorrigeerde partituur: `../gecorrigeerd/2026-04-22 - Psalm 85 ｜ Christelijke pianomuziek van Gerrit Koele [qfzzrg627Ho].musicxml`
 
-## Toelichting
+## Toelichting & Sectiesplitsing (v3)
 
 Psalm 85 diende als referentiestuk voor het afstellen van de transcriptiepijplijn (`fotos_van_boek/`).
 
-Bij de formele harmonie-analyse had de initiële transcriptie 32 meldingen op 275 verticalen. Door 2 noten in
-de binnenstemmen aan te passen zijn de resterende 31 meldingen vooral verborgen kwinten en octaven
-(`H5`/`H8`) en wijdere ligging (`LIG`) tussen melodie en baslijn, die bewust ongemoeid zijn gelaten. De
-enharmonische spelfout (`SPL`) die de organist opmerkte (een es die dis moest zijn) is in v2 in de transcriptie
-zelf opgelost: de spelling gebeurt per verticaal, dus B+Eb wordt B+D#. Inmiddels staan er in de hele partituur
-geen mollen meer.
+### Maatwisseling: 4/4 Voorspel → 3/2 Koraal → 4/4 Naspel
+In de oorspronkelijke v1/v2-transcriptie werd het hele stuk in één 4/4-keurslijf geperst. Omdat het koraal in het boek in 3/2 (drie halve noten per maat) staat, leidde dit tot 29% syncopen en onlogische achtste noten en rusten.
+
+Met de nieuwe sectiesplitsing (`--split-sections`) worden de duidelijke stiltes rond 64.2s en 144.8s automatisch gedetecteerd:
+1. **Voorspel (m1–m21):** 4/4, tempo ♩ = 83, 0 afwijkende maten.
+2. **Koraal (m22–m45):** 3/2, tempo ♩ = 108 (3 halve noten per maat), exact 24 maten gelijk aan het boek, 0 afwijkende maten, syncopen gedaald van 29% naar 2%.
+3. **Naspel (m46–m53):** 4/4, tempo ♩ = 86, 0 afwijkende maten.
+
+De samengevoegde partituur bevat automatische maatwissels, dubbele maatstrepen op de overgangen en repetitietekens (`[Voorspel]`, `[Koraal]`, `[Naspel]`).
+
+### Harmonie-analyse
+Bij de formele harmonie-analyse heeft de samengevoegde partituur 33 meldingen op 271 verticalen (12.2 per 100). In de partituur onder `../controle/` zijn al deze meldingen rood gemarkeerd met de bijbehorende regelcode. Na herzetting van 2 noten in de binnenstemmen dalen de stemvoeringsfouten verder. De resterende meldingen betreffen verborgen kwinten en octaven (`H5`/`H8`) en wijdere ligging (`LIG`) tussen sopraan en bas, conform Koeles eigen speelstijl.

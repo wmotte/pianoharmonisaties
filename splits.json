@@ -1,0 +1,7 @@
+{
+  "Psalm 85": {
+    "splits": [64.18, 144.82],
+    "meters": [4, 6, 4],
+    "labels": ["Voorspel", "Koraal", "Naspel"]
+  }
+}
