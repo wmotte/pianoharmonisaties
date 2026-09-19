@@ -7,6 +7,7 @@
   "Psalm 37": {
     "splits": [48.63, 106.35],
     "meters": [3, 4, 4],
-    "labels": ["Voorspel", "Koraal", "Naspel"]
+    "labels": ["Voorspel", "Koraal", "Naspel"],
+    "key": "2b"
   }
 }

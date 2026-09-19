@@ -503,11 +503,11 @@ INTERVAL_STEP = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 5, 9: 5, 10: 6, 11
 
 
 def key_spell_pc(pc: int, k: key.Key) -> pitch.Pitch:
-    """Toonsoort-spelling met modus: in mineur worden de verhoogde 6e en 7e trap (harmonisch/melodisch
-    mineur) als kruis gespeld, zodat de leidtoon niet als mol verschijnt (E mineur: D#, niet Eb)."""
-    if k.mode == "minor":
-        for deg in (6, 7):
-            p = k.tonic.transpose("M6" if deg == 6 else "M7")
+    """Toonsoort-spelling met modus: in mineur en dorisch worden de verhoogde 4e, 6e en 7e trap
+    als kruis gespeld, zodat leidtoon en tussendominanten niet als mol verschijnen (bv. F# in C dorian/mineur)."""
+    if k.mode in ("minor", "dorian"):
+        for intv in ("A4", "M6", "M7"):
+            p = k.tonic.transpose(intv)
             if p.pitchClass == pc:
                 return pitch.Pitch(p.name)
     return spell_pc(pc, k.sharps)
@@ -608,6 +608,7 @@ def spell_vertical(midis, k: key.Key) -> dict:
 KEY_PROFILES = {  # Krumhansl-Kessler toonsoortprofielen (zoals music21 ze gebruikt)
     "major": np.array([6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88]),
     "minor": np.array([6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17]),
+    "dorian": np.array([6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 2.69, 3.98, 3.34, 3.17]),
 }
 KEYS = [key.Key(pitch.Pitch(pc).name if mode == "major" else pitch.Pitch(pc).name.lower(), mode)
         for mode in ("major", "minor") for pc in range(12)]
@@ -671,7 +672,57 @@ def time_signature(length_units, grid):
     return "3/2" if n == 6 else f"{n}/4"
 
 
-def build_score(hands, grid, bpm, m, bars, title, pedal_units, verses, fermatas=()):
+def parse_forced_key(val):
+    """Parseert een geforceerde toonsoort uit CLI of splits.json (bijv. 'C dorian', 'g minor', '2b', '-2')."""
+    if val is None or val == "":
+        return None
+    if isinstance(val, (key.Key, key.KeySignature)):
+        return val
+    if isinstance(val, int):
+        return key.KeySignature(val)
+    val_str = str(val).strip()
+    if re.match(r"^-?\d+$", val_str):
+        return key.KeySignature(int(val_str))
+    if re.match(r"^\d+b$", val_str, re.IGNORECASE):
+        return key.KeySignature(-int(val_str[:-1]))
+    if re.match(r"^\d+#$", val_str):
+        return key.KeySignature(int(val_str[:-1]))
+    try:
+        v_norm = val_str.replace("dorisch", "dorian").replace("mineur", "minor").replace("majeur", "major")
+        parts = v_norm.split()
+        if len(parts) == 2:
+            return key.Key(parts[0], parts[1].lower())
+        return key.Key(v_norm)
+    except Exception:
+        pass
+    return None
+
+
+def resolve_key_from_sig(ks_sharps, hist):
+    """Bepaalt de meest passende toonsoort (majeur, mineur of dorisch) bij een gegeven aantal voortekens."""
+    cands = [
+        key.KeySignature(ks_sharps).asKey("minor"),
+        key.KeySignature(ks_sharps).asKey("major"),
+    ]
+    dorian_pc = (2 + 7 * ks_sharps) % 12
+    dorian_name = pitch.Pitch(dorian_pc).name
+    try:
+        cands.append(key.Key(dorian_name, "dorian"))
+    except Exception:
+        pass
+
+    def score_cand(k):
+        prof = KEY_PROFILES.get(k.mode, KEY_PROFILES["minor"])
+        rotated = np.roll(prof, k.tonic.pitchClass)
+        denom = np.std(hist) * np.std(rotated)
+        if denom == 0:
+            return 0
+        return np.corrcoef(hist, rotated)[0, 1]
+
+    return max(cands, key=score_cand)
+
+
+def build_score(hands, grid, bpm, m, bars, title, pedal_units, verses, fermatas=(), forced_key=None):
     """bars: lijst (start_units, lengte_units); de eerste maat mag korter zijn (opmaat)."""
     pickup = bars[0][1] // grid if len(bars) > 1 and bars[0][1] < bars[1][1] else 0
     n_bars_units = bars[-1][0] + bars[-1][1]
@@ -710,7 +761,22 @@ def build_score(hands, grid, bpm, m, bars, title, pedal_units, verses, fermatas=
         parts.append(part)
 
     # toonsoort schatten op alle noten samen, en de spelling daarop afstemmen
-    segments = key_segments(hands, grid, bars)  # [(start_units, Key)]: voortekening per (modulerend) deel
+    if forced_key is not None and forced_key != "":
+        fk = parse_forced_key(forced_key)
+        if isinstance(fk, key.Key):
+            k_forced = fk
+        elif isinstance(fk, key.KeySignature):
+            hist = np.zeros(12)
+            for g in hands.values():
+                for _, dur, pitches in g:
+                    for p, _ in pitches:
+                        hist[p % 12] += dur
+            k_forced = resolve_key_from_sig(fk.sharps, hist)
+        else:
+            k_forced = None
+        segments = [(0, k_forced)] if k_forced is not None else key_segments(hands, grid, bars)
+    else:
+        segments = key_segments(hands, grid, bars)  # [(start_units, Key)]: voortekening per (modulerend) deel
     seg_starts = [st for st, _ in segments]
     ks = " -> ".join(str(k_) for _, k_ in segments)
     for hand, part in zip(("R", "L"), parts):
@@ -851,7 +917,7 @@ def write_midi(hands, grid, bpm, m, path):
     out.write(str(path))
 
 
-def clean_section(audio, sr, notes, args, forced_meter=0, title="Deel", pedal_events=None):
+def clean_section(audio, sr, notes, args, forced_meter=0, title="Deel", pedal_events=None, forced_key=None):
     onsets = np.array(sorted(n.start for n in notes))
     beats, bpm = beat_grid(audio, sr, onsets, max(n.end for n in notes), args.tempo_range)
     idx = np.arange(len(beats), dtype=float)
@@ -898,7 +964,7 @@ def clean_section(audio, sr, notes, args, forced_meter=0, title="Deel", pedal_ev
                 down = None
     verses = None if args.no_repeats else find_verses(hands, [b[0] for b in bars])
 
-    score, ks = build_score(hands, grid, bpm, m, bars, title, pedal_units, verses, fermatas)
+    score, ks = build_score(hands, grid, bpm, m, bars, title, pedal_units, verses, fermatas, forced_key=forced_key)
     n_groups = sum(len(g) for g in hands.values())
     offbeat = sum(1 for g in hands.values() for on, _, _ in g if on % grid) / max(n_groups, 1)  # aanslagen op de halve tel
     info = dict(noten=len(notes), R=sum(len(p) for _, _, p in hands.get("R", [])),
@@ -942,6 +1008,7 @@ def clean(mp3: Path, raw_path: Path, args):
             log.warning("Kon splits.json niet laden: %s", e)
 
     should_split = getattr(args, "split_sections", False) or bool(getattr(args, "splits", "")) or (splits_cfg is not None and getattr(args, "split_sections", False))
+    key_forced = getattr(args, "key", "") or (splits_cfg.get("key") if splits_cfg else None)
 
     sections = None
     labels = None
@@ -995,7 +1062,8 @@ def clean(mp3: Path, raw_path: Path, args):
 
             sec_res = clean_section(
                 sec_audio, sr, sec_notes, args,
-                forced_meter=m_forced, title=lbl, pedal_events=pedal_ev
+                forced_meter=m_forced, title=lbl, pedal_events=pedal_ev,
+                forced_key=key_forced,
             )
             sec_res["label"] = lbl
             sections_info.append(sec_res)
@@ -1041,7 +1109,7 @@ def clean(mp3: Path, raw_path: Path, args):
     ] if args.pedal else None
 
     title = clean_title(mp3.stem)
-    res = clean_section(audio, sr, notes, args, forced_meter=args.meter, title=title, pedal_events=pedal_ev)
+    res = clean_section(audio, sr, notes, args, forced_meter=args.meter, title=title, pedal_events=pedal_ev, forced_key=key_forced)
     xml_path = OUT / f"{mp3.stem}.musicxml"
     res["score"].write("musicxml", fp=str(xml_path))
     xml_path.write_text(xml_path.read_text().replace('<note print-object="no" print-spacing="yes">', "<note>"))
@@ -1057,6 +1125,7 @@ def main():
     ap.add_argument("--split", type=int, default=60, help="basis-toonhoogte voor de handverdeling (60 = centrale C)")
     ap.add_argument("--leap", type=int, default=7, help="max. halve tonen dat een hand buiten zijn eigen notenbalk grijpt (links boven A3, rechts onder E4)")
     ap.add_argument("--meter", type=int, default=0, choices=[0, 2, 3, 4, 6], help="maatsoort-teller: 2, 3, 4 of 6 tellen (= 3/2) (0 = automatisch)")
+    ap.add_argument("--key", default="", help="toonsoort of aantal voortekens forceren (bijv. 'C dorian', 'g minor', '2b', '-2')")
     ap.add_argument("--tempo-range", type=int, nargs=2, default=[60, 120], metavar=("MIN", "MAX"))
     ap.add_argument("--no-repeats", action="store_true", help="geen coupletherkenning / herhalingstekens")
     ap.add_argument("--pedal", action="store_true", help="pedaaltekens uit de transcriptie overnemen")

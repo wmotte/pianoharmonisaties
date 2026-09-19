@@ -173,10 +173,19 @@ class Score:
                 if rec.measure in nums:
                     hist[rec.midi % 12] += rec.end - rec.on
             best = None
-            for mode in ("major", "minor"):
-                k = key.KeySignature(sharps).asKey(mode)
-                prof = np.roll(KEY_PROFILES[mode], k.tonic.pitchClass)
-                r = np.corrcoef(hist, prof)[0, 1] if hist.sum() else 0
+            cands = [
+                key.KeySignature(sharps).asKey("major"),
+                key.KeySignature(sharps).asKey("minor"),
+            ]
+            dorian_pc = (2 + 7 * sharps) % 12
+            dorian_name = pitch.Pitch(dorian_pc).name
+            try:
+                cands.append(key.Key(dorian_name, "dorian"))
+            except Exception:
+                pass
+            for k in cands:
+                prof = np.roll(KEY_PROFILES[k.mode], k.tonic.pitchClass)
+                r = np.corrcoef(hist, prof)[0, 1] if hist.sum() and np.std(hist) > 0 else 0
                 if best is None or r > best[0]:
                     best = (r, k)
             for n in nums:

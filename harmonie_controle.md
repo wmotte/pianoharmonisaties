@@ -1,25 +1,25 @@
 # Formele harmonie-controle
 
-49 stukken, 58924 verticalen, 11596 meldingen (19.7 per 100 verticalen). Codes: zie `harmonie_regels.py`.
+49 stukken, 59013 verticalen, 11580 meldingen (19.6 per 100 verticalen). Codes: zie `harmonie_regels.py`.
 
 ## Totaal per code
 
 | code | aantal | per 100 verticalen |
 |---|---|---|
-| LIG | 2289 | 3.9 |
-| OV | 1360 | 2.3 |
+| LIG | 2286 | 3.9 |
+| OV | 1357 | 2.3 |
 | H5 | 1116 | 1.9 |
-| SPL | 1015 | 1.7 |
-| P8 | 942 | 1.6 |
-| H8 | 864 | 1.5 |
-| S7 | 814 | 1.4 |
+| SPL | 999 | 1.7 |
+| P8 | 946 | 1.6 |
+| H8 | 870 | 1.5 |
+| S7 | 816 | 1.4 |
 | P5 | 732 | 1.2 |
 | AP8 | 649 | 1.1 |
-| AP5 | 566 | 1.0 |
+| AP5 | 564 | 1.0 |
 | LT2 | 558 | 0.9 |
-| A2 | 521 | 0.9 |
-| KR | 134 | 0.2 |
-| LT | 36 | 0.1 |
+| A2 | 520 | 0.9 |
+| KR | 133 | 0.2 |
+| LT | 34 | 0.1 |
 
 ## Per stuk
 
@@ -31,7 +31,6 @@
 | 2025-12-18 - 't Is geboren het Godd'lijk Kind | 87 | 469 | 134 | 28.6 | 11 | 13 | 8 | 20 | 18 | 18 | 6 | 22 | 8 | 0 | 6 | 3 | 1 | 0 |
 | 2025-12-11 - Beautiful Christmas Songs ｜ Pian | 613 | 2632 | 743 | 28.2 | 185 | 118 | 34 | 43 | 54 | 38 | 66 | 58 | 36 | 34 | 25 | 38 | 9 | 5 |
 | 2026-01-09 - Psalm 13 ｜ Christelijke pianomuz | 119 | 311 | 83 | 26.7 | 11 | 4 | 8 | 35 | 0 | 6 | 8 | 2 | 2 | 0 | 0 | 7 | 0 | 0 |
-| 2026-01-19 - Psalm 37 ｜ Christelijke pianomuz | 59 | 259 | 69 | 26.6 | 16 | 11 | 0 | 18 | 0 | 4 | 2 | 2 | 2 | 4 | 0 | 5 | 3 | 2 |
 | 2025-10-15 - 'Holy, holy, holy' ｜ Piano ｜ Chr | 72 | 483 | 127 | 26.3 | 14 | 27 | 18 | 11 | 10 | 6 | 5 | 2 | 12 | 10 | 4 | 8 | 0 | 0 |
 | 'De Lofzang van Maria' ｜ Piano ｜ Adventsmuzie | 163 | 882 | 217 | 24.6 | 22 | 11 | 30 | 33 | 65 | 8 | 8 | 4 | 18 | 12 | 0 | 5 | 1 | 0 |
 | 2025-11-29 - 'De Lofzang van Maria' ｜ Piano ｜ | 163 | 882 | 217 | 24.6 | 22 | 11 | 30 | 33 | 65 | 8 | 8 | 4 | 18 | 12 | 0 | 5 | 1 | 0 |
@@ -58,6 +57,7 @@
 | 2025-12-22 - 'Stille nacht' ｜ Piano ｜ Kerstmu | 64 | 206 | 34 | 16.5 | 19 | 2 | 0 | 4 | 0 | 4 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 1 |
 | 2025-05-22 - Psalm 130 ｜ Christelijke pianomu | 184 | 1020 | 161 | 15.8 | 30 | 23 | 50 | 21 | 0 | 16 | 6 | 0 | 4 | 4 | 3 | 3 | 1 | 0 |
 | 2025-05-23 - Out of the Depths (Psalm 130) –  | 183 | 1019 | 159 | 15.6 | 26 | 23 | 48 | 23 | 0 | 14 | 7 | 0 | 6 | 4 | 3 | 5 | 0 | 0 |
+| 2026-01-19 - Psalm 37 ｜ Christelijke pianomuz | 89 | 348 | 53 | 15.2 | 13 | 8 | 0 | 2 | 4 | 10 | 4 | 2 | 2 | 2 | 0 | 4 | 2 | 0 |
 | 2026-03-17 - 'Mijn Jezus, ik hou van U' ｜ Chr | 70 | 403 | 61 | 15.1 | 11 | 9 | 2 | 4 | 4 | 2 | 8 | 4 | 0 | 2 | 12 | 3 | 0 | 0 |
 | 2025-03-21 - 'De weg naar Golgotha' ｜ Lijdens | 404 | 1496 | 224 | 15.0 | 63 | 29 | 38 | 27 | 6 | 14 | 12 | 8 | 0 | 12 | 8 | 3 | 3 | 1 |
 | 2026-01-06 - Psalm 1 ｜ Christelijke pianomuzi | 102 | 385 | 56 | 14.5 | 9 | 0 | 18 | 0 | 0 | 8 | 8 | 4 | 0 | 8 | 0 | 1 | 0 | 0 |

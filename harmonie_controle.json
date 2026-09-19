@@ -650,23 +650,23 @@
   "maten": 75
  },
  "2026-01-19 - Psalm 37 ｜ Christelijke pianomuziek van Gerrit Koele [b9ReiRKeBxg]": {
-  "n_verticalen": 259,
-  "totaal": 69,
-  "per_100": 26.6,
+  "n_verticalen": 348,
+  "totaal": 53,
+  "per_100": 15.2,
   "codes": {
-   "SPL": 18,
-   "LIG": 16,
-   "OV": 11,
-   "A2": 5,
-   "AP5": 4,
-   "H8": 4,
-   "KR": 3,
-   "LT": 2,
-   "S7": 2,
+   "LIG": 13,
+   "H8": 10,
+   "OV": 8,
+   "S7": 4,
+   "P8": 4,
+   "A2": 4,
+   "KR": 2,
    "AP8": 2,
+   "SPL": 2,
+   "AP5": 2,
    "P5": 2
   },
-  "maten": 59
+  "maten": 89
  },
  "2026-01-28 - Psalm 49 ｜ Christelijke pianomuziek van Gerrit Koele [6459w6239Xw]": {
   "n_verticalen": 426,

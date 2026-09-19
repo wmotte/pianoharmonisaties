@@ -62,6 +62,7 @@ zonder procrustesbed verwerkt kunnen worden:
   in `mp3_delen/` en `midi_delen/` (ideaal voor wie alleen de koraalzetting wil).
 - **Handmatige overrides via `splits.json` of CLI**: snijpunten en maatsoorten kunnen nauwkeurig worden afgestemd
   via `splits.json` of CLI-opties (`--splits 64.18,144.82 --meters 4,6,4`).
+- **Toonsoort en modus forceren (`--key` of `splits.json`)**: voorkomt dat modale stukken zoals Psalm 37 (C-dorisch, koraalboek Gerrit Koele in 2 mollen) onnodig in 3 mollen (C-mineur) belanden met overbodige herstellingstekens voor A♮. Ondersteunt dorische profielen en automatische leidtoon-/tussendominantspelling.
 - **Compilatiesplitser (`splits_compilaties.py`)**: knipt lange verzamelvideo's (zoals "8 Psalmen op Piano")
   automatisch op in zelfstandige mp3's op basis van lange stiltes (>= 3.0s).
 
@@ -114,6 +115,7 @@ Opties (`--help` voor de volledige lijst):
 | `--save-parts` | uit | bewaar ook de losse mp3's in `mp3_delen/` en partituren in `midi_delen/` |
 | `--grid 0\|2\|3\|4` | 0 (auto) | onderverdeling per tel: 2 = achtsten, 4 = zestienden, 3 = triolen |
 | `--meter 0\|2\|3\|4\|6` | 0 (auto) | maatsoort forceren: 2/4, 3/4, 4/4 of 3/2 (6 tellen) |
+| `--key KEY` | | toonsoort of aantal voortekens forceren (bijv. `'C dorian'`, `'g minor'`, `'2b'`, `'-2'`) |
 | `--tempo-range MIN MAX` | 60 120 | toegestaan bereik voor het genoteerde tempo |
 | `--split N` | 60 (C4) | basis-splitspunt tussen de handen |
 | `--leap N` | 7 | max. halve tonen dat een hand buiten zijn eigen balk mag grijpen |

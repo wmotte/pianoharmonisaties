@@ -26,6 +26,12 @@ Met de automatische sectiesplitsing (`--split-sections`) worden de stiltes rond 
 
 De samengevoegde partituur schakelt bij maat 19 automatisch over van 3/4 naar 4/4, bevat dubbele maatstrepen op de overgangen en draagt duidelijke repetitietekens (`[Voorspel]`, `[Koraal]`, `[Naspel]`).
 
+### Toonsoort: 2 mollen (C-dorisch / gouden standaard Gerrit Koele)
+
+In het koraalboek van Gerrit Koele staat Psalm 37 genoteerd met **twee mollen** (B♭, E♭). De melodie van Psalm 37 stamt uit het Geneefse Psalter en staat in modus 1 (dorisch) getransponeerd naar C: C – D – E♭ – F – G – A♮ – B♭ – C.
+
+De eerdere automatische sleutelschatting koos 3 mollen (C-mineur / Es-majeur), waardoor elke A♮ in de melodie en harmonie een herstellingsteken nodig had. Door de toonsoort expliciet op 2 mollen (`"key": "2b"` in `splits.json`) te zetten en de transcriptiepijplijn uit te breiden met dorische profielen en leidtoon-/tussendominantspelling (A♮, F♯, B♮ als kruis of hersteld), volgt de partituur exact Koele's notatie met 2 mollen. Dit levert een aanzienlijk rustiger en natuurlijker notenbeeld op zonder overbodige herstellingstekens.
+
 ### Harmonie-analyse
 
 Bij de formele harmonie-analyse heeft de samengevoegde partituur 53 meldingen op 348 verticalen (15.2 per 100).
