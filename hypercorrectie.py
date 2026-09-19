@@ -22,11 +22,12 @@ from types import SimpleNamespace
 from music21 import pitch
 
 from analyse_stijl import label_chord
+from piano_notatie import place_high_bass_notes
 from corrigeer_harmonie import apply, respell
 from harmonie_regels import (DIR, Score, Vertical, assign_slots, check, chord_spelling,
                              mark, report_lines, summary)
 
-ALGORITHM = 'hypercorrectie-1'
+ALGORITHM = 'hypercorrectie-2'
 
 
 @lru_cache(maxsize=4096)
@@ -59,11 +60,27 @@ class SearchNote:
         return named_pitch(self.midi, self.name)
 
 
+def sounding_intervals(sc, boundaries=()):
+    """Alle klankintervallen, ook wanneer alleen een noot eindigt."""
+    starts, ends = defaultdict(list), defaultdict(list)
+    for r in sc.recs:
+        starts[r.on].append(r)
+        ends[r.end].append(r.id)
+    times = sorted(set(starts) | set(ends) | set(boundaries))
+    active = {}
+    for begin, end in zip(times, times[1:]):
+        for i in ends[begin]:
+            active.pop(i, None)
+        for r in starts[begin]:
+            active[r.id] = r
+        yield begin, end, tuple(active[i] for i in sorted(active))
+
+
 def melody_ids(sc):
     """De hoogste klinkende rechterhandnoot vormt de vaste melodie."""
     result = set()
-    for v in sc.verticals:
-        right = [r for r in v.notes if r.staff == 'R']
+    for _, _, notes in sounding_intervals(sc):
+        right = [r for r in notes if r.staff == 'R']
         if right:
             top = max(r.midi for r in right)
             result.update(r.id for r in right if r.midi == top)
@@ -98,11 +115,15 @@ class Search:
                 self.affected[i].add(j)
         self.source_pcs = [{self.orig[i] % 12 for i in ids} for ids in self.v_ids]
         self.source_labels = [v.label for v in sc.verticals]
+        caps = defaultdict(lambda: 108)
+        for _, _, notes in sounding_intervals(sc):
+            top = max((r.midi for r in notes if r.staff == 'R'), default=108)
+            for r in notes:
+                caps[r.id] = min(caps[r.id], top)
         self.candidates = {}
         for i in sorted(self.mutable):
             r = self.recs[i]
-            upper = min(max((self.orig[n] for n in ids if self.recs[n].staff == 'R'), default=108)
-                        for ids in self.v_ids if i in ids)
+            upper = caps[i]
             self.candidates[i] = tuple(m for m in range(max(21, r.midi - radius),
                                                          min(108, upper, r.midi + radius) + 1))
         # Caches horen bij deze zoekopdracht en houden geen eerdere partituren vast.
@@ -147,6 +168,11 @@ class Search:
         original_counts = Counter((self.recs[i].staff, self.orig[i]) for i in self.v_ids[j])
         if sum(c - 1 for c in counts.values()) > sum(c - 1 for c in original_counts.values()):
             errors.add((-j - 1, 'UNISONO'))
+        stop = self.sc.verticals[j + 1].on if j + 1 < len(self.v_ids) else max(r.end for r in cur.notes)
+        for t in {r.end for r in cur.notes if cur.on < r.end < stop}:
+            active = [r for r in cur.notes if r.end > t]
+            if len({r.midi % 12 for r in active}) < len({self.orig[r.id] % 12 for r in active}):
+                errors.add((-j - 1, 'KLEURVERLIES'))
         soft = 0.0
         source = self.source_pcs[j]
         soft += 3.0 * len(source - pcs) + 1.5 * len(pcs - source)
@@ -408,6 +434,15 @@ def preservation(source, result):
         label_a = labelled(tuple(sorted(pcs_a)), min((r.midi for r in active), default=0) % 12)
         unchanged.append(label_a[:2] == b.label[:2])
         density_ok &= len(pcs_b) >= len(pcs_a)
+    boundaries = {t for sc in (source, result) for r in sc.recs for t in (r.on, r.end)}
+    contour_ok = True
+    for (_, _, a), (_, _, b) in zip(sounding_intervals(source, boundaries),
+                                     sounding_intervals(result, boundaries)):
+        top_a = max((r.midi for r in a if r.staff == 'R'), default=None)
+        top_b = max((r.midi for r in b if r.staff == 'R'), default=None)
+        contour_ok &= top_a == top_b
+        density_ok &= len({r.midi % 12 for r in b}) >= len({r.midi % 12 for r in a})
+    melody_ok &= contour_ok
     before, after = metrics(source), metrics(result)
     similarity = sum(similarities) / max(1, len(similarities))
     harmonic_identity = sum(unchanged) / max(1, len(unchanged))
@@ -428,7 +463,31 @@ def prepared_fingerprint(sc):
     return hashlib.sha256(json.dumps(records).encode()).hexdigest()
 
 
-def run_file(source, out, *, rounds=100, seed=0, seconds=300, radius=36, checkpoint=None):
+def apply_preferences(search, preferences):
+    """Leg gerichte begeleidingskeuzes vast zonder de melodie vrij te geven."""
+    choices = {}
+    for spec in preferences:
+        matches = [r for r in search.sc.recs if r.measure == spec['maat']
+                   and r.beat == spec['tel'] and r.staff == spec['hand']
+                   and r.spitch.nameWithOctave == spec['van']]
+        if len(matches) != 1:
+            raise ValueError(f"voorkeur moet precies één bronnoot aanwijzen: {spec}")
+        i = matches[0].id
+        m = pitch.Pitch(spec['naar']).midi
+        if i not in search.mutable or m not in search.candidates[i]:
+            raise ValueError(f"voorkeur wijzigt de melodie of valt buiten de zoekruimte: {spec}")
+        if i in choices and choices[i] != m:
+            raise ValueError(f"tegenstrijdige voorkeuren voor noot {i}")
+        choices[i] = m
+    search.values.update(choices)
+    search.mutable.difference_update(choices)
+    search.current = [search.evaluate(j, search.values) for j in range(len(search.v_ids))]
+
+
+def run_file(source, out, *, rounds=100, seed=0, seconds=300, radius=36, checkpoint=None, preferences=()):
+    source, out = Path(source), Path(out)
+    if source.resolve() == out.resolve() or (out.exists() and source.samefile(out)):
+        raise ValueError('bron en uitvoer moeten verschillende bestanden zijn')
     sc = Score(source)
     before = summary(check(sc), len(sc.verticals))
     original_metrics = metrics(sc)
@@ -450,6 +509,8 @@ def run_file(source, out, *, rounds=100, seed=0, seconds=300, radius=36, checkpo
             raise ValueError('hervatten geweigerd: wijzigingen passen niet binnen de zoekruimte')
         search.values.update(initial)
         search.current = [search.evaluate(j, search.values) for j in range(len(search.v_ids))]
+    if preferences:
+        apply_preferences(search, preferences)
     original_names = {r.id: r.spitch.nameWithOctave for r in sc.recs}
     changes, search_report = search.solve(rounds=rounds, seed=seed, seconds=seconds,
         progress=lambda n, e, trials: print(f'  ronde {n}: zoekfouten={e}, kandidaten={trials}', flush=True) if n == 1 or n % 10 == 0 or e == 0 else None)
@@ -466,16 +527,23 @@ def run_file(source, out, *, rounds=100, seed=0, seconds=300, radius=36, checkpo
     mark(sc, {i: original_names[i] for i in changes})
     for part in sc.parts.values():
         part.makeAccidentals(inPlace=True, overrideStatus=True, cautionaryPitchClass=False)
-    sc.write(out, ' – hypercorrectie')
-    exported = Score(out)
-    findings = check(exported)
-    after = summary(findings, len(exported.verticals))
-    out.with_suffix('.txt').write_text('\n'.join(report_lines(findings)) + '\n')
-    retained = preservation(source_score, exported)
-    result = dict(instellingen=dict(algoritme=ALGORITHM, rounds=rounds, seed=seed, seconds=seconds, radius=radius, hervat=checkpoint is not None),
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='.hypercorrectie-', dir=out.parent) as tmp:
+        staged = Path(tmp) / out.name
+        sc.write(staged, ' – hypercorrectie')
+        moved_staff = place_high_bass_notes(staged)
+        exported = Score(staged)
+        findings = check(exported)
+        after = summary(findings, len(exported.verticals))
+        retained = preservation(source_score, exported)
+        text_report = staged.with_suffix('.txt')
+        text_report.write_text('\n'.join(report_lines(findings)) + '\n')
+        staged.replace(out)
+        text_report.replace(out.with_suffix('.txt'))
+    result = dict(instellingen=dict(algoritme=ALGORITHM, rounds=rounds, seed=seed, seconds=seconds, radius=radius, hervat=checkpoint is not None, voorkeuren=list(preferences)),
                   bron_sha256=source_hash, voorbereiding_sha256=prepared_hash, wijzigingen=changes,
                   status='volledig' if not findings and not search_report['zoekfouten'] and retained['geslaagd'] else 'onvolledig',
-                  behoud=retained,
+                  behoud=retained, bovenbalk_noten=moved_staff,
                   gewijzigd=len(changes), extra_aanslagen=len(sc.recs) - original_metrics['noten'], voor=before, na=after, zoektocht=search_report,
                   rijkheid_voor=original_metrics, rijkheid_na=metrics(exported))
     print(f'{source.stem}: {before["totaal"]} -> {after["totaal"]}, {result["status"]}', flush=True)
@@ -487,11 +555,14 @@ def write_report(results, path):
              'De melodie blijft vast. Bas en binnenstemmen mogen veranderen. Liggende binnenstemmen',
              'kunnen gericht opnieuw worden aangeslagen. De meldingen hieronder zijn na export opnieuw',
              'berekend met de volledige formele regelcontrole.', '',
-             '| Stuk | Voor | Na | Toonhoogtes gewijzigd | Extra aanslagen | Status |',
-             '|---|---:|---:|---:|---:|---|']
+             'Hoge gewijzigde begeleidingsnoten staan op de bovenste balk, met behoud van hun',
+             'oorspronkelijke stem, toonhoogte en duur. De kolom Bovenbalk telt nootkoppen, inclusief',
+             'gebonden vervolgdelen.', '',
+             '| Stuk | Voor | Na | Toonhoogtes gewijzigd | Extra aanslagen | Bovenbalk | Status |',
+             '|---|---:|---:|---:|---:|---:|---|']
     for name, r in sorted(results.items()):
         lines.append(f"| {name} | {r['voor']['totaal']} | {r['na']['totaal']} | "
-                     f"{r['gewijzigd']} | {r['extra_aanslagen']} | {r['status']} |")
+                     f"{r['gewijzigd']} | {r['extra_aanslagen']} | {r.get('bovenbalk_noten', 0)} | {r['status']} |")
     lines += ['', '## Behoud van rijkheid en variatie', '',
               'De uitvoer moet per klank minstens evenveel toonklassen behouden. Daarnaast gelden',
               'ondergrenzen van 95% voor klankentropie, 90% voor het aantal basbewegingen,',
@@ -515,6 +586,8 @@ def main():
     ap.add_argument('--input-dir', type=Path, default=DIR / 'midi')
     ap.add_argument('--output-dir', type=Path, default=DIR / 'midi_hypercorrectie')
     ap.add_argument('--only')
+    ap.add_argument('--preferences', type=Path, default=DIR / 'hypercorrectie_voorkeuren.json',
+                    help='gerichte begeleidingskeuzes per bestandsnaam of video-id')
     ap.add_argument('--rounds', type=int, default=100)
     ap.add_argument('--seconds', type=float, default=300)
     ap.add_argument('--radius', type=int, default=36)
@@ -531,10 +604,15 @@ def main():
     args.output_dir.mkdir(parents=True, exist_ok=True)
     path = args.output_dir / 'hypercorrectie.json'
     results = json.loads(path.read_text()) if path.exists() else {}
+    preferences = json.loads(args.preferences.read_text()) if args.preferences.exists() else {}
     for source in files:
+        chosen = [entry for name, entry in preferences.items() if name in source.name]
+        if len(chosen) > 1:
+            ap.error(f'meer dan één set voorkeuren voor {source.name}')
+        specs = chosen[0]['noten'] if chosen else []
         results[source.stem] = run_file(source, args.output_dir / source.name, rounds=args.rounds,
                                        seed=args.seed, seconds=args.seconds, radius=args.radius,
-                                       checkpoint=results.get(source.stem) if args.resume else None)
+                                       checkpoint=results.get(source.stem) if args.resume else None, preferences=specs)
         path.write_text(json.dumps(results, ensure_ascii=False, indent=2) + '\n')
         write_report(results, args.output_dir / 'hypercorrectie.md')
     return 0 if all(results[f.stem]['status'] == 'volledig' for f in files) else 2

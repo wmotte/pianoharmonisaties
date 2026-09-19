@@ -36,6 +36,7 @@ import numpy as np
 from music21 import chord, converter, interval, key, note, pitch, spanner, stream
 
 from analyse_stijl import TEMPLATES, label_chord
+from piano_notatie import logical_score_xml, place_high_bass_notes
 from transcribe_piano import KEY_PROFILES, fifths_index, key_spell_pc, spell_vertical
 
 DIR = Path(__file__).resolve().parent
@@ -103,7 +104,10 @@ class Score:
 
     def __init__(self, path: Path):
         self.path = Path(path)
-        self.score = converter.parse(str(path))
+        logical_xml = logical_score_xml(self.path)
+        self.cross_staff_layout = logical_xml is not None
+        self.score = (converter.parseData(logical_xml, format='musicxml') if logical_xml is not None
+                      else converter.parse(str(path)))
         self.parts = {"R": self.score.parts[0], "L": self.score.parts[1]}
         self.recs: list[NoteRec] = []
         self.ottava_ids: set[int] = set()
@@ -214,6 +218,8 @@ class Score:
         self.score.write("musicxml", fp=str(path))
         txt = path.read_text().replace('<note print-object="no" print-spacing="yes">', "<note>")
         path.write_text(txt)
+        if self.cross_staff_layout:
+            place_high_bass_notes(path)
 
 
 # ---- stemmen ---------------------------------------------------------------------------------------

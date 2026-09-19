@@ -1,4 +1,6 @@
 import unittest
+import json
+from unittest.mock import patch
 from fractions import Fraction
 from tempfile import TemporaryDirectory
 from pathlib import Path
@@ -7,8 +9,9 @@ from types import SimpleNamespace
 from music21 import key, note, chord, stream, spanner
 
 from harmonie_regels import NoteRec, Vertical, assign_slots, check
+import hypercorrectie as hyper
 from hypercorrectie import (Search, named_pitch, melody_ids, preservation, articulate_accompaniment,
-                            prepared_fingerprint, run_file, DIR)
+                            prepared_fingerprint, run_file, apply_preferences, DIR)
 
 
 def fixture(events):
@@ -24,6 +27,67 @@ def fixture(events):
 
 
 class HyperCorrectionTests(unittest.TestCase):
+    def test_release_only_melody_is_protected(self):
+        score = fixture([(48, 'L', 0, 3), (64, 'R', 0, 3), (72, 'R', 0, 1)])
+        self.assertEqual(melody_ids(score), {1, 2})
+        self.assertNotIn(1, Search(score).mutable)
+
+    def test_candidates_cannot_overtake_melody_after_release(self):
+        score = fixture([(48, 'L', 0, 3), (60, 'R', 0, 3),
+                         (64, 'R', 0, 3), (72, 'R', 0, 1)])
+        self.assertLessEqual(max(Search(score).candidates[1]), 64)
+
+    def test_preservation_rejects_new_voice_above_unchanged_melody(self):
+        source = fixture([(48, 'L', 0, 2), (64, 'R', 0, 2), (67, 'R', 0, 2)])
+        result = fixture([(48, 'L', 0, 2), (76, 'R', 0, 2), (67, 'R', 0, 2)])
+        self.assertFalse(preservation(source, result)['controles']['melodie_identiek'])
+
+    def test_density_loss_after_release_is_not_missed(self):
+        source = fixture([(48, 'L', 0, 3), (64, 'L', 0, 3),
+                          (64, 'R', 0, 1), (67, 'R', 0, 3)])
+        result = fixture([(48, 'L', 0, 3), (60, 'L', 0, 3),
+                          (64, 'R', 0, 1), (67, 'R', 0, 3)])
+        self.assertFalse(preservation(source, result)['controles']['toonklasdichtheid_behouden'])
+
+    def test_failed_export_validation_preserves_previous_file(self):
+        source = next((DIR / 'voorbeelden/ongecorrigeerd').glob('*Psalm 85*'))
+        report = json.loads((DIR / 'voorbeelden/hypercorrectie/hypercorrectie.json').read_text())
+        real_score = hyper.Score
+        def parse(path):
+            if Path(path).name == 'output.musicxml':
+                raise ValueError('gesimuleerde exportfout')
+            return real_score(path)
+        with TemporaryDirectory() as tmp:
+            target = Path(tmp) / 'output.musicxml'
+            target.write_text('bestaande partituur')
+            with patch.object(hyper, 'Score', side_effect=parse):
+                with self.assertRaisesRegex(ValueError, 'gesimuleerde exportfout'):
+                    run_file(source, target, checkpoint=report[source.stem], seconds=1)
+            self.assertEqual(target.read_text(), 'bestaande partituur')
+
+    def test_run_file_rejects_source_as_output_before_parsing(self):
+        with TemporaryDirectory() as tmp:
+            source = Path(tmp) / 'source.musicxml'
+            source.write_text('bron')
+            with patch.object(hyper, 'Score') as parse:
+                with self.assertRaisesRegex(ValueError, 'bron.*uitvoer'):
+                    run_file(source, source)
+                parse.assert_not_called()
+            self.assertEqual(source.read_text(), 'bron')
+
+    def test_preference_cannot_change_melody(self):
+        score = fixture([(48, 'L', 0, 1), (72, 'R', 0, 1)])
+        search = Search(score)
+        with self.assertRaisesRegex(ValueError, 'melodie'):
+            apply_preferences(search, [{'maat': 1, 'tel': 1, 'hand': 'R', 'van': 'C5', 'naar': 'D5'}])
+        self.assertEqual(search.values, search.orig)
+
+    def test_preference_keeps_selected_accompaniment_fixed(self):
+        search = Search(fixture([(48, 'L', 0, 1), (72, 'R', 0, 1)]))
+        apply_preferences(search, [{'maat': 1, 'tel': 1, 'hand': 'L', 'van': 'C3', 'naar': 'E3'}])
+        self.assertEqual(search.values[0], 52)
+        self.assertNotIn(0, search.mutable)
+
     def test_fingerprint_supports_tuplet_offsets(self):
         rational = fixture([(60, 'R', Fraction(1, 3), Fraction(2, 3))])
         floating = fixture([(60, 'R', 1 / 3, 2 / 3)])

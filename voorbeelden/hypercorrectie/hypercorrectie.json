@@ -1,12 +1,13 @@
 {
   "2025-11-29 - 'De Lofzang van Maria' ｜ Piano ｜ Adventsmuziek van Gerrit Koele [e8Sz1o3a8pA]": {
     "instellingen": {
-      "algoritme": "hypercorrectie-1",
+      "algoritme": "hypercorrectie-2",
       "rounds": 100,
       "seed": 0,
-      "seconds": 300.0,
+      "seconds": 30.0,
       "radius": 36,
-      "hervat": false
+      "hervat": true,
+      "voorkeuren": []
     },
     "bron_sha256": "181740f200216eb02feeef522eab26dd857a74082011ea5141430e4cc4f587a0",
     "voorbereiding_sha256": "a777eb95f05a79ee1d89a688ecf9222b2237839ff7b0bc17bbb177a235e4f0da",
@@ -43,7 +44,6 @@
       "1003": 70,
       "1012": 37,
       "1019": 27,
-      "1021": 50,
       "1022": 57,
       "1081": 50,
       "1085": 57,
@@ -121,7 +121,8 @@
       "toonklasseovereenkomst": 0.9766,
       "gelijke_akkoordlabels": 0.966
     },
-    "gewijzigd": 94,
+    "bovenbalk_noten": 35,
+    "gewijzigd": 93,
     "extra_aanslagen": 21,
     "voor": {
       "n_verticalen": 882,
@@ -148,11 +149,11 @@
       "codes": {}
     },
     "zoektocht": {
-      "rondes": 4,
-      "evaluaties": 29840,
-      "seconden": 189.06,
+      "rondes": 0,
+      "evaluaties": 0,
+      "seconden": 0.0,
       "zoekfouten": 0,
-      "melodienoten_vast": 495
+      "melodienoten_vast": 496
     },
     "rijkheid_voor": {
       "noten": 1510,
@@ -203,12 +204,13 @@
   },
   "2026-01-19 - Psalm 37 ｜ Christelijke pianomuziek van Gerrit Koele [b9ReiRKeBxg]": {
     "instellingen": {
-      "algoritme": "hypercorrectie-1",
+      "algoritme": "hypercorrectie-2",
       "rounds": 100,
       "seed": 0,
-      "seconds": 300.0,
+      "seconds": 30.0,
       "radius": 36,
-      "hervat": false
+      "hervat": true,
+      "voorkeuren": []
     },
     "bron_sha256": "2727610c72ba135f4bb7cf7828982576ca5d2954ac071adb4bfa3c5033cf27c2",
     "voorbereiding_sha256": "798ed1723eef274760d7382dd0ac58f58a2025176c261834e63786d6cd2fa1fb",
@@ -263,6 +265,7 @@
       "toonklasseovereenkomst": 0.982,
       "gelijke_akkoordlabels": 0.9511
     },
+    "bovenbalk_noten": 22,
     "gewijzigd": 34,
     "extra_aanslagen": 14,
     "voor": {
@@ -290,9 +293,9 @@
       "codes": {}
     },
     "zoektocht": {
-      "rondes": 2,
-      "evaluaties": 9128,
-      "seconden": 53.4,
+      "rondes": 0,
+      "evaluaties": 0,
+      "seconden": 0.0,
       "zoekfouten": 0,
       "melodienoten_vast": 287
     },
@@ -342,12 +345,13 @@
   },
   "2026-04-04 - 'U zij de glorie' ｜ Christelijke pianomuziek van Gerrit Koele [i7hRZbaeYpw]": {
     "instellingen": {
-      "algoritme": "hypercorrectie-1",
+      "algoritme": "hypercorrectie-2",
       "rounds": 100,
       "seed": 0,
-      "seconds": 300.0,
+      "seconds": 30.0,
       "radius": 36,
-      "hervat": false
+      "hervat": true,
+      "voorkeuren": []
     },
     "bron_sha256": "bb30608be71f5c4eaa63865b34149f932873babbc3f17399bc193d103ce0b3a9",
     "voorbereiding_sha256": "45a416fa67bc16ee8596717ebe67d8aa38f8bafc1a13e6e010605bb55542c65e",
@@ -472,6 +476,7 @@
       "toonklasseovereenkomst": 0.9665,
       "gelijke_akkoordlabels": 0.9389
     },
+    "bovenbalk_noten": 32,
     "gewijzigd": 104,
     "extra_aanslagen": 22,
     "voor": {
@@ -500,9 +505,9 @@
       "codes": {}
     },
     "zoektocht": {
-      "rondes": 3,
-      "evaluaties": 28630,
-      "seconden": 57.77,
+      "rondes": 0,
+      "evaluaties": 0,
+      "seconden": 0.0,
       "zoekfouten": 0,
       "melodienoten_vast": 529
     },
@@ -553,12 +558,56 @@
   },
   "2026-04-22 - Psalm 85 ｜ Christelijke pianomuziek van Gerrit Koele [qfzzrg627Ho]": {
     "instellingen": {
-      "algoritme": "hypercorrectie-1",
+      "algoritme": "hypercorrectie-2",
       "rounds": 100,
       "seed": 0,
-      "seconds": 300.0,
+      "seconds": 30.0,
       "radius": 36,
-      "hervat": false
+      "hervat": true,
+      "voorkeuren": [
+        {
+          "maat": 45,
+          "tel": 3.5,
+          "hand": "L",
+          "van": "D2",
+          "naar": "A2"
+        },
+        {
+          "maat": 46,
+          "tel": 1,
+          "hand": "L",
+          "van": "G2",
+          "naar": "G2"
+        },
+        {
+          "maat": 46,
+          "tel": 1,
+          "hand": "L",
+          "van": "D3",
+          "naar": "D3"
+        },
+        {
+          "maat": 46,
+          "tel": 2,
+          "hand": "L",
+          "van": "D3",
+          "naar": "D4"
+        },
+        {
+          "maat": 46,
+          "tel": 2.5,
+          "hand": "L",
+          "van": "D3",
+          "naar": "E4"
+        },
+        {
+          "maat": 46,
+          "tel": 3,
+          "hand": "L",
+          "van": "D3",
+          "naar": "D4"
+        }
+      ]
     },
     "bron_sha256": "5eb2f9bdb108e8d9e919a89696f090063fce372afabd8873cc578a8baafe5ee4",
     "voorbereiding_sha256": "efa593efee59f179e1891b6b26b531c5b06aa24d23ad97608b5c95edb6e32f98",
@@ -578,7 +627,10 @@
       "520": 51,
       "528": 53,
       "541": 54,
-      "558": 59,
+      "557": 45,
+      "561": 62,
+      "563": 64,
+      "565": 62,
       "571": 59,
       "593": 55,
       "34": 68,
@@ -598,10 +650,11 @@
         "basbeweging_behouden": true
       },
       "geslaagd": true,
-      "toonklasseovereenkomst": 0.9793,
+      "toonklasseovereenkomst": 0.978,
       "gelijke_akkoordlabels": 0.9483
     },
-    "gewijzigd": 22,
+    "bovenbalk_noten": 10,
+    "gewijzigd": 25,
     "extra_aanslagen": 15,
     "voor": {
       "n_verticalen": 271,
@@ -625,11 +678,11 @@
       "codes": {}
     },
     "zoektocht": {
-      "rondes": 2,
-      "evaluaties": 4786,
-      "seconden": 11.41,
+      "rondes": 0,
+      "evaluaties": 0,
+      "seconden": 0.0,
       "zoekfouten": 0,
-      "melodienoten_vast": 205
+      "melodienoten_vast": 206
     },
     "rijkheid_voor": {
       "noten": 583,
@@ -654,7 +707,7 @@
     },
     "rijkheid_na": {
       "noten": 598,
-      "unieke_klanken": 62,
+      "unieke_klanken": 63,
       "akkoordtypen": {
         "add9": 6,
         "maj": 161,
@@ -669,9 +722,9 @@
         "min7": 3,
         "dom7": 2
       },
-      "klankentropie": 4.9546,
-      "gemiddelde_toonklassen": 2.5092,
-      "basbewegingen": 201
+      "klankentropie": 4.9639,
+      "gemiddelde_toonklassen": 2.5129,
+      "basbewegingen": 200
     }
   }
 }

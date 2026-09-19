@@ -34,3 +34,7 @@ De [hypercorrectie](../hypercorrectie/2026-04-22%20-%20Psalm%2085%20%EF%BD%9C%20
 Aangehouden binnenstemmen kunnen gericht opnieuw worden aangeslagen om de stemvoering te verbeteren.
 Het [rapport](../hypercorrectie/hypercorrectie.md) vermeldt het resultaat van de volledige
 regelcontrole en de vergelijking van klankvariatie en harmonische verwantschap.
+
+In maat 46 draagt een G-orgelpunt de bewegende tegenlijn D3–D4–E4–D4. De voorafgaande
+basnoot A2 maakt deze verbinding mogelijk zonder parallelle octaven. De hogere gewijzigde
+begeleidingsnoten staan op de bovenste balk. De melodie blijft intact.

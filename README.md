@@ -361,6 +361,7 @@ correctie in binnenstemmen voorkomen, naast de ongewijzigde buitenstemmen.
 `hypercorrectie.py` zoekt een zetting zonder meldingen van de volledige standaardcontrole uit
 `harmonie_regels.py`. De hoogste klinkende rechterhandnoot geldt als melodie. Die blijft vast,
 inclusief spelling, duur en bindingen. Een linkerhandnoot die de melodie kruist, blijft bewerkbaar.
+Ook momenten waarop alleen een hogere noot eindigt, tellen mee bij het vastleggen van de melodie.
 
 ```bash
 python hypercorrectie.py --input-dir voorbeelden/ongecorrigeerd --output-dir voorbeelden/hypercorrectie --seconds 300
@@ -373,12 +374,23 @@ onder de melodie mogen aangehouden binnenstemmen gericht opnieuw worden aangesla
 klinkende stemdichtheid en totale tijdsdekking per hand blijven behouden. Er verdwijnen geen
 stemmen of passages om aan de regels te voldoen.
 
+Hoge groene begeleidingsnoten vanaf C4 worden op de bovenste balk weergegeven. Hun bestaande
+stem, toonhoogte en duur blijven behouden. Zo verdwijnen de hoge hulplijnen boven de basbalk
+zonder dat de noten aan de melodie worden toegevoegd. De harmoniecontrole gebruikt de
+oorspronkelijke stemindeling, onafhankelijk van de gekozen balk.
+Linker- en rechterhand krijgen bij de export verschillende stemnummers, zodat MuseScore
+een balkwissel niet met een andere stem samenvoegt. Bij een akkoord met lage én hoge noten
+krijgen de verplaatste noten een aparte notatiestem op hetzelfde tijdstip. Zo blijft de lage
+bas op de onderste balk.
+
 De muzikale voorkeuren bewaken de oorspronkelijke toonklassen, akkoordidentiteit, bascontour en
 harmonische wisselingen. Herhaalde aanslagen zijn beperkt tot aangehouden binnenstemmen bij
 liggingsproblemen. De zoekfunctie gebruikt geen willekeurige versieringen. `--seed` bestuurt
 alleen het verkennen van alternatieve oplossingen wanneer lokale wijzigingen vastlopen.
 
-Na export wordt de MusicXML opnieuw ingelezen en gecontroleerd. De status `volledig` vereist
+De MusicXML wordt eerst naar een tijdelijk bestand geëxporteerd en opnieuw ingelezen en gecontroleerd.
+Pas na deze controle vervangt het bestand de bestaande uitvoer. Bron en uitvoer mogen ook bij
+rechtstreeks gebruik van de Python-functie niet naar hetzelfde bestand verwijzen. De status `volledig` vereist
 nul formele meldingen én geslaagde controles op melodie, tijdsdekking en variatie. Bij onvoldoende
 zoekruimte, rekentijd of onverenigbare eisen wordt de status `onvolledig` en eindigt het script met
 exitcode 2. De melodie wordt nooit vrijgegeven om toch een succesmelding te kunnen geven.
@@ -395,6 +407,12 @@ De optionele toets aan zangomvangen (`OMV`) valt buiten deze standaardcontrole v
 Een ruim toonhoogtebereik maakt andere liggingen mogelijk. De muzikale kosten geven de voorkeur
 aan kleinere wijzigingen. Hervatten controleert bron- en voorbereidingsvingerafdrukken en weigert
 wijzigingen buiten de gekozen zoekruimte. Door de tijdslimiet kan het resultaat per machine verschillen.
+
+Gerichte muzikale keuzes staan in `hypercorrectie_voorkeuren.json`. Het script leest dit bestand
+standaard, of een ander bestand via `--preferences`. Elke keuze benoemt maat, tel, hand en
+brontoon. De melodie blijft beschermd en alle formele en muzikale controles blijven gelden.
+Voor Psalm 85 houdt maat 46 een G-orgelpunt met de tegenlijn D3–D4–E4–D4. De voorafgaande
+basnoot A2 verbindt deze ligging zonder parallelle octaven.
 
 De vier uitvoeringen staan in [`voorbeelden/hypercorrectie/`](voorbeelden/hypercorrectie/).
 Het [hypercorrectierapport](voorbeelden/hypercorrectie/hypercorrectie.md) vermeldt de foutaantallen

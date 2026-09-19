@@ -1,0 +1,13 @@
+{
+  "qfzzrg627Ho": {
+    "toelichting": "Psalm 85, maat 46: G-orgelpunt met D3–D4–E4–D4 in de begeleiding. D/A in het voorafgaande slotakkoord maakt de verbinding mogelijk zonder parallelle octaven.",
+    "noten": [
+      {"maat": 45, "tel": 3.5, "hand": "L", "van": "D2", "naar": "A2"},
+      {"maat": 46, "tel": 1, "hand": "L", "van": "G2", "naar": "G2"},
+      {"maat": 46, "tel": 1, "hand": "L", "van": "D3", "naar": "D3"},
+      {"maat": 46, "tel": 2, "hand": "L", "van": "D3", "naar": "D4"},
+      {"maat": 46, "tel": 2.5, "hand": "L", "van": "D3", "naar": "E4"},
+      {"maat": 46, "tel": 3, "hand": "L", "van": "D3", "naar": "D4"}
+    ]
+  }
+}
