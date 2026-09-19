@@ -1,7 +1,5 @@
 # Gerrit Koele – van YouTube naar bladmuziek
 
-Auteur en contact: Willem M. Otte (<w.m.otte@umcutrecht.nl>)
-
 Scripts die de publieke pianovideo's van [Gerrit Koele](https://www.youtube.com/@GerritKoeleMusicus/videos)
 omzetten naar mp3 en vervolgens naar leesbare, speelbare bladmuziek (MusicXML voor MuseScore) plus MIDI.
 Zie [stijlanalyse.md](stijlanalyse.md) voor een uitgebreide karakterisering van de muzikale stijl en signatuur van Gerrit Koele.
@@ -15,6 +13,37 @@ controleer_harmonie.py stap 4: formele controle van de zettingen -> midi_control
 corrigeer_harmonie.py  stap 5: binnenstemmen herzetten -> midi_gecorrigeerd/ (gewijzigd groen, rest rood)
 ```
 
+## Installatie
+
+Vereisten: Python 3.10 of 3.11 en optioneel `ffmpeg` (voor audiosegmentatie) en `yt-dlp` (voor downloaden van video's).
+
+### Met uv (aanbevolen)
+
+Met [uv](https://docs.astral.sh/uv/) installeer je de afhankelijkheden snel in een virtuele omgeving:
+
+```bash
+# 1. Maak een virtuele omgeving aan en activeer deze
+uv venv
+source .venv/bin/activate
+
+# 2. Installeer alle vereiste pakketten via requirements.txt
+uv pip install -r requirements.txt
+```
+
+### Met standaard pip
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Externe tools (macOS)
+
+```bash
+brew install ffmpeg yt-dlp
+```
+
 ## v3 – sectiesplitsing & maatconversie (Voorspel → Koraal → Naspel)
 
 Naar aanleiding van de vraag hoe maatwisselingen (bijv. 4/4 voorspel → 3/2 koraal → 4/4 naspel) en verzamelvideo's
@@ -25,16 +54,16 @@ zonder procrustesbed verwerkt kunnen worden:
 - **Per sectie eigen tempo en maatsoort**: elk deel krijgt een eigen beat-tracking en maatsoort. In Psalm 85
   resulteert dit in een 4/4 voorspel (83 bpm), een 3/2 koraal (108 bpm kwart-eenheden, 3 halve noten per maat),
   en een 4/4 naspel (86 bpm). Het aantal syncopen in het koraal daalde van 29% naar 2% en het aantal afwijkende
-  maten werd 0!
+  maten werd 0! In Psalm 37 resulteert dit in een 3/4 voorspel (66 bpm), 4/4 koraal (112 bpm) en 4/4 naspel (108 bpm).
 - **Naadloos samenvoegen ("vastplakken")**: de losse secties worden samengevoegd tot één complete partituur
-  in `midi/<stem>.musicxml` en `midi/<stem>.mid` met doorlopende maatnummering, maatwissels (bijv. 4/4 naar 3/2),
-  dubbele maatstrepen op de overgangen, tempo-aanduidingen en repetitietekens (`[Voorspel]`, `[Koraal]`, `[Naspel]`).
-- **Losse delen bewaren (`--save-parts`)**: schrijft de losse mp3's naar `mp3_delen/<stem>/` en de afzonderlijke
-  partituren naar `midi_delen/<stem>/` (ideaal voor organisten die alleen de koraalzetting willen).
+  met doorlopende maatnummering, maatwissels (bijv. 4/4 naar 3/2 of 3/4 naar 4/4), dubbele maatstrepen op de
+  overgangen, tempo-aanduidingen en repetitietekens (`[Voorspel]`, `[Koraal]`, `[Naspel]`).
+- **Losse delen bewaren (`--save-parts`)**: optioneel bewaart het script ook de losse partituren en mp3-secties
+  in `mp3_delen/` en `midi_delen/` (ideaal voor wie alleen de koraalzetting wil).
 - **Handmatige overrides via `splits.json` of CLI**: snijpunten en maatsoorten kunnen nauwkeurig worden afgestemd
   via `splits.json` of CLI-opties (`--splits 64.18,144.82 --meters 4,6,4`).
 - **Compilatiesplitser (`splits_compilaties.py`)**: knipt lange verzamelvideo's (zoals "8 Psalmen op Piano")
-  automatisch op in zelfstandige mp3's in `mp3/` op basis van lange stiltes (>= 3.0s).
+  automatisch op in zelfstandige mp3's op basis van lange stiltes (>= 3.0s).
 
 ## v2 – wat er eerder is veranderd
 
@@ -50,31 +79,6 @@ noten en achtste rusten; hier en daar een es die dis moet zijn):
 - **Diagnostiek in de log**: `syncopen` (aandeel aanslagen op de halve tel) en `maat_hint`. Een hoog
   `syncopen` duidt op veel achtste noten/rusten – precies wat de organist opviel; zo zijn de stukken die
   handmatige controle vragen in één oogopslag te vinden.
-
-## Mappen en bestanden
-
-| Pad | Inhoud |
-|---|---|
-| `mp3/` | `YYYY-MM-DD - Titel [videoId].mp3`, één per video |
-| `midi_raw/` | `<stem>.transkun.mid` (of `.bytedance.mid`): ruwe transcriptie incl. pedaal |
-| `midi/` | `<stem>.musicxml` (openen in MuseScore) en `<stem>.mid` (afspelen) |
-| `mp3_delen/` | losse mp3-secties (`01_Voorspel.mp3`, `02_Koraal.mp3`, etc.) bij `--save-parts` |
-| `midi_delen/` | losse partituren per sectie (`Voorspel.musicxml`, etc.) bij `--save-parts` |
-| `splits.json` | configuratiebestand met handmatige snijpunten en maatsoorten per stuk |
-| `audio_segmentatie.py` | stiltedetectie via librosa en snijdtools voor audio en MIDI |
-| `plak_partituren.py` | samenvoegengine voor MusicXML (music21) en MIDI (pretty_midi) |
-| `splits_compilaties.py` | tool om compilatie-video's ("8 Psalmen op Piano") op te knippen in `mp3/` |
-| `download.log`, `midi.log` | logboek per stap met keuzes per stuk |
-| `archive.txt`, `videos.txt` | yt-dlp archief en index met datum, video-id en titel |
-| `fotos_van_boek/` | foto's van gedrukte bladmuziek (Psalm 85) ter referentie |
-| `analyse_stijl.py`, `stijlanalyse.json`, `stijlanalyse.md` | stijlanalyse (stap 3) over alle stukken |
-| `harmonie_regels.py` | gedeelde module voor harmonie-analyse en regels (`--test` voor zelftest) |
-| `midi_controle/` | stap 4: `<stem>.musicxml` met fouten in rood en `<stem>.txt` |
-| `harmonie_controle.json`, `harmonie_controle.md` | stap 4: overzichtsrapport per stuk en per regel |
-| `midi_gecorrigeerd/` | stap 5: `<stem>.musicxml` met gewijzigde noten in groen en restfouten in rood |
-| `harmonie_correctie.json`, `harmonie_correctie.md` | stap 5: effect van herzetting vóór en na |
-| `voorbeelden/` | vier uitgewerkte voorbeelden (Psalm 85, Psalm 37, Lofzang van Maria, U zij de glorie) met ongecorrigeerde, controle- (fouten in rood) en gecorrigeerde MusicXML, mp3's en YouTube-links in `readmes/` |
-| `.venv/` | Python 3.11-omgeving met transkun, music21, torch, librosa, pretty_midi |
 
 ## Stap 0 – `download_koele.sh`
 
@@ -94,7 +98,7 @@ Haalt met `yt-dlp` alle video's van het kanaal op als mp3 (beste audiokwaliteit,
 ./transcribe_midi.sh --split-sections        # met automatische voorspel/koraal/naspel splitsing en maatwissels
 ./transcribe_midi.sh --reclean               # alleen stap 2 opnieuw (na een scriptwijziging), ruwe midi hergebruiken
 ./transcribe_midi.sh --force                 # alles opnieuw, ook de transcriptie
-.venv/bin/python transcribe_piano.py --reclean --split-sections --save-parts "mp3/…één stuk….mp3"
+python transcribe_piano.py --reclean --split-sections --save-parts "mp3/…één stuk….mp3"
 ```
 
 Opties (`--help` voor de volledige lijst):
@@ -127,7 +131,7 @@ OK: noten=1708, R=1019, L=689, bpm=92, raster=1/8, maat=4/4, opmaat=0, fermates=
 ### Stap 1 – ruwe transcriptie (audio → noten)
 
 - **Transkun v2** (Yan & Duan 2024, standaard): neuraal piano-transcriptiemodel; wordt als CLI aangeroepen
-  (`.venv/bin/transkun --device mps in.mp3 out.mid`). Op een Mac draait het op de GPU (MPS), anders CPU.
+  (`transkun --device mps in.mp3 out.mid`). Op een Mac draait het op de GPU (MPS), anders CPU.
 - **ByteDance** "High-resolution piano transcription" (Kong et al. 2020) als alternatief via `--model bytedance`
   (checkpoint in `~/piano_transcription_inference_data/`).
 - Spotify basic-pitch (eerste poging) is verlaten: te veel ruis en foute octaven voor piano.
@@ -209,7 +213,7 @@ Het model weet niet welke hand wat speelt; dat moet uit de toonhoogtes worden af
    opmaat getoond).
 5. **Fermates in plaats van afwijkende maten** (`normalise_bars`): is een te lange/korte maat aan het einde
    een aangehouden noot of rust (geen aanslagen in de staart), dan wordt de maat weer m tellen door die noot
-   in te korten/te verlengen en krijgt hij een fermate – precies zoals het boek "rit." + fermate noteert.
+   in te korten/te verlengen en krijgt hij een fermate – precies zoals een partituur "rit." + fermate noteert.
    Een maat waarin tot het einde wordt doorgespeeld blijft als tijdelijke maatsoort (bijv. 5/4) staan; dat
    aantal staat in de log als `afwijkende_maten` en is een goede indicator voor stukken die handmatige
    controle nodig hebben.
@@ -262,7 +266,7 @@ verdeelt die zelf weer over twee balken, maar mist dan alle notatiekeuzes – ge
 ## Stap 3 – `analyse_stijl.py` (stijlanalyse)
 
 ```bash
-.venv/bin/python analyse_stijl.py        # leest midi/*.musicxml + midi_raw/*.transkun.mid, schrijft stijlanalyse.json (~2 min)
+python analyse_stijl.py        # leest midi/*.musicxml + midi_raw/*.transkun.mid, schrijft stijlanalyse.json (~2 min)
 ```
 
 Per stuk worden gemeten: toonsoort(en) per maat, akkoordlabel per tel (sjabloon-matching op 15 akkoordtypen,
@@ -270,7 +274,7 @@ Romeinse trap, ligging), vormdelen (voorspel / koraal / tussenspel / naspel op b
 een couplet is een passage waarvan de intervalreeks ≥ 32 tellen verderop bijna letterlijk terugkomt), per
 vormdeel textuur/register/dynamiek/akkoordstatistiek, cadensen op fermates, basbeweging, orgelpunten,
 octaafverdubbelingen, en uit de ruwe MIDI pedaalgebruik, legato, gebroken akkoorden en het slot-ritenuto.
-Titels uit `COMPILATIONS` (verzamelvideo's) doen niet mee aan de vorm-statistiek. De duiding staat in
+Titels uit verzamelvideo's doen niet mee aan de vorm-statistiek. De duiding staat in
 `stijlanalyse.md`; §0 daarvan zegt welke cijfers betrouwbaar zijn en welke niet.
 
 ### De stijl van Gerrit Koele
@@ -288,9 +292,9 @@ Zie [stijlanalyse.md](stijlanalyse.md) voor de gedetailleerde analyse, frequenti
 ## Stap 4 – `controleer_harmonie.py` (formele controle)
 
 ```bash
-.venv/bin/python controleer_harmonie.py                      # alle stukken (~1 min); overslaan als uitvoer nieuwer is
-.venv/bin/python controleer_harmonie.py --only "Psalm 85" --force
-.venv/bin/python controleer_harmonie.py --omvang             # ook de zangomvang van S/A/T/B toetsen (OMV)
+python controleer_harmonie.py                      # alle stukken (~1 min); overslaan als uitvoer nieuwer is
+python controleer_harmonie.py --only "Psalm 85" --force
+python controleer_harmonie.py --omvang             # ook de zangomvang van S/A/T/B toetsen (OMV)
 ```
 
 Toetst elke zetting in `midi/` aan de regels van de klassieke vierstemmige koraalzetting en schrijft
@@ -341,8 +345,8 @@ Over alle 49 stukken en 58.928 verticalen gaf de controle 11.596 meldingen (gemi
 ## Stap 5 – `corrigeer_harmonie.py` (binnenstemmen herzetten)
 
 ```bash
-.venv/bin/python corrigeer_harmonie.py                       # alle stukken (~1 s per stuk)
-.venv/bin/python corrigeer_harmonie.py --only "Psalm 85" --beam 20 --force
+python corrigeer_harmonie.py                       # alle stukken (~1 s per stuk)
+python corrigeer_harmonie.py --only "Psalm 85" --beam 20 --force
 ```
 
 Maakt de zetting formeel zo kloppend mogelijk zonder aan Koeles melodie en bas te komen: de hoogste noot van
@@ -423,7 +427,7 @@ MuseScore print op stderr meldingen van de crash reporter; die kunnen genegeerd 
 ## Voorbeelden
 
 In de map [`voorbeelden/`](voorbeelden/) staan vier uitgewerkte stukken:
-- **Psalm 85** (de referentiezetting, inclusief automatische 4/4 → 3/2 → 4/4 sectiesplitsing)
+- **Psalm 85** (inclusief automatische 4/4 → 3/2 → 4/4 sectiesplitsing)
 - **Psalm 37** (met automatische 3/4 → 4/4 → 4/4 sectiesplitsing en maatwissels)
 - **De Lofzang van Maria** (65 opgeloste parallelle octaven)
 - **U zij de glorie** (toonsoortwisselingen en opgeloste leidtoonverdubbelingen)

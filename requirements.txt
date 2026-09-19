@@ -1,0 +1,19 @@
+# Neurale piano-transcriptie
+transkun>=2.0.0
+torch>=2.0.0
+
+# Notatie, theorie & harmonie-analyse
+music21>=9.0.0
+
+# Audioverwerking & segmentatie
+librosa>=0.10.0
+soundfile>=0.12.0
+pydub>=0.25.1
+scipy>=1.10.0
+numpy>=1.24.0
+
+# MIDI-verwerking
+pretty_midi>=0.2.10
+
+# Optioneel: YouTube download CLI
+yt-dlp>=2024.0.0
