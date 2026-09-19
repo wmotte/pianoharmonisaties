@@ -25,11 +25,11 @@
     <score-part id="P28edd6ae3e87d205f8eeb8593166d07f">
       <part-name>Piano</part-name>
       <part-abbreviation>Pno</part-abbreviation>
-      <score-instrument id="I2d8e72603a0ddb90ee18e30567db0ee1">
+      <score-instrument id="I90750db88c668e973dec2cc6665d24c8">
         <instrument-name>Piano</instrument-name>
         <instrument-abbreviation>Pno</instrument-abbreviation>
       </score-instrument>
-      <midi-instrument id="I2d8e72603a0ddb90ee18e30567db0ee1">
+      <midi-instrument id="I90750db88c668e973dec2cc6665d24c8">
         <midi-channel>1</midi-channel>
         <midi-program>1</midi-program>
       </midi-instrument>
@@ -249,21 +249,19 @@
         <type>eighth</type>
         <staff>1</staff>
       </note>
-      <note color="#00A000" dynamics="84.44">
+      <note color="#E00000" dynamics="84.44">
         <pitch>
-          <step>D</step>
-          <alter>0</alter>
+          <step>C</step>
           <octave>4</octave>
         </pitch>
         <duration>10080</duration>
         <voice>1</voice>
         <type>quarter</type>
-        <accidental>natural</accidental>
-        <notehead color="#00A000" parentheses="no">normal</notehead>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>1</staff>
         <lyric name="1" number="1">
           <syllabic>single</syllabic>
-          <text>was C4</text>
+          <text>KR</text>
         </lyric>
       </note>
       <note dynamics="82.22">
@@ -349,7 +347,7 @@
         <type>quarter</type>
         <staff>2</staff>
       </note>
-      <note>
+      <note color="#E00000">
         <pitch>
           <step>G</step>
           <octave>3</octave>
@@ -357,7 +355,12 @@
         <duration>5040</duration>
         <voice>2</voice>
         <type>eighth</type>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>2</staff>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>KR</text>
+        </lyric>
       </note>
       <note>
         <chord />
@@ -425,24 +428,18 @@
         <staff>1</staff>
         <beam number="1">begin</beam>
       </note>
-      <note color="#00A000">
+      <note>
         <pitch>
-          <step>G</step>
-          <alter>0</alter>
+          <step>B</step>
+          <alter>-1</alter>
           <octave>3</octave>
         </pitch>
         <duration>5040</duration>
         <voice>1</voice>
         <type>eighth</type>
-        <accidental>natural</accidental>
         <stem>down</stem>
-        <notehead color="#00A000" parentheses="no">normal</notehead>
         <staff>1</staff>
         <beam number="1">end</beam>
-        <lyric name="1" number="1">
-          <syllabic>single</syllabic>
-          <text>was B-3</text>
-        </lyric>
       </note>
       <note>
         <chord />
@@ -816,8 +813,12 @@
         <stem>up</stem>
         <staff>1</staff>
         <beam number="1">begin</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>P8</text>
+        </lyric>
       </note>
-      <note>
+      <note color="#E00000">
         <chord />
         <pitch>
           <step>B</step>
@@ -827,6 +828,7 @@
         <duration>5040</duration>
         <voice>1</voice>
         <type>eighth</type>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>1</staff>
       </note>
       <note color="#E00000">
@@ -868,23 +870,17 @@
         <type>eighth</type>
         <staff>1</staff>
       </note>
-      <note color="#00A000">
+      <note>
         <pitch>
-          <step>F</step>
-          <alter>0</alter>
+          <step>C</step>
           <octave>4</octave>
         </pitch>
         <duration>5040</duration>
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
-        <notehead color="#00A000" parentheses="no">normal</notehead>
         <staff>1</staff>
         <beam number="1">begin</beam>
-        <lyric name="1" number="1">
-          <syllabic>single</syllabic>
-          <text>was C4</text>
-        </lyric>
       </note>
       <note>
         <chord />
@@ -979,16 +975,23 @@
         <voice>2</voice>
         <type>quarter</type>
         <staff>2</staff>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>P8/S7</text>
+        </lyric>
       </note>
-      <note>
+      <note color="#E00000">
         <chord />
         <pitch>
-          <step>G</step>
+          <step>B</step>
+          <alter>-1</alter>
           <octave>3</octave>
         </pitch>
         <duration>10080</duration>
         <voice>2</voice>
         <type>quarter</type>
+        <accidental>flat</accidental>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>2</staff>
       </note>
       <note dynamics="58.89">
@@ -1557,13 +1560,14 @@
       </note>
       <note color="#00A000">
         <pitch>
-          <step>G</step>
+          <step>E</step>
           <alter>0</alter>
           <octave>4</octave>
         </pitch>
         <duration>5040</duration>
         <voice>1</voice>
         <type>eighth</type>
+        <accidental>natural</accidental>
         <stem>up</stem>
         <notehead color="#00A000" parentheses="no">normal</notehead>
         <staff>1</staff>
@@ -1629,6 +1633,7 @@
         <duration>10080</duration>
         <voice>1</voice>
         <type>quarter</type>
+        <accidental>flat</accidental>
         <staff>1</staff>
       </note>
       <note>
@@ -1686,6 +1691,7 @@
         <duration>5040</duration>
         <voice>1</voice>
         <type>eighth</type>
+        <accidental>flat</accidental>
         <staff>1</staff>
       </note>
       <note dynamics="101.11">
@@ -2491,23 +2497,17 @@
         <stem>up</stem>
         <staff>1</staff>
         <beam number="1">end</beam>
-        <lyric name="1" number="1">
-          <syllabic>single</syllabic>
-          <text>was B-4</text>
-        </lyric>
       </note>
-      <note color="#00A000">
+      <note>
         <chord />
         <pitch>
-          <step>C</step>
-          <alter>0</alter>
+          <step>B</step>
+          <alter>-1</alter>
           <octave>4</octave>
         </pitch>
         <duration>5040</duration>
         <voice>1</voice>
         <type>eighth</type>
-        <accidental>natural</accidental>
-        <notehead color="#00A000" parentheses="no">normal</notehead>
         <staff>1</staff>
       </note>
       <note>
@@ -2537,7 +2537,7 @@
           <text>OV</text>
         </lyric>
       </note>
-      <note>
+      <note color="#E00000">
         <chord />
         <pitch>
           <step>D</step>
@@ -2546,6 +2546,7 @@
         <duration>5040</duration>
         <voice>1</voice>
         <type>eighth</type>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>1</staff>
       </note>
       <note color="#E00000">
@@ -8726,15 +8727,21 @@
     </measure>
     <!--========================= Measure 69 =========================-->
     <measure implicit="no" number="69">
-      <note>
+      <note color="#00A000">
         <pitch>
-          <step>G</step>
-          <octave>4</octave>
+          <step>B</step>
+          <alter>-1</alter>
+          <octave>3</octave>
         </pitch>
         <duration>10080</duration>
         <voice>1</voice>
         <type>quarter</type>
+        <notehead color="#00A000" parentheses="no">normal</notehead>
         <staff>1</staff>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>was G4</text>
+        </lyric>
       </note>
       <note>
         <chord />

@@ -325,6 +325,7 @@ Over alle 49 stukken en 58.928 verticalen gaf de controle 11.596 meldingen (gemi
 ```bash
 python corrigeer_harmonie.py                       # alle stukken (rekentijd afhankelijk van de zetting)
 python corrigeer_harmonie.py --only "Psalm 85" --beam 20 --force
+python corrigeer_harmonie.py --input-dir voorbeelden/ongecorrigeerd --output-dir voorbeelden/gecorrigeerd --force
 ```
 
 Herzet de binnenstemmen met behoud van de toonhoogte en het ritme van melodie en bas.
@@ -345,9 +346,12 @@ Gewijzigde noten verschijnen groen met de oorspronkelijke noot als toelichting.
 Resterende meldingen van de formele controle verschijnen rood. De uitvoer staat in
 `midi_gecorrigeerd/`, met rapporten in `harmonie_correctie.md` en `harmonie_correctie.json`.
 Bij een gewijzigd algoritme of andere bundelbreedte worden bestaande resultaten opnieuw berekend.
+`--input-dir` en `--output-dir` selecteren andere partituurmappen. `--report-dir` bepaalt waar
+de rapporten worden bewaard. Een gedeeltelijke berekening behoudt de rapportregels van andere stukken.
+Een lege selectie stopt met een foutmelding en laat de bestaande rapporten intact.
 
-De opgeslagen rapporten en voorbeeldpartituren documenteren de bijbehorende berekening.
-Ze worden pas bijgewerkt wanneer de correctie opnieuw wordt uitgevoerd. Een lager aantal
+De vier voorbeeldpartituren zijn met deze correctiemethode berekend. De overige regels in
+het verzamelrapport betreffen de eerder opgeslagen berekeningen. Een lager aantal
 regelmeldingen is op zichzelf geen maat voor muzikale kwaliteit. Meldingen kunnen ook na
 correctie in binnenstemmen voorkomen, naast de ongewijzigde buitenstemmen.
 

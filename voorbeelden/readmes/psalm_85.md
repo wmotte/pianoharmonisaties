@@ -26,4 +26,4 @@ De samengevoegde partituur bevat automatische maatwissels, dubbele maatstrepen o
 
 ### Harmonie-analyse
 
-Bij de formele harmonie-analyse heeft de samengevoegde partituur 33 meldingen op 271 verticalen (12.2 per 100). In de partituur onder `../controle/` zijn al deze meldingen rood gemarkeerd met de bijbehorende regelcode. Na herzetting van 2 noten in de binnenstemmen dalen de stemvoeringsfouten verder. De resterende meldingen betreffen verborgen kwinten en octaven (`H5`/`H8`) en wijdere ligging (`LIG`) tussen sopraan en bas, conform Koeles eigen speelstijl.
+Bij de formele harmonie-analyse heeft de samengevoegde partituur 33 meldingen op 271 verticalen (12.2 per 100). In de partituur onder `../controle/` zijn al deze meldingen rood gemarkeerd met de bijbehorende regelcode. Na herzetting van 3 binnenstemnoten blijft het totaal op 33 meldingen. De verdeling over de regelcodes verandert wel. Resterende meldingen betreffen onder meer verborgen kwinten en octaven, wijde liggingen en septiemoplossingen. De volledige meldingen staan bij de gecorrigeerde partituur in het gelijknamige tekstbestand.

@@ -16,5 +16,5 @@ In de ongecorrigeerde transcriptie zaten 185 stemvoeringsmeldingen op 882 vertic
 hiervan bestond uit parallelle octaven (`P8`: 65 meldingen). In de controlepartituur (`../controle/`)
 zijn al deze 185 meldingen rood gemarkeerd met de tekstcode onder de betreffende noot.
 
-Door 32 binnenstemnoten aan te passen daalde het aantal meldingen van 185 naar 96. Alle 65 parallelle octaven
+Door 32 binnenstemnoten aan te passen daalde het aantal meldingen van 185 naar 99. Alle 65 parallelle octaven
 zijn hiermee verholpen, terwijl de melodie en baslijn ongewijzigd bleven. Enharmonische spelfouten (`SPL`) zijn in deze partituur niet gemeld. De spelling wordt per verticaal bepaald.

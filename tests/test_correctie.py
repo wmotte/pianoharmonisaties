@@ -1,5 +1,10 @@
 import unittest
 from types import SimpleNamespace
+from unittest.mock import patch
+from tempfile import TemporaryDirectory
+from pathlib import Path
+import sys
+import corrigeer_harmonie as correction
 
 from music21 import key, note
 
@@ -39,6 +44,52 @@ class CorrectionTests(unittest.TestCase):
         timing = [(r.on, r.end, r.staff) for r in records]
         apply(score, changes)
         self.assertEqual(timing, [(r.on, r.end, r.staff) for r in records])
+
+    def test_held_inner_note_cannot_overtake_later_melody(self):
+        records = [NoteRec(i, note.Note(m), None, st, on, end, 1, on + 1)
+                   for i, (m, st, on, end) in enumerate([
+                       (48, 'L', 0, 2), (60, 'R', 0, 2), (76, 'R', 0, 1),
+                       (64, 'R', 1, 2)])]
+        verticals = [Vertical(t, sorted([r for r in records if r.on <= t < r.end],
+                                       key=lambda r: r.midi), 1, t + 1,
+                              key.Key('C'), (0, 'maj', 3)) for t in (0, 1)]
+        for v in verticals:
+            assign_slots(v)
+        score = SimpleNamespace(recs=records, verticals=verticals)
+        # Verleid de zoekfunctie tot C5, boven de latere melodienoot E4.
+        def prefer_high(notes, *args):
+            return 0 if dict((i, m) for i, m, _ in notes)[1] == 72 else 1000
+        with patch.object(correction, 'vertical_cost', side_effect=prefer_high):
+            changes = revoice(score)
+        self.assertLessEqual(changes.get(1, 60), 64)
+
+    def test_transition_receives_all_onsets(self):
+        records = [NoteRec(i, note.Note(m), None, st, t, t + 1, 1, t + 1)
+                   for i, (m, st, t) in enumerate([
+                       (48, 'L', 0), (60, 'R', 0), (72, 'R', 0),
+                       (50, 'L', 1), (62, 'R', 1), (74, 'R', 1)])]
+        verticals = [Vertical(t, [r for r in records if r.on == t], 1, t + 1,
+                              key.Key('C'), (0, 'maj', 3)) for t in (0, 1)]
+        for v in verticals:
+            assign_slots(v)
+        with patch.object(correction, 'transition_cost', return_value=0) as cost:
+            revoice(SimpleNamespace(recs=records, verticals=verticals))
+        self.assertTrue(cost.called)
+        for call in cost.call_args_list:
+            self.assertEqual(call.args[-1], {3, 4, 5})
+
+    def test_missing_input_does_not_erase_report(self):
+        with TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            report = directory / 'harmonie_correctie.md'
+            report.write_text('bestaand rapport')
+            with patch.object(correction, 'DIR', directory), \
+                    patch.object(correction, 'OUT', directory / 'out'), \
+                    patch.object(sys, 'argv', ['corrigeer_harmonie.py']):
+                with self.assertRaises(SystemExit) as error:
+                    correction.main()
+            self.assertEqual(error.exception.code, 2)
+            self.assertEqual(report.read_text(), 'bestaand rapport')
 
     def test_invalid_beam(self):
         with self.assertRaises(ValueError):
