@@ -42,6 +42,7 @@ import pretty_midi
 import torch
 import json
 import re
+import shutil
 from music21 import (bar, chord, clef, dynamics, expressions, instrument, interval, key, layout, metadata, meter,
                      note,
                      pitch, spanner, stream, tempo)
@@ -58,12 +59,6 @@ NICE = [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64]  # noteerbare lengtes in raste
 DYNAMICS = ["pp", "p", "mp", "mf", "f", "ff"]  # relatief: de mediane aanslagsterkte van het stuk = mf
 DYN_STEP = 10  # velocity-verschil per dynamiekstap
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s  %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[logging.FileHandler(LOG), logging.StreamHandler(sys.stdout)],
-)
 log = logging.getLogger(__name__)
 
 
@@ -82,7 +77,8 @@ class Transcriber:
 
     def __call__(self, mp3: Path, raw_path: Path):
         if self.model_name == "transkun":
-            subprocess.run([str(DIR / ".venv/bin/transkun"), "--device", self.device, str(mp3), str(raw_path)],
+            executable = shutil.which("transkun") or str(Path(sys.executable).parent / "transkun")
+            subprocess.run([executable, "--device", self.device, str(mp3), str(raw_path)],
                            check=True, capture_output=True, text=True)
         else:
             from piano_transcription_inference import sample_rate
@@ -1074,9 +1070,10 @@ def clean(mp3: Path, raw_path: Path, args):
             )
 
         if getattr(args, "save_parts", False):
-            mp3_out = DIR / "mp3_delen" / mp3.stem
+            parts_dir = getattr(args, "parts_dir", None)
+            mp3_out = (parts_dir / "mp3" if parts_dir else DIR / "mp3_delen") / mp3.stem
             split_audio_file(mp3, sections, mp3_out, labels)
-            xml_out = DIR / "midi_delen" / mp3.stem
+            xml_out = (parts_dir / "midi" if parts_dir else DIR / "midi_delen") / mp3.stem
             xml_out.mkdir(parents=True, exist_ok=True)
             for s_info in sections_info:
                 s_xml = xml_out / f"{s_info['label']}.musicxml"
@@ -1118,8 +1115,14 @@ def clean(mp3: Path, raw_path: Path, args):
 
 
 def main():
+    global RAW, OUT
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("files", nargs="+", type=Path)
+    ap.add_argument("--raw-dir", type=Path, default=RAW)
+    ap.add_argument("--output-dir", type=Path, default=OUT)
+    ap.add_argument("--parts-dir", type=Path)
+    ap.add_argument("--log", type=Path, default=LOG)
+    ap.add_argument("--raw-only", action="store_true", help="bewaar uitvoering zonder notatiebewerking")
     ap.add_argument("--model", choices=["transkun", "bytedance"], default="transkun")
     ap.add_argument("--grid", type=int, default=0, help="onderverdelingen per beat: 2 = 8sten, 4 = 16den, 3 = triolen (0 = automatisch)")
     ap.add_argument("--split", type=int, default=60, help="basis-toonhoogte voor de handverdeling (60 = centrale C)")
@@ -1139,26 +1142,36 @@ def main():
     ap.add_argument("--force", action="store_true", help="alles opnieuw maken (ook de ruwe transcriptie)")
     ap.add_argument("--reclean", action="store_true", help="alleen stap 2 opnieuw doen, ruwe transcriptie hergebruiken")
     args = ap.parse_args()
-
-    RAW.mkdir(exist_ok=True)
-    OUT.mkdir(exist_ok=True)
+    if args.reclean and (args.force or args.raw_only):
+        ap.error("--reclean kan niet samen met --force of --raw-only")
+    RAW, OUT = args.raw_dir, args.output_dir
+    args.log.parent.mkdir(parents=True, exist_ok=True)
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(message)s",
+                        handlers=[logging.FileHandler(args.log), logging.StreamHandler(sys.stdout)])
+    RAW.mkdir(parents=True, exist_ok=True)
+    if not args.raw_only:
+        OUT.mkdir(parents=True, exist_ok=True)
     device = pick_device()
     log.info("=== Start: %d bestanden, model=%s, device=%s, grid=%s, split=%d, maat=%s ===",
              len(args.files), args.model, device, args.grid or "auto", args.split, args.meter or "auto")
-    transcribe = Transcriber(args.model, device)
+    transcribe = None
 
     ok = skip = fail = 0
     for mp3 in args.files:
         raw_path = RAW / f"{mp3.stem}.{args.model}.mid"
-        if (OUT / f"{mp3.stem}.musicxml").exists() and not (args.force or args.reclean):
+        if (raw_path.exists() if args.raw_only else (OUT / f"{mp3.stem}.musicxml").exists()) and not (args.force or args.reclean):
             skip += 1
             continue
         log.info("-> %s", mp3.stem)
         t0 = time.time()
         try:
             if not raw_path.exists() or args.force:
+                if args.reclean:
+                    raise FileNotFoundError(f"Ruwe MIDI ontbreekt bij --reclean: {raw_path}")
+                if transcribe is None:
+                    transcribe = Transcriber(args.model, device)
                 transcribe(mp3, raw_path)
-            info = clean(mp3, raw_path, args)
+            info = {"raw_midi": str(raw_path)} if args.raw_only else clean(mp3, raw_path, args)
             log.info("   OK: %s, %.0fs", ", ".join(f"{k}={v}" for k, v in info.items()), time.time() - t0)
             ok += 1
         except Exception as e:  # één mislukking mag de rest niet stoppen
@@ -1166,7 +1179,8 @@ def main():
             fail += 1
 
     log.info("=== Klaar: %d omgezet, %d overgeslagen (bestond al), %d mislukt ===", ok, skip, fail)
+    return 1 if fail else 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

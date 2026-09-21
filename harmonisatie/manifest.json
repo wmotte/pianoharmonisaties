@@ -1,0 +1,240 @@
+{
+  "version": "gekozen-basisversie-1",
+  "model_sha256": "a86dd7cbcabb6711a4e14f31f10e665f8b786fac43320702895c1a5033ef353e",
+  "source_model_sha256": "fb04dbe01c03b22e55be9fdc873a4b8457d8d522bda69a1d3836fadfe5406b00",
+  "model_packaging": "Only source_path metadata and cadence_source_hashes removed. Musical parameters and source identities preserved.",
+  "selection": "Baseline corresponding to B in the three-psalm temporal-transition comparison.",
+  "example_origin": "Existing generated arrangements; no reference performances or new generation.",
+  "examples": [
+    {
+      "psalm": 6,
+      "variant": "baseline",
+      "files": {
+        "voorbeelden/psalm_06.mid": "e88d0b701acf47cf5c9446ad11053088161164df21633444f02e3ec16de54d7d",
+        "voorbeelden/psalm_06.musicxml": "fdbe36fffdd509cfae88df9cf69049ed31b0abaa33c33acc591179596978e34c",
+        "voorbeelden/psalm_06.pdf": "590721d5716d4364da89aade367760b0f3eafacc72c1ef5e2c8ecf2ee7fcdd82",
+        "voorbeelden/psalm_06.melodie.json": "d830dd37981f594dde0731b76579d462fdb3f362f963c311103eb1b296c20220"
+      },
+      "existing_export_checks": {
+        "midi_checks": {
+          "melody_exact_after_export": true,
+          "all_notes_exact_after_export": true,
+          "no_dangling_notes": true,
+          "pedal_released_per_channel": true,
+          "pedal_released": true,
+          "ticks_per_beat": 960,
+          "note_count": 124,
+          "tempo_events": 1
+        },
+        "notation_checks": {
+          "all_notes_exact_after_export": true,
+          "melody_voice_exact_after_export": true,
+          "notes": 124,
+          "staves": 2,
+          "measures": 20,
+          "key_signature_sharps": 1,
+          "structural_timing": true
+        }
+      },
+      "training_group_excluded": true
+    },
+    {
+      "psalm": 16,
+      "variant": "baseline",
+      "files": {
+        "voorbeelden/psalm_16.mid": "9b494983a7de11ed0ac47958b0c27d2026748ec93d06861c4e060b2ff0b021a3",
+        "voorbeelden/psalm_16.musicxml": "e04c7ea737f2bc94518025198cce2120561bea42939079246c632325406de92f",
+        "voorbeelden/psalm_16.pdf": "ff0e6aa9c1892bc16d2967efeef28511839b4cdc326cd3b023eed6f726c80a76",
+        "voorbeelden/psalm_16.melodie.json": "f0b4382dca7f634e54356d13726bd2c746a4d3b8bcfd922f93b9bff997d15ee7"
+      },
+      "existing_export_checks": {
+        "midi_checks": {
+          "melody_exact_after_export": true,
+          "all_notes_exact_after_export": true,
+          "no_dangling_notes": true,
+          "pedal_released_per_channel": true,
+          "pedal_released": true,
+          "ticks_per_beat": 960,
+          "note_count": 183,
+          "tempo_events": 1
+        },
+        "notation_checks": {
+          "all_notes_exact_after_export": true,
+          "melody_voice_exact_after_export": true,
+          "notes": 183,
+          "staves": 2,
+          "measures": 28,
+          "key_signature_sharps": 0,
+          "structural_timing": true
+        }
+      },
+      "training_group_excluded": true
+    },
+    {
+      "psalm": 49,
+      "variant": "baseline",
+      "files": {
+        "voorbeelden/psalm_49.mid": "b4d803b2bb767d67082c928fc21ea5a2f9b09ba9cddc15bfac1218482a21c184",
+        "voorbeelden/psalm_49.musicxml": "4b11c1cc3c5bd9a2bd9453c3f38fc90bdd79a9b83a7941167c0adcc6a2162997",
+        "voorbeelden/psalm_49.pdf": "cb8a64e0b6c012828dae5ee7e87ac0b7ef513f6f5ec5d416f8b2dfa89f08ab58",
+        "voorbeelden/psalm_49.melodie.json": "8e8d15a36d194af4b8767ad4b8efce16ca88e3a4f0b6400fbc6683a7eec5d024"
+      },
+      "existing_export_checks": {
+        "midi_checks": {
+          "melody_exact_after_export": true,
+          "all_notes_exact_after_export": true,
+          "no_dangling_notes": true,
+          "pedal_released_per_channel": true,
+          "pedal_released": true,
+          "ticks_per_beat": 960,
+          "note_count": 233,
+          "tempo_events": 1
+        },
+        "notation_checks": {
+          "all_notes_exact_after_export": true,
+          "melody_voice_exact_after_export": true,
+          "notes": 233,
+          "staves": 2,
+          "measures": 35,
+          "key_signature_sharps": 1,
+          "structural_timing": true
+        }
+      },
+      "training_group_excluded": true
+    },
+    {
+      "psalm": 61,
+      "variant": "baseline",
+      "files": {
+        "voorbeelden/psalm_61.mid": "dec7a9c8b2fceaec391b2cc20e782e4acafacba621c703da6fbbcd7974d259e5",
+        "voorbeelden/psalm_61.musicxml": "f104f12a000ff95f2e7a821dc5cc426f6c99d9b51b1a8556e7f9906f27e950d7",
+        "voorbeelden/psalm_61.pdf": "22dea8265df936a39f9db623aef302b139c901a2a43e3f8ed37600d6b812cea4",
+        "voorbeelden/psalm_61.melodie.json": "c52ab17868a690129fdc5fb8847f29cacb179b7ea0f3f25b60d24bf52ca2347e"
+      },
+      "existing_export_checks": {
+        "midi_checks": {
+          "melody_exact_after_export": true,
+          "all_notes_exact_after_export": true,
+          "no_dangling_notes": true,
+          "pedal_released_per_channel": true,
+          "pedal_released": true,
+          "ticks_per_beat": 960,
+          "note_count": 110,
+          "tempo_events": 1
+        },
+        "notation_checks": {
+          "all_notes_exact_after_export": true,
+          "melody_voice_exact_after_export": true,
+          "notes": 110,
+          "staves": 2,
+          "measures": 17,
+          "key_signature_sharps": 1,
+          "structural_timing": true
+        }
+      },
+      "training_group_excluded": true
+    },
+    {
+      "psalm": 84,
+      "variant": "baseline",
+      "files": {
+        "voorbeelden/psalm_84.mid": "27e3986f34a658aec8b55e5c33f2bbfe0cd7b6366da3f0f4d58d4b2f66fa28ec",
+        "voorbeelden/psalm_84.musicxml": "8ced15c6e4e517c062f4c176dbaa30013e7a1c0a23d0d9543d08594dc5f4c95f",
+        "voorbeelden/psalm_84.pdf": "fb93b8785b855b07e4c79db8501b8e47639751a2c2aab54d38e74aece89bbd28",
+        "voorbeelden/psalm_84.melodie.json": "301b8808b23d7dde31df5b42a53dbfafec88f33e1cc63785fbb4610118650e58"
+      },
+      "existing_export_checks": {
+        "midi_checks": {
+          "melody_exact_after_export": true,
+          "all_notes_exact_after_export": true,
+          "no_dangling_notes": true,
+          "pedal_released_per_channel": true,
+          "pedal_released": true,
+          "ticks_per_beat": 960,
+          "note_count": 195,
+          "tempo_events": 1
+        },
+        "notation_checks": {
+          "all_notes_exact_after_export": true,
+          "melody_voice_exact_after_export": true,
+          "notes": 195,
+          "staves": 2,
+          "measures": 29,
+          "key_signature_sharps": 2,
+          "structural_timing": true
+        }
+      },
+      "training_group_excluded": true
+    }
+  ],
+  "implementation_sha256": {
+    "__init__.py": "0d4e50378e3c6148db2a93423546754d9d9dc7a9a6ab5f64f530e1c258bacd73",
+    "alignment.py": "c2f808f5ae23fd1d8cc9b40123076582d0d97f272cdaa70b7f46c5c06be8db79",
+    "annotations.py": "c0dcd392aad6c3c5b426050708b53ff6447ca5f4f22862c22fabb8a74397b8c5",
+    "aria.py": "6b655d770d2b9ff62f9ecbeb1d7f1cf2bc305d1e10236f1f8a504bc011f1ed6c",
+    "audit.py": "3245549c2991a089936598a25e4606b242e51c2858cd7eb32dc14963dce02bce",
+    "chorale_arpeggio_evidence.py": "b5a74fff7d421fd1494921f54c5612b79d93cc95d5eafdadfb73ee772b857733",
+    "chorale_bass_density.py": "ea8c850781cba285aac2d5f66582f5bbcfd974774c53363751c35c98dca56177",
+    "chorale_bass_plan.py": "81a3161ca2e729358f533c7679b20ccf11ce73df2ab8ad9fb8bc8e1723361994",
+    "chorale_boundaries.py": "b6e2d670932ebd7ac826dd529e9f66487b56c7cae59fab8a63766210f1c4a697",
+    "chorale_boundary_links.py": "76d6fc218e7f23012c01ed57ef11b63c92d2e00d574f7214b4ce2d92bcd77ae9",
+    "chorale_cadence_contracts.py": "b6ef94cebfb6bed39eaede146d2543063e3cf05f4bc3d5837ee25d2f28dd6ae6",
+    "chorale_cadences.py": "2ce4c4adbf01a5f0f0022282c646fe8e2c9518c0eaeb2a426eba0b4c962dca9e",
+    "chorale_chromatic.py": "1d025a9490dedf8e1601c68855feee419aad567356465cdb8899f3efad9ef4b3",
+    "chorale_continuity.py": "820e8c1cec266f4580ccb2e6203f69190664f84b0baa0c0af614e399b0f17132",
+    "chorale_corpus.py": "36cef7de298fb5aa0d1eb42fe2b9c195d2e67fb44eb67f6e3c2d37dacda426e0",
+    "chorale_dissonance.py": "5645e14d66c1dd6995b6a97a7ffdf41be587affe1fdaf1f7ef58cbcc8c621aac",
+    "chorale_expansion.py": "62e1a60f1547ca2818df9d1226807bb39a8a439d76d20dcce1899c98e779c96f",
+    "chorale_figures.py": "26f112851da95238218dfd81ee47745e7efc72454ed99e6b631181422fb022ae",
+    "chorale_functions.py": "9273df856c4904cd31779c30969c590851e14d40741c8753a679cb77a011f51a",
+    "chorale_generate.py": "769cfcec1d09d63c7da6f2c673a430b3291bb16fe3a448a32caafbb7e403bfaf",
+    "chorale_gestures.py": "1895e96552fbdbec62b9a62115c8b74f462e7f6467186d7da9e49b74a0a261d3",
+    "chorale_hand_plan.py": "22c1d520fb5eeb057b0fe62e64f39fbe7af067b6ae7eecec8aa09c0eecb17b65",
+    "chorale_harmony_audit.py": "947fac8885410cdbc789a70457969fb0414b80b3907562c9a82f661e617a89b7",
+    "chorale_harmony_evidence.py": "f0dfb9d147ca6bbcf86f288eb1818c6adf97bd9c8adebcc4ab51c0f5a897612e",
+    "chorale_inner_line.py": "ad3318235778d51224fc4d031a988c2008a8e50f5c9032fc30534ea528c85d3a",
+    "chorale_inner_pair.py": "55abc2358e2960f50b1a466e876242d0514bf2b5218b718ff26b50078480c0e4",
+    "chorale_lab.py": "ace2aefd1168701c0309a355ec88d378fd64b9eaf95c1fe6711e03fcfd9fc482",
+    "chorale_model.py": "94e951121a4aea02a91902c27d7d09088ec454d404f0622ff9eb3664ab8b7c1b",
+    "chorale_motion.py": "b9b318059b1572a9f4b213e040e29b08483ba8cca8718cdec48af0ed72fc1b32",
+    "chorale_neural_review.py": "5e9803a790b8ddb48b40a4b15a218bcc9b3b808797e692cf948bc7f49b2f3136",
+    "chorale_obligations.py": "5205cc4bc0fd7327fbbbd72f24a5c2c11e75a431eb3803b28a5df56b6458bf55",
+    "chorale_octave_register.py": "c6d1d319cca1cfea45e5e95f77cde4a103b5c5ccc1046059e661d0158e36d54c",
+    "chorale_phrase_transfer.py": "52839dfa2beb5c25e476c397d67721bc67becccca16593fc8898798da62b0a2d",
+    "chorale_phrases.py": "3e1bf67a7e684bbfcc18793175e0961eb17cf775b533c77e6e72da826f00a25c",
+    "chorale_portfolio.py": "337ed52cfbf25360ffb2a7ccd7430e584555167c4a3066dc360036344c8b268e",
+    "chorale_priority_paths.py": "446cff5a1a7cdd615d51250319bd38b9d3833d0ffb3c465c2c0fce6e77803d3c",
+    "chorale_refine.py": "3403431172ae4d4f9adb08343de9df4b2bbbf11dac12b2110e7a7d1846681bad",
+    "chorale_register.py": "d4f520dd92ed08bcfec02a0c2830603a5760f4e84e16a1f3fe2f0d372755a7e0",
+    "chorale_resolution.py": "967b746a7e2f7ba96d2b7fe286c1ee193adb933a64827811f18aef72507998a7",
+    "chorale_resolution_contracts.py": "b76f40cb65802573047aef434727b8cff7a8e62fd0590edf5d69754e4174e3c6",
+    "chorale_rest_corpus.py": "28e4c11dd4506e4a578a2159dc67db030ca3638a74900ba5bef1e6a98a4079d1",
+    "chorale_retrieval.py": "66a5f7fc3dd2f113dd54b35916d42375bdf8139dabf9ef395b8b20c09674dc79",
+    "chorale_review.py": "2e644aad06fb7e402f3c393acda6fb456862458e49e44cd6d819b80beb4d4e13",
+    "chorale_rhythm_plan.py": "412bdc99a3bd90f16a502c325b863011ecf00805bbc016fcb7e6f2397793216d",
+    "chorale_search_gates.py": "1a433b4eb860c3665929b38c6cfedd245b876d0e55e3a956b2f54ca2e3139d87",
+    "chorale_source_protection.py": "692e73a79d3d44753e756ca34246115da426b1e47465ebe33fd14d55a19f3d45",
+    "chorale_source_spans.py": "cbc6ff4b155071a69f03d8fd21f83a51a40bc250761de13b8c7c55e70e11f6d8",
+    "chorale_suspensions.py": "98c777e09edccf757b50748906eb5d4bd3b075821db787b9f71883cbb48d76ee",
+    "chorale_targets.py": "658cfb4bb55d383d8ba9a578d7f77b553260d41d548be65e49e5b98cd4b5b921",
+    "chorale_terminal.py": "5ed1eba4b926801cfdc4696fbf018b56536c84db9f6d1b03940007d2d4b9a4dc",
+    "chorale_texture.py": "70665079c31940c511d862294362e7d6e5d918990fb4ca5f3b7da90d15cbe4cb",
+    "chorale_uncertain_harmony.py": "5035c2d5dbe10a873d411fac3c66cf3eedb5e7705129f35ad052444d8b06f1f7",
+    "cli.py": "684201638f3520f49d255579868484289700ec5e9d376156e916ee253369344b",
+    "composition.py": "a0d55b76c0e672cfae4a4c3947fc4124b2111d07377cbf0ca291269df28c8888",
+    "corpus.py": "c304dfe64254824c98a492f59f3e6c0092390351258c2ff962adeed77adfe029",
+    "engine.py": "b96c0b6dfca61d20daa3aa96873d46097f4ed27478ae07183cd4ff87fa2577d4",
+    "evaluation.py": "e3ece28418e2afec7f151a433a55480a6de5a8b3550e4b9d1999a5d7812f13d7",
+    "genevan_alignment.py": "c0de6bf4814793f6711f756e68ff83676bd6da8693960b6f573a4259cda35c4c",
+    "midi.py": "8a290af9ed63e4d59c1fa3086fa777e5a99d9bb1c16f85ed1321c4c930c46595",
+    "model.py": "3b6cc451a54db434265992845a8db46c99bcf8e5a1511d6cd888443149fda816",
+    "notation.py": "fe46e706097f50d42a9508c02838d158362b3315cd227c22bea9b59ec6f04ee7",
+    "prelude.py": "5aaa9c0cb3a6a4a798f0834ff49a6d9b8c5df650d52bdca03464388c31d65e02",
+    "profile.py": "ea97b569111370431b2df937e714e3af33078d181274a58a914b55270176e534",
+    "review.py": "c526ac3d0f55faeec112e4b4cd5a0c810fdfc1a818e8cab7c58440becd96f6fc",
+    "score_style.py": "ebd2a4f6774f3e47bcb26d38b3a63bd183fe2b0161dd2ad666579ac45a6372b8",
+    "timing.py": "301be4f529a852db5b812189e0f9f4582ca0c5a11af58e3cfc7c46d98382f540",
+    "transcription_timing.py": "9d06bed56e395b0a44a60bcca9ed13caadc56065261ea96c21d0d816549fc882"
+  },
+  "launcher_sha256": "3c5fd9acc8e4c50bc08c3351d24d1d6bb5da1992f298b3beadbaf06060638684"
+}

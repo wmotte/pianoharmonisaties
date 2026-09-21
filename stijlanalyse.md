@@ -6,6 +6,38 @@ samen ruim 5 uur muziek). De cijfers komen uit `analyse_stijl.py`; de kwalitatie
 aan de hand van MuseScore-renders van o.a. Psalm 85, Psalm 73, 'Mijn Jezus, ik hou van U', 'I need Thee every hour' 
 en 'U zij de glorie'.
 
+## Actualisatie: secties, maat en tempo
+
+De onderstaande kwantitatieve analyse is een historische momentopname en is niet
+volledig reproduceerbaar uit de huidige conversies. Het oude script nam alleen
+de eerste maatsoort en het eerste tempo over. Bovendien waren de sectiegrenzen
+voor onder meer Psalm 37 en Psalm 85 inmiddels gewijzigd. De oude percentages
+zijn daarom beschrijvende hypothesen, geen gevalideerde trainingsdoelen.
+
+De huidige geconverteerde partituren geven deze expliciete vormdelen:
+
+| Bron | Voorspel | Koraal | Naspel |
+|---|---|---|---|
+| Psalm 37 | 3/4, ♩ = 66 | 4/4, ♩ = 112 | 4/4, ♩ = 108 |
+| Psalm 85 | 4/4, ♩ = 83 | 3/2, ♩ = 108 | 4/4, ♩ = 86 |
+
+Dit zijn transcriptiegegevens, geen controle van een gedrukte uitgave. Het tempo
+is steeds omgerekend naar kwartnoten per minuut. In 3/2 is ♩ = 108 gelijk aan
+𝅗𝅥 = 54. Een groter BPM-getal bewijst dus niet zonder meer een snellere ervaren puls.
+
+`python -m harmonizer.score_style` meet de actuele 49 partituren opnieuw, met
+bronhashes, maat- en tempokaarten en bezetting inclusief aangehouden noten.
+Alleen expliciet ingedeelde stukken uit de trainingsset leveren sectievoorbeelden
+voor de generator. Dat zijn momenteel Psalm 37 en Psalm 85, zes vormdelen samen.
+De overige sectiegrenzen blijven onbeslist. Gevonden frasegrenzen zijn voorstellen.
+De nieuwe privé-uitvoer staat in `private_data/harmonizer/score-style-v2.json`.
+
+Aanslagen met drie noten bewijzen geen driestemmige zetting: een vierde stem kan
+nog klinken. De uitspraken hieronder over aantallen stemmen mogen daarom niet
+als voorschrift dienen. Voor het huidige harmonisatieonderzoek is wisselende bezetting toegestaan,
+ook in het koraal. Vier zelfstandige stemmen blijven een mogelijke zetting,
+maar geen verplicht aantal gelijktijdige tonen.
+
 ## 0. Methode en betrouwbaarheid
 
 | Vraag | Middel |
@@ -38,8 +70,8 @@ drieklankgebaseerd, en de grootste foutbron is de audio-transcriptie zelf, niet 
 | Kenmerk | Bevinding |
 |---|---|
 | Lengte los stuk | mediaan 98 maten ≈ 4 minuten (2:18 – 13:30) |
-| Tempo | mediaan 86 bpm; alles tussen 65 en 112 (♩); nooit sneller, nooit langzamer |
-| Maatsoort | 4/4 (33×) of 3/4 (16×); geen andere maatsoorten |
+| Tempo | Historische begintempo’s: mediaan 86 kwartnoten/min. Sectietempo’s verschillen; deze spreiding is geen harde grens. |
+| Maatsoort | Historische telling van alleen beginmaten: 4/4 (33×), 3/4 (16×). De actuele secties bevatten ook 3/2 en maatwisselingen. |
 | Toonsoort | C, D, G, F, g, e, d, Bes, A, c, a — **nooit meer dan 3 voortekens**, en driekwart van de tijd 0–2 |
 | Modus | 80 % majeur, 20 % mineur (Geneefse psalmen: modaal/aeolisch) |
 | Modulatie | de helft van de losse stukken moduleert minstens één keer (zie §7) |
@@ -109,7 +141,7 @@ koraal is laag: gemiddeld rond gis' (68), hoogste noot mediaan g'' (79). Hij zet
 
 **Zetting.**
 - Rechterhand: melodie + 1 noot (gemiddeld 1,5 noten per aanslag); linkerhand: bijna uitsluitend één
-  basnoot (1,05). De typische zetting is **driestemmig**, niet vierstemmig-koraalachtig. Volle akkoorden
+  basnoot (1,05). De oude aanslagmeting suggereerde een dunne zetting, maar stelde het aantal zelfstandige klinkende stemmen niet vast. Volle akkoorden
   (≥4 noten) zijn de uitzondering en komen op regelbegin/-einde.
 - Linkerhand-octaven: 16 % van de basaanslagen (0–67 % per stuk); vooral in het laatste couplet en het
   naspel, om zwaarte te geven.
@@ -294,7 +326,7 @@ majeur-slotakkoord, uitgehouden op het pedaal.
   een consequente legato-aanslag, geen staccato of portato, ook niet in de bas.
 - **Dynamiek**: het relatieve niveau blijft tussen mp en f; pp en ff komen alleen als korte uitschieters
   voor (< 4 % van de maten). De climax ligt in het voorspel/tussenspel, het slot is het zachtste punt.
-- **Agogiek**: tempo binnen een stuk stabiel (Viterbi-maatvolger vindt zelden onregelmatige maten);
+- **Agogiek**: de eerdere conclusie over een stabiel tempo gold niet voor alle vormdelen; expliciete sectietempowisselingen moeten afzonderlijk worden verwerkt;
   vrijheid zit in fermates (regeleinden), een korte adem vóór een nieuw couplet en het slot-ritenuto.
 - **Gebroken akkoorden** (arpeggio's): 1–17 % van de akkoorden, meestal het eerste akkoord van een frase in
   voor- of naspel; nooit systematisch, nooit als begeleidingspatroon.
@@ -303,7 +335,7 @@ majeur-slotakkoord, uitgehouden op het pedaal.
 
 **Altijd (≥ 95 %)**
 - Vorm voorspel → koraal → (tussenspel → koraal) → naspel; elk stuk eindigt met een naspel.
-- Melodie in de bovenstem van de rechterhand, in zangligging; koraal driestemmig gezet.
+- Melodie in de bovenstem van de rechterhand, in zangligging; het aantal zelfstandige stemmen vereist aanvullende controle.
 - Fermates op de regeleinden van het koraal; harmonische puls 2 akkoorden per maat.
 - Toonsoort met 0–3 voortekens; tempo 65–112.
 - Grondliggings-harmonie op wortelbas; diatonische drieklanken als basis.
@@ -330,11 +362,11 @@ majeur-slotakkoord, uitgehouden op het pedaal.
 - Drie coupletten; tussenspel langer dan het voorspel.
 - Slot op de dominant (open einde, 1×) of in mineur zonder picardische terts.
 
-**Nooit**
+**Niet aangetroffen volgens de historische analyse, geen harde uitsluitingen**
 - Verminderde septiem-, halfverminderde, alterered of jazz-akkoorden (m7♭5 0,3 %, dim7 0,07 % = ruis).
 - Chromatische halve-toon-modulatie als 'gear change'; modulatie midden in een couplet.
 - Melodie in tenor of bas; koraal een octaaf hoger dan de zangligging.
-- Meer dan 3 voortekens; andere maatsoorten dan 4/4 en 3/4; tempo boven 112 of onder 65.
+- De oude grenzen voor voortekens, maatsoorten en tempo zijn geen uitsluitingsregels. Maat- en tempowisselingen binnen stukken zijn wel aanwezig.
 - Droog (ongepedaliseerd) spel, staccato-begeleiding, Alberti-bas of ostinato-patronen.
 - Virtuoze uitbarstingen: ff-slot, hoog slotakkoord, gebroken slotakkoord, extra slotnoot na het
   slotakkoord.

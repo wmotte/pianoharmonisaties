@@ -1,0 +1,473 @@
+{
+  "notes": [
+    {
+      "pitch": 72,
+      "start": 2.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 71,
+      "start": 4.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 69,
+      "start": 6.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 67,
+      "start": 8.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 64,
+      "start": 9.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 67,
+      "start": 10.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 67,
+      "start": 11.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 65,
+      "start": 12.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 65,
+      "start": 13.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 64,
+      "start": 14.0,
+      "duration": 3.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 64,
+      "start": 18.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 62,
+      "start": 20.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 60,
+      "start": 21.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 67,
+      "start": 22.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 67,
+      "start": 24.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 69,
+      "start": 26.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 69,
+      "start": 27.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 71,
+      "start": 28.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 67,
+      "start": 29.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 72,
+      "start": 30.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 71,
+      "start": 32.0,
+      "duration": 4.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 72,
+      "start": 36.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 72,
+      "start": 38.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 72,
+      "start": 39.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 67,
+      "start": 40.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 69,
+      "start": 42.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 67,
+      "start": 44.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 65,
+      "start": 45.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 64,
+      "start": 47.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 62,
+      "start": 49.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 64,
+      "start": 50.0,
+      "duration": 3.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 60,
+      "start": 54.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 62,
+      "start": 56.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 65,
+      "start": 58.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 64,
+      "start": 60.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 69,
+      "start": 61.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 69,
+      "start": 62.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 68,
+      "start": 63.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 69,
+      "start": 64.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 72,
+      "start": 65.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 71,
+      "start": 66.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 69,
+      "start": 68.0,
+      "duration": 3.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 64,
+      "start": 72.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 65,
+      "start": 74.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 62,
+      "start": 76.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 60,
+      "start": 77.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 67,
+      "start": 80.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 65,
+      "start": 82.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 64,
+      "start": 83.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 65,
+      "start": 84.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 67,
+      "start": 85.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 69,
+      "start": 86.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 67,
+      "start": 88.0,
+      "duration": 4.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 64,
+      "start": 92.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 67,
+      "start": 94.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 69,
+      "start": 96.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 64,
+      "start": 98.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 67,
+      "start": 99.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 69,
+      "start": 100.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 72,
+      "start": 101.0,
+      "duration": 1.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 71,
+      "start": 102.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 69,
+      "start": 104.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 68,
+      "start": 106.5,
+      "duration": 1.5,
+      "velocity": 72,
+      "role": "melody"
+    },
+    {
+      "pitch": 69,
+      "start": 108.0,
+      "duration": 2.0,
+      "velocity": 72,
+      "role": "melody"
+    }
+  ],
+  "length": 111.0,
+  "meters": [
+    [
+      0,
+      4,
+      4
+    ]
+  ],
+  "phrases": [
+    18.0,
+    36.0,
+    54.0,
+    72.0,
+    92.0,
+    111.0
+  ],
+  "tonic": 9,
+  "mode": "minor",
+  "bpm": 103.0,
+  "fermatas": [],
+  "title": "Psalm 16, bronvariant"
+}

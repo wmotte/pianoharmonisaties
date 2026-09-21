@@ -1,3 +1,4 @@
+private_data
 .DS_Store
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -217,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Lokale tests, ontwikkelrapporten en onderzoek voor de harmoniser.
+/ontwikkeling_harmonisatie/

@@ -4,6 +4,11 @@ Scripts die de publieke pianovideo's van [Gerrit Koele](https://www.youtube.com/
 omzetten naar mp3 en vervolgens naar leesbare, speelbare bladmuziek (MusicXML voor MuseScore) plus MIDI.
 Zie [stijlanalyse.md](stijlanalyse.md) voor een uitgebreide karakterisering van de muzikale stijl en signatuur van Gerrit Koele.
 
+Je kunt met deze repository ook **nieuwe pianoharmonisaties laten maken**.
+Lever een losse psalmmelodie aan: de [harmoniser](#psalmen-harmoniseren) schrijft
+er een baslijn en begeleidende stemmen bij, op basis van patronen uit Koeles
+spel en muzikale regels voor harmonie en stemvoering.
+
 ```
 download_koele.sh      stap 0: YouTube -> mp3/
 transcribe_midi.sh     stap 1+2: mp3/ -> midi_raw/ (ruwe transcriptie) -> midi/ (opgeschoonde partituur)
@@ -13,6 +18,49 @@ controleer_harmonie.py stap 4: formele controle van de zettingen -> midi_control
 corrigeer_harmonie.py  stap 5: binnenstemmen herzetten -> midi_gecorrigeerd/ (gewijzigd groen, rest rood)
 hypercorrectie.py     stap 6: bas en binnenstemmen herzetten met vaste melodie -> midi_hypercorrectie/
 ```
+
+## Psalmen harmoniseren
+
+De harmoniser maakt zelf een nieuwe zetting bij een melodie die je opgeeft,
+bijvoorbeeld een Geneefse psalm. Je hoeft alleen de melodienoten, toonsoort,
+maat en frasegrenzen aan te leveren. Het programma kiest de akkoorden, baslijn
+en binnenstemmen en schrijft die uit als pianopartituur. De opgegeven melodie
+blijft daarbij intact.
+
+Het meegeleverde model bevat begeleidingsfiguren uit transcripties van Gerrit
+Koeles pianospel: akkoordliggingen, basbewegingen, ritmische patronen en
+cadensvoorbeelden. De harmoniser past deze figuren toe op de nieuwe melodie en
+zoekt naar passende verbindingen, rekening houdend met stemvoering en
+speelbaarheid. Zo ontstaat een eigen harmonisatie die door Koeles stijl is
+geïnspireerd. Er hoeft geen opname of bestaande begeleiding van de ingevoerde
+melodie beschikbaar te zijn.
+
+In [harmonisatie](harmonisatie/HARMONISATIE.md) staan het programma, het model en
+vijf complete voorbeelden van zulke gegenereerde harmonisaties: Psalm 6, 16,
+49, 61 en 84. Elk voorbeeld heeft een PDF, MusicXML voor MuseScore, MIDI en de
+bijbehorende melodie-invoer. Je kunt de uitvoer afspelen of in MuseScore verder
+bewerken.
+De [uitleg over de harmonisatie](harmonisatie/HARMONISATIE.md) beschrijft de
+muzikale ideeën, de werking en de beperkingen van deze versie.
+
+Installeer de afhankelijkheden in een virtuele omgeving en start vanuit de
+hoofdmap, bijvoorbeeld met de melodie van Psalm 49:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements-harmonizer.txt
+.venv/bin/python harmonisatie/harmoniseer.py \
+  harmonisatie/voorbeelden/psalm_49.melodie.json \
+  --output harmonisatie/uitvoer/psalm_49 --complete --search exact
+```
+
+Het startscript kiest het meegeleverde model. De uitvoermap moet leeg zijn;
+de generator schrijft daar MIDI en MusicXML. De privéopnamen zijn voor dit
+gebruik niet nodig. Eigen melodieën en de optionele PDF-uitvoer via MuseScore
+staan toegelicht in de [gebruiksaanwijzing](harmonisatie/HARMONISATIE.md#zelf-gebruiken).
+
+Het model blijft experimenteel; de voorbeelden zijn gegenereerde zettingen,
+geen uitvoeringen van Gerrit Koele.
 
 ## Installatie
 

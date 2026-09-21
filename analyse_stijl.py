@@ -14,6 +14,7 @@ Per stuk:
 Uitvoer: stijlanalyse.json (alle cijfers) en een samenvatting op stdout.
 """
 import json
+import math
 import re
 import sys
 from collections import Counter, defaultdict
@@ -150,9 +151,12 @@ def analyse(xml_path: Path, raw_path: Path):
     measures_L = list(L.getElementsByClass(stream.Measure))
     n_bars = len(measures_R)
     ts = measures_R[0].timeSignature or R.recurse().getElementsByClass("TimeSignature")[0]
-    beats_per_bar = ts.numerator
+    from harmonizer.score_style import score_timeline, explicit_sections
+    timeline = score_timeline(s)
+    bar_beats = [max(1, math.ceil(m["length"])) for m in timeline["measures"]]
+    beats_per_bar = 4  # Only for normalized, low-confidence repetition detection.
     tempo_marks = list(R.recurse().getElementsByClass("MetronomeMark"))
-    bpm = tempo_marks[0].number if tempo_marks else None
+    bpm = tempo_marks[0].getQuarterBPM() if tempo_marks else None
 
     # toonsoort per maat (KeySignature -> Key via analyse van dat deel)
     key_by_bar, cur = [], None
@@ -198,7 +202,7 @@ def analyse(xml_path: Path, raw_path: Path):
     for mm in ch.getElementsByClass(stream.Measure):
         bi = mm.number - 1
         sounding = list(mm.recurse().getElementsByClass(chord.Chord))
-        for b in range(beats_per_bar):
+        for b in range(bar_beats[bi]):
             cand = [c for c in sounding if c.offset <= b < c.offset + c.quarterLength]
             if cand:
                 chords_by_beat[(bi, b)] = cand[-1]
@@ -223,14 +227,24 @@ def analyse(xml_path: Path, raw_path: Path):
         for el in mm.recurse().notes:
             if any(isinstance(e, expressions.Fermata) for e in el.expressions):
                 fermata_bars.add(mm.number - 1)
-    melody = [labels[(bi, b)]["high"] if (bi, b) in labels else np.nan for bi in range(n_bars) for b in range(beats_per_bar)]
-    sections = section_labels(feats, fermata_bars, melody, beats_per_bar)
+    # Four samples per bar only for legacy repetition detection, not duration.
+    melody = [labels.get((bi, min(bar_beats[bi]-1, int(j*bar_beats[bi]/4))), {}).get("high", np.nan)
+              for bi in range(n_bars) for j in range(4)]
+    split_path = DIR / "splits.json"
+    explicit = explicit_sections(timeline, xml_path.stem,
+        json.loads(split_path.read_text()) if split_path.exists() else {}, float(s.duration.quarterLength))
+    if explicit:
+        sections = [(sec["name"].lower(),
+                     sum(m["start"] < sec["start"] for m in timeline["measures"]),
+                     sum(m["start"] < sec["end"] for m in timeline["measures"])) for sec in explicit]
+    else:
+        sections = section_labels(feats, fermata_bars, melody, beats_per_bar)
     dyn_by_bar = {}
     for mm in measures_R:
         for d in mm.getElementsByClass("Dynamic"):
             dyn_by_bar[mm.number - 1] = d.value
     for name, i, j in sections:
-        labs = [labels[(bi, b)] for bi in range(i, j) for b in range(beats_per_bar) if (bi, b) in labels]
+        labs = [labels[(bi, b)] for bi in range(i, j) for b in range(bar_beats[bi]) if (bi, b) in labels]
         seq = []
         for l in labs:
             tag = l["deg"] + ("7" if l["name"] in ("dom7", "min7", "maj7", "m7b5", "dim7") else "") + \
@@ -253,6 +267,9 @@ def analyse(xml_path: Path, raw_path: Path):
         intervals = [b - a for a, b in zip(mel, mel[1:])]
         sec_stats.append(dict(
             name=name, start=i, end=j, bars=j - i,
+            boundary_source="explicit" if explicit else "inferred",
+            quarter_beats=sum(m["length"] for m in timeline["measures"][i:j]),
+            meters=[m for m in timeline["meters"] if timeline["measures"][i]["start"] <= m[0] < (timeline["measures"][j]["start"] if j < n_bars else float(s.duration.quarterLength))],
             frac8=float(np.mean([feats[b]["frac8"] for b in range(i, j)])),
             chord_size=float(np.mean([feats[b]["chord_size"] for b in range(i, j)])),
             rh_size=float(np.mean(rh_sizes)) if rh_sizes else 0, lh_size=float(np.mean(lh_sizes)) if lh_sizes else 0,
@@ -282,7 +299,7 @@ def analyse(xml_path: Path, raw_path: Path):
     for fb in sorted(fermata_bars):
         seq = []
         for bi in range(max(0, fb - 1), fb + 1):
-            for b in range(beats_per_bar):
+            for b in range(bar_beats[bi]):
                 l = labels.get((bi, b))
                 if l:
                     tag = l["deg"] + ("7" if l["name"] == "dom7" else "")
@@ -292,7 +309,7 @@ def analyse(xml_path: Path, raw_path: Path):
             cadences.append((seq[-2][0], seq[-1][0], seq[-1][1]))
 
     # bas: beweging
-    bass_seq = [labels[(bi, b)]["low"] for bi in range(n_bars) for b in range(beats_per_bar) if (bi, b) in labels]
+    bass_seq = [labels[(bi, b)]["low"] for bi in range(n_bars) for b in range(bar_beats[bi]) if (bi, b) in labels]
     moves = Counter()
     for a, b in zip(bass_seq, bass_seq[1:]):
         d = abs(b - a)
@@ -378,12 +395,12 @@ def analyse(xml_path: Path, raw_path: Path):
             med = np.median(per)
             rit_end = float(np.mean(per[-6:]) / med)  # > 1 = langzamer aan het slot
     # begin en slot
-    first_bar_chords = [labels[(0, b)] for b in range(beats_per_bar) if (0, b) in labels]
-    last_lab = [labels[(bi, b)] for bi in range(n_bars - 2, n_bars) for b in range(beats_per_bar) if (bi, b) in labels]
+    first_bar_chords = [labels[(0, b)] for b in range(bar_beats[0]) if (0, b) in labels]
+    last_lab = [labels[(bi, b)] for bi in range(n_bars - 2, n_bars) for b in range(bar_beats[bi]) if (bi, b) in labels]
     final = last_lab[-1] if last_lab else None
     final_seq = []
     for bi in range(max(0, n_bars - 4), n_bars):
-        for b in range(beats_per_bar):
+        for b in range(bar_beats[bi]):
             l = labels.get((bi, b))
             if l:
                 tag = l["deg"] + ("7" if l["name"] == "dom7" else "")
@@ -395,6 +412,8 @@ def analyse(xml_path: Path, raw_path: Path):
     ottavas = len(list(R.getElementsByClass("Ottava")))
 
     return dict(
+        source_sha256=__import__("hashlib").sha256(xml_path.read_bytes()).hexdigest(),
+        timeline=timeline,
         title=xml_path.stem, bars=n_bars, bpm=bpm, meter=f"{ts.numerator}/{ts.denominator}",
         keys=[str(k) for k in dict.fromkeys(str(k) for k in keys_bar)],
         key_changes=len({str(k) for k in keys_bar}) - 1,
