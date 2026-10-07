@@ -1,0 +1,26 @@
+#!/bin/sh
+# Weigert commits met privé-materiaal (bladmuziek, liedmappen, mailbijlagen). De repo is openbaar.
+# Actief via: git config core.hooksPath .githooks
+
+fout=0
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+
+for pad in $staged; do
+    case "$pad" in
+        muziekgroep_*/*|bariton/*|_prive/*|private_data/*)
+            echo "pre-commit: privé-map, niet committen: $pad"
+            fout=1
+            ;;
+        harmonisatie/voorbeelden/*)
+            ;;
+        *.pdf|*.mscz|*.mscx|*.eml|*.docx)
+            echo "pre-commit: bladmuziek/bijlage buiten harmonisatie/voorbeelden/, niet committen: $pad"
+            fout=1
+            ;;
+    esac
+done
+
+if [ "$fout" -ne 0 ]; then
+    echo "pre-commit: commit geweigerd (zie AGENTS.md: privédata hoort buiten git)."
+fi
+exit "$fout"

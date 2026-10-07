@@ -222,3 +222,10 @@ __marimo__/
 
 # Lokale tests, ontwikkelrapporten en onderzoek voor de harmoniser.
 /ontwikkeling_harmonisatie/
+
+# Prive bladmuziek om te oefenen (niet committen).
+/bariton/
+/muziekgroep_11_oct/
+
+# Lokale Claude Code-status.
+/.claude/scheduled_tasks.lock
