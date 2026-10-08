@@ -13,6 +13,8 @@
     <genCourtesyTimesig>0</genCourtesyTimesig>
     <lyricsMinDistance>1.2</lyricsMinDistance>
     <minNoteDistance>0.8</minNoteDistance>
+    <minHarmonyDistance>1</minHarmonyDistance>
+    <harmonyHarmonyDistance>1</harmonyHarmonyDistance>
     <lastSystemFillLimit>0.5</lastSystemFillLimit>
   </Style>
 </museScore>

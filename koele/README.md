@@ -3,6 +3,9 @@
 Gereedschap om liederen uit `bron/*.py` om te zetten naar MuseScore (`.mscz`) en PDF met een eigen,
 regelgecontroleerde pianobegeleiding. De liederen zelf staan in privémappen (`muziekgroep_<datum>/`, gitignored);
 werkwijze en stijlkeuzes staan in de skill `.agents/skills/koele-pianozetting/SKILL.md`.
+Gitaarakkoorden staan boven de bovenste pianobalk en volgen de eigen harmonisatie plus de werkelijk gezette
+bas (slashakkoorden bij omkeringen). Elke maat geeft houvast; binnen een maat verschijnen alleen gewijzigde
+harmonieën. Kleurakkoorden blijven behouden, doorgangsnoten en arpeggio's krijgen geen extra symbolen.
 
 Alle scripts draai je vanuit een liedmap met `bron/`:
 

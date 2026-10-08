@@ -1,6 +1,8 @@
 """Zet de bronnen in bron/*.py om naar MuseScore (.mscz) en PDF.
 
 Draai vanuit een liedmap (bron/, uitvoer naar musescore/, pdf/, tmp/). Elke bron definieert STUK met secties.
+Akkoordsymbolen boven de piano volgen de gekozen "akkoorden" en de werkelijk gezette bas, inclusief
+omkeringen. Binnen een maat verschijnen alleen nieuwe harmonieën; iedere maat herhaalt het geldende akkoord.
 Per sectie:
 
     "melodie"    de zangmelodie (eigen balk, met tekst)
@@ -39,7 +41,7 @@ import zipfile
 from fractions import Fraction
 from pathlib import Path
 
-from music21 import (articulations, bar, chord, clef, duration, expressions, instrument, key, layout, metadata, meter, note, pitch,
+from music21 import (articulations, bar, chord, clef, duration, expressions, harmony, instrument, key, layout, metadata, meter, note, pitch,
                      repeat, spanner, stream, tempo, tie)
 
 HIER = Path(__file__).resolve().parent
@@ -238,7 +240,11 @@ def bouw_sectie(stuk, sec, startnummer, laatste, vorige_maat, met_zang):
         mm = tempo.MetronomeMark(number=sec["tempo"], referent=note.Note(type="quarter"))
         bovenste[0].insert(0, mm)
     if sec.get("kop"):
-        bovenste[0].insert(0, expressions.TextExpression(sec["kop"]))
+        if re.fullmatch(r"[A-Z]", sec["kop"]):
+            label = expressions.RehearsalMark(sec["kop"])
+        else:
+            label = expressions.TextExpression(sec["kop"])
+        bovenste[0].insert(0, label)
     for idx, txt in sec.get("teksten", {}).items():
         te = expressions.TextExpression(txt)
         bovenste[idx].insert(bovenste[idx].highestTime if txt.startswith(("D.S", "D.C", "Fine")) else 0, te)
@@ -268,6 +274,67 @@ def _stem(m, vid):
 
 def _tie(n):
     return n.tie.type if n.tie else None
+
+
+def gitaarakkoorden(stuk, boven):
+    """Akkoordsymbolen boven de piano uit de gekozen harmonie en de werkelijk gezette bas.
+
+    Iedere maat krijgt een akkoord bij de eerste klinkende harmonie. Binnen de maat alleen opnieuw
+    bij een andere harmonie of omkering; doorgangen in de melodie en arpeggio's geven geen extra symbolen.
+    Een '=' loopt door, 'R' onderbreekt de harmonie. Symbolen voegen geen speelnoten toe.
+    """
+    import zetter
+
+    maten = iter(_maten(boven))
+    huidig = None
+    for sec in stuk["secties"]:
+        ks = key.KeySignature(sec["toonsoort"])
+        basmaten = parse_stem(sec["4"], ks)
+        if "akkoorden" not in sec:
+            # Uitgeschreven stemmen zonder akkoordplan vragen een afzonderlijke harmonische analyse.
+            for _ in basmaten:
+                next(maten)
+            huidig = None
+            continue
+        akkmaten = zetter.parse_akkoorden(sec["akkoorden"])
+        if len(akkmaten) != len(basmaten):
+            raise ValueError(f"{stuk['titel']}: akkoordmaten en basmaten verschillen")
+        for akkm, basm in zip(akkmaten, basmaten):
+            m = next(maten)
+            offset, vorig = Fraction(0), None
+            for sym, dur in akkm:
+                if sym == "R":
+                    if huidig is not None:
+                        nc = harmony.NoChord()
+                        nc.placement = "above"
+                        m.insert(offset, nc)
+                    huidig, vorig = None, None
+                else:
+                    if sym != "=":
+                        huidig = sym.partition(":")[0]
+                    if huidig is None:
+                        raise ValueError(f"{stuk['titel']} maat {m.number}: '=' zonder vorig akkoord")
+                    tijd, bas = Fraction(0), None
+                    for soort, p, duur, _ in basm["elems"]:
+                        if tijd <= offset < tijd + duur:
+                            if soort == "noot":
+                                bas = maak_noot((soort, p, duur, "")).pitch
+                            break
+                        tijd += duur
+                    if bas is None:
+                        raise ValueError(f"{stuk['titel']} maat {m.number}: akkoord zonder klinkende bas")
+                    figuur = re.sub(r"^([A-G])b", r"\1-", huidig)
+                    cs = harmony.ChordSymbol(figuur)
+                    if bas.pitchClass != cs.root().pitchClass:
+                        cs = harmony.ChordSymbol(f"{figuur}/{bas.name}")
+                    if cs.figure != vorig:
+                        cs.placement = "above"
+                        cs.writeAsChord = False
+                        m.insert(offset, cs)
+                    vorig = cs.figure
+                offset += dur
+            if offset != sum(e[2] for e in basm["elems"]):
+                raise ValueError(f"{stuk['titel']} maat {m.number}: akkoordduur en basduur verschillen")
 
 
 def vul(boven, onder, gebroken=False):
@@ -536,6 +603,7 @@ def bouw(stuk, met_zang=True):
     score.insert(0, layout.StaffGroup([boven, onder], symbol="brace", barTogether=True))
     if met_zang:
         vul(boven, onder, gebroken=stuk.get("linkerhand") == "gebroken")
+        gitaarakkoorden(stuk, boven)
     return score
 
 
@@ -561,9 +629,22 @@ def nabewerk(pad):
     boom.write(pad, encoding="UTF-8", xml_declaration=True)
 
 
+def fermate_duur(tekst):
+    """MuseScore-fermates afspelen op 150% van de notatieduur."""
+    def zet(match):
+        fermate = ET.fromstring(match[0])
+        for oud in fermate.findall("timeStretch"):
+            fermate.remove(oud)
+        ET.SubElement(fermate, "timeStretch").text = "1.5"
+        return ET.tostring(fermate, encoding="unicode")
+
+    return re.sub(r"<Fermata\b[^>]*>.*?</Fermata>", zet, tekst, flags=re.S)
+
+
 def ruim_bereik(mscz, spatium=None):
     """Zet het bereik van de zangstemmen ruim, zodat MuseScore geen noten rood kleurt.
-    Met spatium: kleinere notenbalk voor dit stuk (de MusicXML-import negeert die uit stijl.mss)."""
+    Met spatium: kleinere notenbalk voor dit stuk (de MusicXML-import negeert die uit stijl.mss).
+    Fermates krijgen 150% afspeelduur, ook na opnieuw bouwen vanuit MusicXML."""
     with zipfile.ZipFile(mscz) as z:
         delen = {n: z.read(n) for n in z.namelist()}
     for n, data in delen.items():
@@ -571,7 +652,7 @@ def ruim_bereik(mscz, spatium=None):
             tekst = data.decode("utf-8")
             for tag, waarde in (("minPitchP", 21), ("minPitchA", 21), ("maxPitchP", 108), ("maxPitchA", 108)):
                 tekst = re.sub(rf"<{tag}>\d+</{tag}>", f"<{tag}>{waarde}</{tag}>", tekst)
-            delen[n] = tekst.encode("utf-8")
+            delen[n] = fermate_duur(tekst).encode("utf-8")
         if spatium and n.endswith(".mss"):
             delen[n] = re.sub(rb"<spatium>[\d.]+</spatium>", f"<spatium>{spatium}</spatium>".encode(), data)
     with zipfile.ZipFile(mscz, "w", zipfile.ZIP_DEFLATED) as z:

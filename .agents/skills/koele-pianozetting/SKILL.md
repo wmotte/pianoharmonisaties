@@ -1,6 +1,6 @@
 ---
 name: koele-pianozetting
-description: Liederen (psalmen, Op Toonhoogte, Sela e.d.) omzetten naar MuseScore/PDF met een eigen pianobegeleiding in de stijl van Gerrit Koele — transcriberen naar bron/*.py, harmoniseren, regelcontrole, speelbaarheid, kleur en opmaak. Gebruik bij "zet deze liederen om naar MuseScore", "harmoniseer in de stijl van Koele", "maak de zetting voller/kleurrijker", of bij een nieuwe muziekgroep-map.
+description: Liederen (psalmen, Op Toonhoogte, Sela e.d.) omzetten naar MuseScore/PDF met een eigen pianobegeleiding in de stijl van Gerrit Koele, inclusief gitaarakkoorden uit de harmonisatie, regelcontrole, speelbaarheid, kleur en opmaak. Gebruik bij "zet deze liederen om naar MuseScore", "harmoniseer in de stijl van Koele", "maak de zetting voller/kleurrijker", "gitaarakkoorden boven de pianopartij", of bij een nieuwe muziekgroep-map.
 ---
 
 # Pianozettingen in de stijl van Gerrit Koele
@@ -32,7 +32,26 @@ Een zetting juist uitdunnen of vierstemmig maken: skill `vierstemmig-reduceren`.
 4. **Kleur meten**: `../koele/kleurstats.py` → doel 15–25 % kleur, 10–15 % omkeringen.
 5. **Bekijken**: render alleen de PDF-pagina's waar de controle iets meldt, plus een steekproef
    (`pdftoppm -r 80 -png -f <p> -l <p> "pdf/<bestand>.pdf" tmp/<naam>`). Kijk kritisch naar herhaalde noten in
-   binnenstemmen, vreemde sprongen, twee dezelfde noten tegelijk.
+   binnenstemmen, vreemde sprongen, twee dezelfde noten tegelijk. Controleer ook de leesbaarheid en plaatsing
+   van gitaarakkoorden, vooral lange kleur-/slashakkoorden en dicht opeenvolgende sus4-oplossingen.
+
+## Gitaarakkoorden boven de pianopartij
+- Zet akkoordsymbolen boven de **bovenste pianobalk**, afgeleid uit de eigen harmonisatie (`"akkoorden"`)
+  en de **werkelijk gezette bas** in stem `"4"`. Neem geen akkoorden over uit `raw/`. `gitaarakkoorden()` in
+  `maak_partituren.py` doet dit automatisch, inclusief omkeringen die de zetter zelf kiest (`C/E`, `G/B`).
+- Behoud de harmonische kleur: sus4/sus2, add9, maj7 en m7 waar die in de zetting staan. Geef bij de eerste
+  klinkende harmonie van elke maat een symbool en vervolgens bij iedere betekenisvolle akkoord- of baswissel.
+  Doorgaans twee akkoorden per maat in 4/4 of 2/2, extra bij cadensen of doorgaande bassen. Melodische
+  doorgangen en gebroken begeleidingsfiguren krijgen niet per noot een nieuw akkoord.
+- Herhaalde gelijke akkoorden binnen de maat en `=` lopen door zonder extra symbool; aan het begin van een
+  volgende maat herhaal je het geldende akkoord voor houvast. `R` onderbreekt de harmonie met `N.C.` als er
+  een akkoord klonk. Symbolen voegen geen speelnoten toe en veranderen de pianozetting niet.
+- Review de symbolen tegen de gekozen harmonie en klinkende bas, ook bij opmaten, herhalingen en
+  maat-/toonsoortwisselingen. Beoordeel de PDF op botsingen en pas zo nodig akkoordafstand of regelverdeling
+  aan. Secties met alleen uitgeschreven stemmen, zonder `"akkoorden"`, vragen eerst afzonderlijke harmonische
+  analyse; de automatische functie voegt daar geen symbolen toe.
+- Sectieletters zoals A/B/C staan in een kader boven de zangbalk, zodat ze herkenbaar blijven als
+  vormaanduiding. Gitaarakkoorden staan boven de pianobalk.
 
 ## Stijl (wat de gebruiker wil)
 - **Kleur, niet saai**: sus4 (Vsus4→V, Isus4→I, Koeles handtekening), sus2/add9 op I en IV, IVmaj7, vi7/ii7
@@ -46,6 +65,11 @@ Een zetting juist uitdunnen of vierstemmig maken: skill `vierstemmig-reduceren`.
 - **Overgang voorspel → zang** (automatisch, `voorspel_pauze()`): fermates + caesuur aan het eind van de eerste
   sectie zonder zang, zang op een nieuwe regel met kaderlabel **Zang**. Vervalt als een noot overgebonden is naar
   het zingen — de zang gaat altijd voor.
+- **Afspeelduur fermates**: 150% van de notatieduur in MuseScore. `fermate_duur()` zet bij de nabewerking
+  van de `.mscz` elke fermate op `<timeStretch>1.5</timeStretch>`, zodat opnieuw bouwen de voorkeur behoudt.
+- **Standaardtempo psalmen**: 90 kwartnoten per minuut, tenzij de gebruiker expliciet een ander tempo vraagt.
+  Zet `"tempo": 90` in de eerste sectie, zodat MuseScore dit vanaf het voorspel gebruikt en het tempo bij
+  opnieuw bouwen behouden blijft. Vermijd onbedoelde terugval naar MuseScores standaardtempo van 120.
 - **Voller dan Koeles kale zetting**: `vul()` in maak_partituren.py (alleen partituur, niet in de controle).
 
 ## Speelbaarheid (harde eis van de gebruiker)
