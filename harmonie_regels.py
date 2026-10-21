@@ -79,6 +79,7 @@ class NoteRec:
     shift: int = 0  # +12 onder een 8va
     orig: str = ""  # oorspronkelijke spelling (nameWithOctave, geschreven)
     codes: list = field(default_factory=list)
+    voice: str | None = None
 
     @property
     def midi(self) -> int:
@@ -116,8 +117,9 @@ class Vertical:
 class Score:
     """Ingelezen partituur met noot-records, verticalen en toonsoort per maat."""
 
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, *, voice_identity: bool = False):
         self.path = Path(path)
+        self.voice_identity = voice_identity
         logical_xml = logical_score_xml(self.path)
         self.cross_staff_layout = logical_xml is not None
         self.score = (converter.parseData(logical_xml, format='musicxml') if logical_xml is not None
@@ -129,7 +131,7 @@ class Score:
         self.keys = self._keys_per_measure()
         self.verticals = self._verticals()
         for v in self.verticals:
-            assign_slots(v)
+            assign_slots(v, named=voice_identity)
 
     # ---- inlezen -------------------------------------------------------------------------------
     def _collect(self):
@@ -148,6 +150,12 @@ class Score:
                     for n in (el.notes if el.isChord else [el]):
                         rec = NoteRec(nid, n, el if el.isChord else None, staff, on, on + el.quarterLength,
                                       mm.number, beat, shift, n.pitch.nameWithOctave)
+                        if self.voice_identity:
+                            voices = list(mm.voices)
+                            voice = el.getContextByClass(stream.Voice)
+                            if len(voices) != 2 or voice not in voices:
+                                raise ValueError("Vaste stemidentiteit vereist twee expliciete stemmen per pianobalk.")
+                            rec.voice = (("S", "A") if staff == "R" else ("T", "B"))[voices.index(voice)]
                         if shift:
                             self.ottava_ids.add(nid)
                         self.recs.append(rec)
@@ -158,14 +166,14 @@ class Score:
         for rec in sorted(self.recs, key=lambda r: (r.staff, r.on)):
             tie = rec.obj.tie
             if tie is not None and tie.type in ("stop", "continue"):
-                prev = by_key.get((rec.staff, rec.midi, rec.on))
+                prev = by_key.get((rec.staff, rec.voice, rec.midi, rec.on))
                 if prev is not None:
                     prev.end = max(prev.end, rec.end)
                     prev.tied = getattr(prev, "tied", []) + [rec]
-                    by_key[(rec.staff, rec.midi, rec.end)] = prev
+                    by_key[(rec.staff, rec.voice, rec.midi, rec.end)] = prev
                     continue
             merged.append(rec)
-            by_key[(rec.staff, rec.midi, rec.end)] = rec
+            by_key[(rec.staff, rec.voice, rec.midi, rec.end)] = rec
         self.recs = merged
 
     def _keys_per_measure(self) -> dict:
@@ -237,8 +245,18 @@ class Score:
 
 
 # ---- stemmen ---------------------------------------------------------------------------------------
-def assign_slots(v: Vertical):
+def assign_slots(v: Vertical, *, named=False):
     """S/A/T/B op positie; unisono-verdubbelingen en extra noten (> 4) hangen als verdubbeling aan een slot."""
+    if named:
+        v.slots, v.doubles = {}, {}
+        for r in v.notes:
+            if r.voice not in v.slots:
+                v.slots[r.voice] = r
+            else:
+                v.doubles[r.id] = r.voice
+        if "S" not in v.slots and "A" in v.slots:
+            v.slots["S"] = v.slots.pop("A")
+        return
     distinct = []
     for r in v.notes:
         if distinct and distinct[-1][0] == r.midi:
@@ -278,6 +296,9 @@ def assign_slots(v: Vertical):
 def pair_voices(v1: Vertical, v2: Vertical) -> list:
     """Koppeling van stemmen tussen twee verticalen: [(slot1, slot2, rec1, rec2)]; buitenstemmen vast,
     binnenstemmen orde-behoudend met minimale totale verplaatsing."""
+    if all(r.voice is not None for r in [*v1.notes, *v2.notes]):
+        return [(s, s, a, v2.slots[s]) for s, a in v1.slots.items()
+                if s in v2.slots and a.voice == v2.slots[s].voice]
     pairs = []
     for s in ("S", "B"):
         if s in v1.slots and s in v2.slots:

@@ -982,11 +982,60 @@ def bouw(stuk, met_zang=True):
     score.insert(0, onder)
     score.insert(0, layout.StaffGroup([boven, onder], symbol="brace", barTogether=True))
     if met_zang:
-        vul(boven, onder, gebroken=stuk.get("linkerhand") == "gebroken")
+        if stuk.get("handverdeling"):
+            pas_handverdeling_toe(boven, onder, stuk["handverdeling"])
+        else:
+            vul(boven, onder, gebroken=stuk.get("linkerhand") == "gebroken")
         if stuk.get("begeleiding") == "akkoorden":
             akkoordbegeleiding(stuk, zang, boven, onder)
         gitaarakkoorden(stuk, boven)
     return score
+
+
+def pas_handverdeling_toe(boven, onder, handverdeling):
+    """Behoud een getoetst compositiehandplan, ook bij melodie in de linkerhand."""
+    from harmonizer.notation import _rests
+
+    verzameld = {"RH": [], "LH": []}
+    for staff_index, staf in enumerate((boven, onder)):
+        for maat in staf.getElementsByClass(stream.Measure):
+            for voice_index, voice in enumerate(maat.voices or [maat]):
+                identity = staff_index * 2 + voice_index
+                for n in voice.notes:
+                    start = float(n.getOffsetInHierarchy(staf))
+                    end = start + float(n.quarterLength)
+                    p = n.pitch.midi
+                    passend = [h for pitch_midi, a, b, h in handverdeling
+                               if pitch_midi == p and a <= start + 1e-6 and b >= end - 1e-6]
+                    if len(set(passend)) != 1:
+                        raise ValueError(f"Handplan ontbreekt of is dubbelzinnig bij {start:g}/{p}.")
+                    verzameld[passend[0]].append((start, end, copy.deepcopy(n), identity))
+    for hand, staf in (("RH", boven), ("LH", onder)):
+        # Keep each logical voice in the same engraving voice across barlines.
+        # Packing notes into whichever lane is free changes stems and breaks ties.
+        identities = sorted({identity for _, _, _, identity in verzameld[hand]})
+        for maat in staf.getElementsByClass(stream.Measure):
+            length = float(maat.duration.quarterLength)
+            start = float(maat.offset)
+            lanes = [[(a, b, n) for a, b, n, ident in verzameld[hand]
+                      if ident == identity and start <= a < start + length - 1e-7]
+                     for identity in identities]
+            for old in list(maat):
+                if isinstance(old, (stream.Voice, note.GeneralNote)):
+                    maat.remove(old)
+            for i, lane in enumerate(lanes or [[]], 1):
+                voice, cursor = stream.Voice(id=str(i)), start
+                for a, b, n in lane:
+                    if a > cursor + 1e-7:
+                        _rests(voice, cursor - start, a - cursor, length)
+                    voice.insert(a - start, n)
+                    cursor = b
+                if cursor < start + length - 1e-7:
+                    _rests(voice, cursor - start, start + length - cursor, length)
+                if not lane:
+                    for rest in voice.notesAndRests:
+                        rest.style.hideObjectOnPrint = True
+                maat.insert(0, voice)
 
 
 def nabewerk(pad):
@@ -1026,7 +1075,7 @@ def fermate_duur(tekst):
 TITELKADER = 6  # hoogte titelkader in sp (MuseScore-import: 10)
 
 
-def ruim_bereik(mscz, spatium=None):
+def ruim_bereik(mscz, spatium=None, *, hide_empty=False):
     """Zet het bereik van de zangstemmen ruim, zodat MuseScore geen noten rood kleurt.
     Met spatium: kleinere notenbalk voor dit stuk (de MusicXML-import negeert die uit stijl.mss).
     Fermates krijgen 150% afspeelduur, ook na opnieuw bouwen vanuit MusicXML.
@@ -1042,6 +1091,15 @@ def ruim_bereik(mscz, spatium=None):
             delen[n] = fermate_duur(tekst).encode("utf-8")
         if spatium and n.endswith(".mss"):
             delen[n] = re.sub(rb"<spatium>[\d.]+</spatium>", f"<spatium>{spatium}</spatium>".encode(), data)
+        if hide_empty and n.endswith(".mss"):
+            root = ET.fromstring(delen[n])
+            style = root.find("Style")
+            for tag, value in (("hideEmptyStaves", "1"), ("dontHideStavesInFirstSystem", "0")):
+                element = style.find(tag)
+                if element is None:
+                    element = ET.SubElement(style, tag)
+                element.text = value
+            delen[n] = ET.tostring(root, encoding="utf-8", xml_declaration=True)
     with zipfile.ZipFile(mscz, "w", zipfile.ZIP_DEFLATED) as z:
         for n, data in delen.items():
             z.writestr(n, data)

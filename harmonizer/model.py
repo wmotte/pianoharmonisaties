@@ -25,6 +25,7 @@ class Event:
     duration: float
     velocity: int = 72
     role: str = "melody"
+    part: str = "piano"
 
     @property
     def end(self):
@@ -118,6 +119,12 @@ def piano_hand(event, arrangement):
 
     This changes staff placement, never musical role, pitch or timing.
     """
+    if event.part == "flute":
+        return "Flute"
+    assigned = getattr(arrangement, "diagnostics", {}).get("hand_assignment", {})
+    token = f"{event.role}:{event.start:.7f}:{event.pitch}"
+    if token in assigned:
+        return assigned[token]
     if event.role in ("bass", "tenor"):
         return "LH"
     if event.role == "inner" and event.pitch < 60:

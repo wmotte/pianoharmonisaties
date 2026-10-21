@@ -144,7 +144,7 @@ def ngrams(seq, n=5):
     return {tuple(seq[i:i + n]) for i in range(len(seq) - n + 1)}
 
 
-def analyse(xml_path: Path, raw_path: Path):
+def analyse(xml_path: Path, raw_path: Path, *, audio_path: Path | None = None):
     s = converter.parse(str(xml_path))
     R, L = s.parts[0], s.parts[1]
     measures_R = list(R.getElementsByClass(stream.Measure))
@@ -384,7 +384,7 @@ def analyse(xml_path: Path, raw_path: Path):
     vel_all = [n.velocity for n in notes]
     # tempo-curve uit de audio: rit. aan het slot en bij fermates
     import librosa
-    mp3 = DIR / "mp3" / f"{xml_path.stem}.mp3"
+    mp3 = audio_path if audio_path is not None else DIR / "mp3" / f"{xml_path.stem}.mp3"
     rit_end = rit_fermata = None
     if mp3.exists():
         audio, sr = librosa.load(str(mp3), sr=22050, mono=True)

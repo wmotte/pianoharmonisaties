@@ -54,7 +54,7 @@ def _motif(rng):
     return steps
 
 
-def _harmony_plan(melody, ends, bar, profile, source, rng, section, arrival_root=None):
+def _harmony_plan(melody, ends, bar, profile, source, rng, section, arrival_root=None, terminal_quality=None):
     from .engine import chord_options
 
     scale = {(melody.tonic + x) % 12 for x in MODES[melody.mode]}
@@ -103,12 +103,14 @@ def _harmony_plan(melody, ends, bar, profile, source, rng, section, arrival_root
     )
     if section == "Voorspel" and (cadence_targets[-1], "major") not in options:
         options.append((cadence_targets[-1], "major"))
+    if section == "Naspel" and terminal_quality and (melody.tonic, terminal_quality) not in options:
+        options.append((melody.tonic, terminal_quality))
     for bi, (a, b, pi, cadential) in enumerate(blocks):
         extensions = []
         for old, path in beam:
             for root, q in options:
                 final = bi == len(blocks) - 1
-                tonic_quality = "major" if MODES[melody.mode][2] == 4 else "minor"
+                tonic_quality = terminal_quality or ("major" if MODES[melody.mode][2] == 4 else "minor")
                 if final and (
                     root != cadence_targets[-1]
                     or q != (tonic_quality if section == "Naspel" else "major")
@@ -158,204 +160,16 @@ def _harmony_plan(melody, ends, bar, profile, source, rng, section, arrival_root
     ], value / max(1, len(path))
 
 
-def free_section(
-    melody, length, section, seed=0, profile=None, settings=None, material=None
-):
-    from .engine import Harmony, voice
+def free_section(melody, length, section, seed=0, profile=None, settings=None, material=None):
+    from .thematic import free_section as compose
 
-    profile = profile or {}
-    settings = settings or {"meter": [4, 4], "quarter_bpm": melody.bpm, "source": {}}
-    rng = random.Random(seed)
-    if length < 2:
-        raise ValueError("Een vrij vormdeel vereist minstens twee kwartnoottellen.")
-    num, den = settings["meter"]
-    bar = num * 4 / den
-    source = settings.get("source", {})
-    ends = _phrase_ends(length, bar, source, rng)
-    motifs = material or [_motif(rng), _motif(rng)]
-    harmonic, score = _harmony_plan(
-        melody, ends, bar, profile, source, rng, section, settings.get("arrival_root")
-    )
-    scale = [p for p in range(48, 97) if (p - melody.tonic) % 12 in MODES[melody.mode]]
-    plan = []
-    start = 0.0
-    for i, end in enumerate(ends):
-        development = (
-            "statement"
-            if i == 0
-            else "return"
-            if i == len(ends) - 1
-            else rng.choice(("sequence", "expansion", "answer"))
-        )
-        family = 0 if development in ("statement", "return") else i % 2
-        center = 71 + round(8 * math.sin(math.pi * i / max(1, len(ends) - 1)))
-        if section == "Naspel":
-            center = 75 - round(9 * i / max(1, len(ends) - 1))
-        plan.append(
-            {
-                "start": start,
-                "end": end,
-                "function": development,
-                "motif": family,
-                "center": center,
-                "density": 2 if i == 0 else 4 if i == len(ends) - 2 else 3,
-                "pedal_point": i == 0 or development == "return",
-            }
-        )
-        start = end
-    # Short optional quotations are a minority of the section; independent motifs
-    # supply the main material. Do not change rhythm every two beats by a loop.
-    references = []
-    quote_phrase = (
-        rng.randrange(1, len(plan)) if section == "Voorspel" and len(plan) > 2 else None
-    )
-    top, harmonies = [], []
-    previous = None
-    previous_top = None
-    resolution = None
-    for a, b, pi, cadential, root, quality in harmonic:
-        phrase = plan[pi]
-        contour = motifs[phrase["motif"]]
-        if phrase["function"] == "answer":
-            contour = [-x for x in contour]
-        pcs = {(root + x) % 12 for x in QUALITIES[quality]}
-        center = phrase["center"]
-        chordtones = [p for p in scale if p % 12 in pcs and 60 <= p <= 88]
-        anchor = min(
-            chordtones,
-            key=lambda p: (
-                abs(p - center) + (0.35 * abs(p - previous_top) if previous_top else 0)
-            ),
-        )
-        anchor_index = scale.index(anchor)
-        rhythm_values = [
-            float(x)
-            for x in source.get("rhythm_counts", {})
-            if float(x) in (0.5, 1, 1.5, 2)
-        ] or [0.5, 1, 2]
-        weights = [
-            math.sqrt(source.get("rhythm_counts", {}).get(str(x), 1))
-            for x in rhythm_values
-        ]
-        # One rhythm per motif family is shared across its transformations.
-        rr = random.Random(seed + phrase["motif"] * 137)
-        pattern = rr.choices(rhythm_values, weights=weights, k=len(contour))
-        if phrase["function"] == "expansion" or section == "Naspel":
-            pattern = [min(3, x * 2) for x in pattern]
-        cursor = a
-        note_index = round((a - phrase["start"]) * 2) % len(contour)
-        quote = pi == quote_phrase and a == phrase["start"]
-        if quote:
-            references.append({"start": a, "end": min(b, a + 2), "notes": 3})
-        while cursor < b - 1e-7:
-            final = b == length
-            remaining = b - cursor
-            duration = (
-                remaining
-                if final
-                else min(remaining, pattern[note_index % len(pattern)])
-            )
-            desired = scale[
-                max(
-                    0,
-                    min(
-                        len(scale) - 1,
-                        anchor_index + contour[note_index % len(contour)],
-                    ),
-                )
-            ]
-            if quote and cursor < a + 2:
-                fragment = melody.notes[: min(5, len(melody.notes))]
-                quote_index = min(round((cursor - a) * 2), len(fragment) - 1)
-                displacement = fragment[quote_index].pitch - fragment[0].pitch
-                desired = min(scale, key=lambda p: abs(p - anchor - displacement))
-                duration = min(0.5 if cursor - a < 1 else 1, remaining, a + 2 - cursor)
-            strong = abs((cursor - phrase["start"]) % bar) < 1e-7 or cursor == a
-            if final:
-                desired = min(
-                    chordtones,
-                    key=lambda p: abs(
-                        p - (melody.notes[0].pitch + 5 if section == "Voorspel" else 65)
-                    ),
-                )
-            elif resolution is not None:
-                desired = min(chordtones, key=lambda p: abs(p - resolution))
-                resolution = None
-            elif strong or remaining <= duration or cadential:
-                desired = min(
-                    chordtones,
-                    key=lambda p: (
-                        abs(p - desired)
-                        + (0.4 * abs(p - previous_top) if previous_top else 0)
-                    ),
-                )
-            else:
-                # A neighbour is permitted only when the next step resolves to a
-                # chord tone. Keep the line connected and within the hand span.
-                desired = min(chordtones, key=lambda p: abs(p - desired))
-                if (
-                    previous_top in chordtones
-                    and duration <= 1
-                    and remaining > duration
-                    and rng.random() < 0.25
-                ):
-                    neighbors = [p for p in scale if abs(p - previous_top) in (1, 2)]
-                    if neighbors:
-                        desired = min(neighbors, key=lambda p: abs(p - desired))
-                        if desired % 12 not in pcs:
-                            resolution = previous_top
-            bass, inner, _cost = voice(
-                root,
-                quality,
-                desired,
-                previous,
-                melody.tonic,
-                profile,
-                root_position=final,
-            )
-            if bass is None:
-                raise ValueError("Geen speelbare ligging voor vrij vormdeel.")
-            h = Harmony(cursor, cursor + duration, root, quality, bass, inner)
-            top.append(Event(desired, cursor, duration, role="motif"))
-            harmonies.append(h)
-            previous, previous_top = h, desired
-            cursor += duration
-            note_index += 1
-    result = Melody(
-        top,
-        length,
-        [(0, num, den)],
-        ends,
-        melody.tonic,
-        melody.mode,
-        settings["quarter_bpm"],
-    )
-    result.validate()
-    for reference in references:
-        reference["notes"] = sum(
-            reference["start"] <= n.start < reference["end"] for n in top
-        )
-    return (
-        result,
-        harmonies,
-        score,
-        {
-            "approach": "phrase_motif_development",
-            "phrases": plan,
-            "motifs": motifs,
-            "melodic_references": references,
-            "reference_beats": sum(x["end"] - x["start"] for x in references),
-            "reference_fraction": sum(x["end"] - x["start"] for x in references)
-            / length,
-            "source_id": source.get("source_id"),
-            "source_sha256": source.get("source_sha256"),
-            "source_reviewed": source.get("reviewed", False),
-            "settings": {k: v for k, v in settings.items() if k != "source"},
-        },
-    )
+    return compose(melody, length, section, seed, profile, settings, material)
 
 
 def free_accompaniment(harmonies, melody, plan, profile):
+    if "accompaniment" in plan:
+        return [Event(**n) for n in plan["accompaniment"]]
+
     from .engine import accompaniment
 
     full = accompaniment(harmonies, melody, 0, profile)

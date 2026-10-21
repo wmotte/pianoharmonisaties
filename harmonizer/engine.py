@@ -373,148 +373,28 @@ def accompaniment(harmonies, melody, seed, profile):
 
 
 def build_arrangement(melody, profile, config, seed):
-    from .prelude import free_accompaniment, free_section
-    from .timing import section_settings
+    from .arrange import frame_arrangement
+    from .counterpoint import CompositionError
 
-    unknown = set(config.get("sections", {})) - {"intro", "outro"}
-    if unknown:
-        raise ValueError(f"Onbekende vormdelen: {sorted(unknown)}")
-    intro_settings = section_settings(
-        melody, profile, config, "Voorspel", random.Random(seed)
-    )
-    outro_settings = section_settings(
-        melody, profile, config, "Naspel", random.Random(seed + 2018)
-    )
-    intro_length, outro_length = intro_settings["length"], outro_settings["length"]
-    chorale_harmony, chorale_score = harmonize(
-        melody, profile, seed + 1009, beam_width=16
-    )
-    intro_settings["arrival_root"] = chorale_harmony[0].root
-    intro_settings["arrival_quality"] = chorale_harmony[0].quality
-    intro, intro_harmony, intro_score, intro_plan = free_section(
-        melody, intro_length, "Voorspel", seed, profile, intro_settings
-    )
-    outro, outro_harmony, outro_score, outro_plan = free_section(
-        melody,
-        outro_length,
-        "Naspel",
-        seed + 2018,
-        profile,
-        outro_settings,
-        intro_plan["motifs"],
-    )
-    sections, notes, harmonies, phrases, fermatas, meters, tempos = (
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-    )
-    cursor, total_score = 0.0, 0.0
-    for i, (name, part) in enumerate(
-        (("Voorspel", intro), ("Harmonisatie", melody), ("Naspel", outro))
-    ):
-        if i == 0:
-            hs, score = intro_harmony, intro_score
-        elif i == 2:
-            hs, score = outro_harmony, outro_score
-        else:
-            hs, score = chorale_harmony, chorale_score
-        generated = part.notes + (
-            accompaniment(hs, part, seed + i, profile)
-            if i == 1
-            else free_accompaniment(
-                hs, part, intro_plan if i == 0 else outro_plan, profile
-            )
-        )
-        if i == 1 and not satb_coverage(generated)["valid"]:
-            raise ValueError("De gegenereerde zetting is niet continu vierstemmig.")
-        notes.extend(replace(n, start=n.start + cursor) for n in generated)
-        harmonies.extend(
-            replace(h, start=h.start + cursor, end=h.end + cursor) for h in hs
-        )
-        sections.append(
-            {
-                "name": name,
-                "start": cursor,
-                "end": cursor + part.length,
-                "quarter_bpm": part.bpm,
-                "texture": "SATB" if i == 1 else "variable",
-            }
-        )
-        if not tempos or tempos[-1][1] != part.bpm:
-            tempos.append((cursor, part.bpm))
-        meters.extend((t + cursor, num, den) for t, num, den in part.meters)
-        phrases.extend(p + cursor for p in part.phrases)
-        fermatas.extend(p + cursor for p in part.fermatas)
-        cursor += part.length
-        total_score += score
-    # The structural melody is copied, never regenerated or post-corrected.
-    expected = [
-        (n.pitch, round(n.start + intro_length, 7), round(n.duration, 7))
-        for n in melody.notes
-    ]
-    actual = [
-        (n.pitch, round(n.start, 7), round(n.duration, 7))
-        for n in notes
-        if n.role == "melody"
-    ]
-    if actual != expected:
-        raise AssertionError("Interne fout: melodie gewijzigd.")
-    matches = []
-    for section in sections:
-        if section["name"] == "Harmonisatie":
+    hs, score = harmonize(melody, profile, seed + 1009, beam_width=16)
+    notes = melody.notes + accompaniment(hs, melody, seed, profile)
+    if not satb_coverage(notes)["valid"]:
+        raise ValueError("De gegenereerde zetting is niet continu vierstemmig.")
+    chorale = Arrangement(notes, hs, [{"name": "Harmonisatie", "start": 0, "end": melody.length}],
+                          melody.meters, melody.phrases, melody.fermatas, melody.bpm, score,
+                          seed, 0, melody.length, {"profile_status": profile["status"],
+                          "satb_coverage": satb_coverage(notes)}, melody.tonic, melody.mode)
+    rejected = []
+    for attempt in range(12):
+        frame_seed = seed + attempt * 7919
+        try:
+            result = frame_arrangement(melody, chorale, config, profile, frame_seed)
+        except CompositionError as exc:
+            rejected.append({"seed": frame_seed, "reason": str(exc)})
             continue
-        motif = [
-            n
-            for n in notes
-            if n.role == "motif" and section["start"] <= n.start < section["end"]
-        ]
-        for j in range(len(motif) - 12):
-            intervals = [motif[k + 1].pitch - motif[k].pitch for k in range(j, j + 12)]
-            signature = hashlib.sha256(json.dumps(intervals).encode()).hexdigest()[:20]
-            if signature in profile.get("reference_contours", {}):
-                matches.append(
-                    {
-                        "section": section["name"],
-                        "beat": motif[j].start,
-                        "reference": profile["reference_contours"][signature],
-                    }
-                )
-    total_score += len(matches)
-    return Arrangement(
-        sorted(notes, key=lambda n: (n.start, n.pitch)),
-        harmonies,
-        sections,
-        meters,
-        phrases,
-        fermatas,
-        melody.bpm,
-        total_score / 3,
-        seed,
-        intro_length,
-        cursor,
-        {
-            "melody_exact": True,
-            "profile_status": profile["status"],
-            "human_accepted": False,
-            "musical_quality": "not_evaluated",
-            "reference_contour_matches": matches,
-            "novelty_check_scope": "12 successive pitch intervals in introduction/coda only; absence is not proof of originality",
-            "form_source": "section-conditioned phrase and motif development; fixed SATB chorale",
-            "prelude_plan": intro_plan,
-            "postlude_plan": outro_plan,
-            "voicing": "SATB chorale; variable free sections",
-            "satb_coverage": satb_coverage(
-                notes, intro_length, intro_length + melody.length
-            ),
-        },
-        tonic=melody.tonic,
-        mode=melody.mode,
-        tempos=tempos,
-    )
+        result.diagnostics["framing_search"] = {"requested_seed": seed, "rejected": rejected}
+        return result
+    raise CompositionError(f"Geen geldige omlijsting binnen twaalf pogingen: {rejected[-1]['reason']}")
 
 
 def generate(melody, profile, config):
@@ -528,8 +408,14 @@ def generate(melody, profile, config):
     seed = int(config.get("seed", 0))
     arrangements = []
     fingerprints = set()
-    for i in range(number):
-        a = build_arrangement(melody, profile, config, seed + i * 7919)
+    rejected = []
+    for i in range(number * 4):
+        from .counterpoint import CompositionError
+        try:
+            a = build_arrangement(melody, profile, config, seed + i * 7919)
+        except CompositionError as exc:
+            rejected.append({"seed": seed + i * 7919, "reason": str(exc)})
+            continue
         from .composition import composition_metrics
 
         a.diagnostics["composition"] = composition_metrics(a)
@@ -538,4 +424,10 @@ def generate(melody, profile, config):
         if fp not in fingerprints:
             fingerprints.add(fp)
             arrangements.append(a)
+        if len(arrangements) == number:
+            break
+    if len(arrangements) < 3:
+        raise CompositionError(f"Slechts {len(arrangements)} geldige arrangementen; afgewezen pogingen: {rejected}")
+    for a in arrangements:
+        a.diagnostics["candidate_search"] = {"budget": number * 4, "rejected": rejected}
     return sorted(arrangements, key=lambda a: (a.score, a.seed))

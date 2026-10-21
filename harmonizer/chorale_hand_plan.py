@@ -39,12 +39,13 @@ def validate_hands(notes, hands):
             raise ValueError("Hand plan crosses or splits a unison")
 
 
-def assign_hands(notes):
+def assign_hands(notes, *, keep_melody_right=True, pinned_roles=None, preferred_roles=None):
     """Return one hand per input event, or None when no stable split exists.
 
     Melody stays in RH. Hands do not cross. Each simultaneous hand span is at
     most an octave with at most five distinct keys. Held notes cannot change
     hands. This is a geometric assignment, not a fingering or tempo analysis.
+    Framed arrangements can permit a left-hand melody and pin a descant to RH.
     """
     if not notes:
         return []
@@ -64,7 +65,7 @@ def assign_hands(notes):
             left, right = active[:cut], active[cut:]
             if left and right and notes[left[-1]].pitch == notes[right[0]].pitch:
                 continue
-            if any(notes[i].role in ("melody", "motif") for i in left):
+            if keep_melody_right and any(notes[i].role in ("melody", "motif") for i in left):
                 continue
             if any(
                 len({notes[i].pitch for i in hand}) > 5
@@ -73,8 +74,11 @@ def assign_hands(notes):
             ):
                 continue
             state = {i: ("LH" if i in left else "RH") for i in active}
+            if any(hand != pinned_roles[notes[i].role] for i, hand in state.items()
+                   if notes[i].role in (pinned_roles or {})):
+                continue
             cost = sum(
-                hand != ("LH" if notes[i].role in ("bass", "tenor") else "RH")
+                hand != (preferred_roles or {}).get(notes[i].role, "LH" if notes[i].role in ("bass", "tenor") else "RH")
                 for i, hand in state.items()
                 if notes[i].start == start
             )

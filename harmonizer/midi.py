@@ -18,6 +18,7 @@ PPQ = 960
 
 def expression_map(arrangement, profile):
     # Include fractional phrase ends so a ritardando never spills into the next phrase.
+    pause = getattr(arrangement, "diagnostics", {}).get("entry_pause")
     points = sorted(
         {
             0.0,
@@ -25,6 +26,7 @@ def expression_map(arrangement, profile):
             *range(math.ceil(arrangement.length)),
             *(p for p in arrangement.phrases if p < arrangement.length),
             *(p for p in arrangement.fermatas if p < arrangement.length),
+            *([pause["start"]] if pause else []),
         }
     )
     values, previous = [], None
@@ -42,6 +44,8 @@ def expression_map(arrangement, profile):
             factor -= 0.4 * max(0, 1 - (arrangement.length - beat) / 8)
         if any(beat < f <= beat + 1 for f in arrangement.fermatas):
             factor *= 0.72
+        if pause and pause["start"] <= beat < pause["end"]:
+            factor = 1 / pause["time_stretch"]
         bpm = local_tempo(arrangement, beat) * factor
         encoded = mido.bpm2tempo(bpm)
         if encoded != previous:
@@ -85,6 +89,7 @@ def rendered_notes(arrangement, profile, expressive=False):
                 "inner": -12,
                 "tenor": -10,
                 "alto": -8,
+                "descant": 9,
             }[n.role]
             learned = expression.get("phrase_velocity_envelope")
             envelope = (
@@ -170,12 +175,13 @@ def save_midi(arrangement, path, profile, expressive=False):
         )
     fill_track(conductor, meta, final_tick)
     notes = rendered_notes(arrangement, profile, expressive)
-    for hand in ("RH", "LH"):
+    for hand in ("RH", "LH", *(["Flute"] if any(n.part == "flute" for n in arrangement.notes) else [])):
         track = mido.MidiTrack()
         midi.tracks.append(track)
-        events = [(0, mido.MetaMessage("track_name", name="Piano " + hand))]
-        if hand == "RH":
-            events.append((0, mido.Message("program_change", program=0, channel=0)))
+        channel = 1 if hand == "Flute" else 0
+        events = [(0, mido.MetaMessage("track_name", name="Dwarsfluit" if hand == "Flute" else "Piano " + hand))]
+        if hand in ("RH", "Flute"):
+            events.append((0, mido.Message("program_change", program=73 if hand == "Flute" else 0, channel=channel)))
         for pitch, on, off, velocity, note_hand in notes:
             if hand == note_hand:
                 events.extend(
@@ -183,12 +189,12 @@ def save_midi(arrangement, path, profile, expressive=False):
                         (
                             on,
                             mido.Message(
-                                "note_on", channel=0, note=pitch, velocity=velocity
+                                "note_on", channel=channel, note=pitch, velocity=velocity
                             ),
                         ),
                         (
                             off,
-                            mido.Message("note_off", channel=0, note=pitch, velocity=0),
+                            mido.Message("note_off", channel=channel, note=pitch, velocity=0),
                         ),
                     ]
                 )
@@ -310,13 +316,19 @@ def validate_export(path, arrangement, expressive=False, profile=None):
     if not pedal or any(value >= 64 for value in pedal.values()):
         raise ValueError("Pedaal niet op ieder gebruikt kanaal afgesloten.")
     expected = Counter(
-        (p, on, off, v, 0)
-        for p, on, off, v, _ in rendered_notes(arrangement, profile or {}, expressive)
+        (p, on, off, v, 1 if hand == "Flute" else 0)
+        for p, on, off, v, hand in rendered_notes(arrangement, profile or {}, expressive)
     )
     if Counter(actual) != expected:
         raise ValueError(
             "Geëxporteerde noten, timing, aanslag of kanalen wijken af van het arrangement."
         )
+    programs = sorted((t, m.channel, m.program) for t, m in events if m.type == "program_change")
+    intended_programs = [(0, 0, 0)] + ([(0, 1, 73)] if any(n.part == "flute" for n in arrangement.notes) else [])
+    if programs != intended_programs:
+        raise ValueError("Instrumentprogramma ontbreekt of wijkt af.")
+    if any(m.type == "control_change" and m.channel == 1 and m.control == 64 and m.value >= 64 for _, m in events):
+        raise ValueError("Pianopedaal op het fluitkanaal.")
     actual_tempos = sorted((t, m.tempo) for t, m in events if m.type == "set_tempo")
     intended_tempos = (
         expression_map(arrangement, profile or {})

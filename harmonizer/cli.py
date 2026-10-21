@@ -42,6 +42,7 @@ def main():
         "aria",
         "sections",
         "style_analysis",
+        "countervoice",
     }
     unknown = set(config) - allowed
     if unknown:

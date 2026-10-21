@@ -16,6 +16,9 @@ LABELS = {
     "harmony": "Harmonische afwisseling",
     "transition": "Overgangen",
     "ending": "Slotwerking",
+    "countervoice": "Zelfstandigheid tegenstem",
+    "recognition": "Herkenbaarheid",
+    "playability": "Speelbaarheid",
 }
 
 

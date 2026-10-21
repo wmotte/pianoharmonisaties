@@ -453,7 +453,7 @@ def write_pages(output, reports):
     (output / "review.html").write_text(review + "</html>")
 
 
-def _musescore_export(app, source, target, log_path):
+def _musescore_export(app, source, target, log_path, *, style=None):
     """Retry startup failures, then audit the artifact rather than the exit code."""
     target.unlink(missing_ok=True)
     for attempt in range(3):
@@ -461,7 +461,7 @@ def _musescore_export(app, source, target, log_path):
             log.write(f"\nExport attempt {attempt + 1}\n")
             try:
                 result = subprocess.run(
-                    [str(app), "-o", str(target), str(source)],
+                    [str(app), *(["-S", str(style)] if style else []), "-o", str(target), str(source)],
                     stdout=log,
                     stderr=log,
                     check=False,

@@ -85,7 +85,7 @@ def segmenten(stuk):
     segs = []
     t0 = Fraction(0)
     for si, sec in enumerate(stuk["secties"]):
-        if "akkoorden" not in sec:
+        if "akkoorden" not in sec or sec.get("compositie_vast"):
             _, _, lengtes = mp.sectie_maten(stuk, sec, key.KeySignature(sec["toonsoort"]))
             t0 += sum(lengtes)
             continue
@@ -222,8 +222,6 @@ def overgang(vorig, nu, seg_v, seg, S, teg):
     for i in range(len(namen)):
         for j in range(i + 1, len(namen)):
             x, y = namen[i], namen[j]
-            if {x, y} == {"S", "G"}:
-                continue  # melodie en tegenstem liggen vast
             if parallel(oud[x], oud[y], nieuw[x], nieuw[y]):
                 return INF
     for y in ("B", "T"):
@@ -279,7 +277,7 @@ def overgang(vorig, nu, seg_v, seg, S, teg):
 
 def zet_stuk(stuk):
     """Vult "2", "3" en "4" in voor elke sectie met "akkoorden"."""
-    if not any("akkoorden" in s for s in stuk["secties"]):
+    if not any("akkoorden" in s and not s.get("compositie_vast") for s in stuk["secties"]):
         return stuk
     segs = segmenten(stuk)
     S = tijdlijn(stuk, "1")

@@ -85,7 +85,16 @@ def descriptor(arrangement):
                 (key, p["function"], round(p["end"] - p["start"], 2), p.get("density"))
             )
         for motif in plan.get("motifs", []):
-            features.add((key, "motif", tuple(motif)))
+            if isinstance(motif, dict):
+                tones = motif["tones"]
+                fingerprint = tuple((t["degree"] - tones[0]["degree"], t["duration"]) for t in tones)
+            else:
+                fingerprint = tuple(motif)
+            features.add((key, "motif", fingerprint))
+        realized = [n["realized_pitch"] for n in plan.get("realized_motifs", [])
+                    if n["realized_pitch"] is not None]
+        if realized:
+            features.add((key, "realized_contour", tuple(b - a for a, b in pairwise(realized))))
     return features
 
 

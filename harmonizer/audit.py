@@ -97,8 +97,9 @@ def musical_audit(arrangement, profile, performance_path=None):
             terminal_sounding_pitches=sorted(sounding),
         )
         sections.append(row)
-        row["satb"] = satb_coverage(a.notes, section["start"], section["end"])
-        if section["name"] == "Harmonisatie" and not row["satb"]["valid"]:
+        row["satb"] = satb_coverage([n for n in a.notes if n.part == "piano" and n.role != "descant"], section["start"], section["end"])
+        piano_descant = a.diagnostics.get("countervoice", {}).get("profile") == "piano"
+        if section["name"] == "Harmonisatie" and not row["satb"]["valid"] and not piano_descant:
             issues.append(
                 {
                     "code": "not_four_part",
@@ -107,7 +108,9 @@ def musical_audit(arrangement, profile, performance_path=None):
                 }
             )
         if section["name"] == "Naspel" and sounding:
-            tonic_triad = {(a.tonic + MODES[a.mode][i]) % 12 for i in (0, 2, 4)}
+            final_quality = hs[-1].quality if hs else None
+            third = 4 if final_quality == "major" else 3 if final_quality == "minor" else MODES[a.mode][2]
+            tonic_triad = {a.tonic, (a.tonic + third) % 12, (a.tonic + 7) % 12}
             if min(sounding) % 12 != a.tonic:
                 issues.append(
                     {

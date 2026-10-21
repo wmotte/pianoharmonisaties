@@ -41,9 +41,11 @@ def local_tempo(arrangement, beat):
 def section_settings(melody, profile, config, name, rng):
     key = "intro" if name == "Voorspel" else "outro"
     overrides = config.get("sections", {}).get(key, {})
-    unknown = set(overrides) - {"meter", "tempo", "bars"}
+    unknown = set(overrides) - {"meter", "tempo", "bars", "terminal_quality"}
     if unknown:
         raise ValueError(f"Onbekende sectie-instellingen: {sorted(unknown)}")
+    if "terminal_quality" in overrides and (key != "outro" or overrides["terminal_quality"] not in ("major", "minor")):
+        raise ValueError("terminal_quality is alleen major/minor in het naspel.")
     sources = [
         s
         for s in profile.get("section_library", [])
@@ -74,14 +76,7 @@ def section_settings(melody, profile, config, name, rng):
     if legacy is not None and "bars" in overrides:
         raise ValueError("Gebruik sectielengte in maten of tellen, niet beide.")
     ratio = profile.get("section_ratios", {}).get(name)
-    fallback = max(
-        32 if key == "intro" else 16,
-        min(
-            128 if key == "intro" else 80,
-            round(melody.length * (0.6 if key == "intro" else 0.35) / measure)
-            * measure,
-        ),
-    )
+    fallback = (24 if key == "intro" else 16) * measure
     length = float(
         legacy
         if legacy is not None
@@ -101,4 +96,5 @@ def section_settings(melody, profile, config, name, rng):
         "length": length,
         "source": source,
         "overrides": overrides,
+        **({"terminal_quality": overrides["terminal_quality"]} if "terminal_quality" in overrides else {}),
     }

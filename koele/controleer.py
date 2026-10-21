@@ -89,8 +89,6 @@ def stemcontrole(stuk):
             for a in range(len(namen)):
                 for b in range(a + 1, len(namen)):
                     sa, sb = namen[a], namen[b]
-                    if {sa, sb} == {"tegenstem", "1"}:
-                        continue  # melodie en tegenstem komen uit de bron
                     if not all((vorige[sa], vorige[sb], nu[sa], nu[sb])):
                         continue
                     if vorige[sa][1] == nu[sa][1] or vorige[sb][1] == nu[sb][1]:
@@ -165,7 +163,7 @@ def controleer_bron(b):
     stuk = mp.laad(b)
     xml = tmp / f"{b.stem}_piano.musicxml"
     mp.bouw(stuk, met_zang=False).write("musicxml", fp=xml)
-    alle = check(Score(xml))
+    alle = check(Score(xml, voice_identity=True))
     regels = [f for f in alle if f["code"] not in ZACHT]
     meldingen, waarschuwingen = stemcontrole(stuk)
     waarschuwingen += tegenstem_leidtonen(stuk)

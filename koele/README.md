@@ -36,6 +36,7 @@ het pad naar MuseScore staat bovenaan `maak_partituren.py`.
 | `waarom.py` | Laat bij een verbinding zonder regelgoede oplossing zien welke regel elke kandidaat blokkeert. |
 | `kleurstats.py` | Aandeel kleurakkoorden en omkeringen per bron. |
 | `transponeer.py` | Transponeert een bron, stemmen en akkoorden. |
+| `componeer.py` | Maakt afzonderlijke STUK-varianten met thematische omlijsting en een fluit- of piano-bovenstem. Zie [compositie](../docs/compositie.md). |
 | `stijl.mss` | MuseScore-stijl voor alle partituren. |
 
 ## Gitaarakkoorden

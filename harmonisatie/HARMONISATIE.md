@@ -73,6 +73,10 @@ wilt laten maken. Voeg op macOS bijvoorbeeld toe:
 Op andere systemen geef je het pad naar de eigen MuseScore-installatie op.
 De vijf bestaande voorbeelden bevatten al een PDF.
 
+Voor een thematisch voorspel, naspel en een optionele fluit- of piano-bovenstem
+voeg je `--arrangement-config arrangement.json` toe. De [compositiehandleiding](../docs/compositie.md)
+beschrijft de instellingen en de muziekgroepadapter.
+
 ### Een eigen melodie aanleveren
 
 JSON geeft de meeste controle over de muzikale invoer. Neem een meegeleverd

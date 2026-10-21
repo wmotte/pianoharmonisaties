@@ -34,6 +34,8 @@ def main(*, default_model=None):
         "--exclude-group", help="Reject a model trained on this tune group"
     )
     parser.add_argument("--musescore")
+    parser.add_argument("--arrangement-config", type=Path,
+                        help="Compose thematic prelude/postlude and an optional flute or piano countervoice")
     parser.add_argument(
         "--octave-register",
         action="store_true",
@@ -114,6 +116,24 @@ def main(*, default_model=None):
         report["export_error"] = f"{type(exc).__name__}: {exc}"
         write_json(args.output / "report.json", report)
         raise
+    if args.arrangement_config:
+        from .arrange import compose_variants, export_variants, validate_config
+        config = json.loads(args.arrangement_config.read_text())
+        validate_config(config)
+        write_json(args.output / "arrangement.config.json", config)
+        try:
+            variants = compose_variants(melody, arrangement, config)
+            report["arrangements"] = export_variants(
+                variants, melody, args.output / "arrangements",
+                soundfont=config.get("soundfont"), musescore=args.musescore)
+        except Exception as exc:
+            report["arrangement_status"] = "failed"
+            report["arrangement_error"] = str(exc)
+            report["arrangement_search"] = getattr(exc, "report", {})
+            write_json(args.output / "report.json", report)
+            raise
+        report["arrangement_status"] = "awaiting_listening"
+        write_json(args.output / "report.json", report)
     write_json(args.output / "report.json", report)
     print(
         json.dumps(

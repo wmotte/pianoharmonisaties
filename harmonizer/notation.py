@@ -8,12 +8,14 @@ from itertools import pairwise
 from pathlib import Path
 
 from music21 import (
+    articulations,
     bar,
     chord,
     clef,
     converter,
     duration,
     expressions,
+    harmony,
     instrument,
     key,
     layout,
@@ -235,11 +237,15 @@ def _sounding(score, melody_only=False):
         for measure in part.getElementsByClass(stream.Measure):
             for voice in list(measure.voices)[:1] if melody_only else measure.voices:
                 for element in voice.notes:
+                    if isinstance(element, harmony.Harmony):
+                        continue
                     voices[str(voice.id)].insert(
                         element.getOffsetInHierarchy(part), sounding_copy(element)
                     )
             if not measure.voices:
                 for element in measure.notes:
+                    if isinstance(element, harmony.Harmony):
+                        continue
                     voices["1"].insert(
                         element.getOffsetInHierarchy(part), sounding_copy(element)
                     )
@@ -385,23 +391,33 @@ def save_musicxml(
     def hand(n):
         return hand_by_id[id(n)] if hands is not None else piano_hand(n, arrangement)
 
-    top = [n for n in arrangement.notes if n.role in ("melody", "motif")]
+    piano_notes = [n for n in arrangement.notes if n.part == "piano"]
+    flute = [n for n in arrangement.notes if n.part == "flute"]
+    top = [n for n in piano_notes if n.role in ("melody", "motif")]
     inner = [
         n
-        for n in arrangement.notes
+        for n in piano_notes
         if n.role in ("inner", "alto", "bass", "tenor") and hand(n) == "RH"
     ]
-    bass = [n for n in arrangement.notes if hand(n) == "LH"]
-    if len(top) + len(inner) + len(bass) != len(arrangement.notes):
+    bass = [n for n in piano_notes if hand(n) == "LH" and n not in top]
+    descant = [n for n in piano_notes if n.role == "descant"]
+    if len(top) + len(inner) + len(bass) + len(descant) != len(piano_notes):
         raise ValueError("Onbekende nootrol voor pianonotatie.")
     if len(_lanes(top)) > 1:
         raise ValueError(
             "Melodie en motief moeten samen een eenstemmige bovenstem vormen."
         )
-    explicit_satb = hands is None and any(
+    partitioned = bool(descant) or bool(arrangement.diagnostics.get("hand_assignment"))
+    explicit_satb = hands is None and not partitioned and not any(n.role == "inner" for n in piano_notes) and any(
         n.role in ("tenor", "alto") for n in arrangement.notes
     )
-    if explicit_satb:
+    if partitioned:
+        lanes = []
+        for side in ("RH", "LH"):
+            primary = [n for n in top if hand(n) == side]
+            others = [n for n in piano_notes if n not in top and hand(n) == side]
+            lanes.append((_lanes(primary) or [[]]) + _lanes(others))
+    elif explicit_satb:
         tenor = [n for n in arrangement.notes if n.role == "tenor"]
         bass_line = [n for n in arrangement.notes if n.role == "bass"]
         lanes = [
@@ -412,10 +428,14 @@ def save_musicxml(
             raise ValueError("SATB vereist vier afzonderlijke monofone stemmen.")
     else:
         lanes = [(_lanes(top) or [[]]) + _lanes(inner), _lanes(bass) or [[]]]
+    if flute:
+        staffs.append(stream.Part(id="flute"))
+        lanes.append(_lanes(flute) or [[]])
     bars = _bars(arrangement)
     for staff_index, staff in enumerate(staffs):
-        staff.partName = "Piano"
-        staff.insert(0, instrument.Piano())
+        staff.partName = "Dwarsfluit" if staff_index == 2 else "Piano"
+        staff.partAbbreviation = "Fl." if staff_index == 2 else "Pno."
+        staff.insert(0, instrument.Flute() if staff_index == 2 else instrument.Piano())
         previous_meter = None
         for number, (start, end, num, den) in enumerate(bars, 1):
             measure = stream.Measure(number=number)
@@ -427,7 +447,7 @@ def save_musicxml(
                 measure.showNumber = stream.enums.ShowNumber.NEVER
             if number == 1:
                 measure.insert(
-                    0, clef.TrebleClef() if staff_index == 0 else clef.BassClef()
+                    0, clef.BassClef() if staff_index == 1 else clef.TrebleClef()
                 )
                 measure.insert(0, deepcopy(signature))
             if staff_index == 0:
@@ -465,7 +485,7 @@ def save_musicxml(
                             else "start"
                         )
                     if (
-                        staff_index == 0
+                        (staff_index == 0 or partitioned or staff_index == 2)
                         and voice_index == 1
                         and not after
                         and any(
@@ -476,6 +496,11 @@ def save_musicxml(
                         fermata_mark = expressions.Fermata()
                         fermata_mark.type = "upright"
                         element.expressions.append(fermata_mark)
+                    pause = arrangement.diagnostics.get("entry_pause")
+                    if pause and not after and abs(offset - pause["end"]) < _EPS:
+                        if not any(isinstance(e, expressions.Fermata) for e in element.expressions):
+                            element.expressions.append(expressions.Fermata())
+                        element.articulations.append(articulations.Caesura())
                     if staff_index == 0 or explicit_satb:
                         element.stemDirection = "up" if voice_index == 1 else "down"
                     voice.insert(a - start, element)
@@ -502,7 +527,7 @@ def save_musicxml(
             _accidentals(measure, signature)
             staff.insert(start, measure)
         score.insert(0, staff)
-    score.insert(0, layout.StaffGroup(staffs, symbol="brace", barTogether=True))
+    score.insert(0, layout.StaffGroup(staffs[:2], symbol="brace", barTogether=True))
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     score.write("musicxml", fp=str(path))
@@ -517,7 +542,18 @@ def save_musicxml(
         raise ValueError(
             "MusicXML-roundtrip heeft toonhoogten of structurele noottijden veranderd."
         )
-    melody_actual = _sounding(parsed, melody_only=True)
+    if partitioned:
+        # The retained melody can change hand. Its reserved voice is always first.
+        retained = stream.Score()
+        for source_part in list(parsed.parts)[:2]:
+            part = deepcopy(source_part)
+            for measure in part.getElementsByClass(stream.Measure):
+                for voice in list(measure.voices)[1:]:
+                    measure.remove(voice)
+            retained.insert(0, part)
+        melody_actual = _sounding(retained)
+    else:
+        melody_actual = _sounding(parsed, melody_only=True)
     melody_expected = sorted((n.pitch, n.start, n.end) for n in top)
     if len(melody_actual) != len(melody_expected) or any(
         p != q or abs(a - c) >= _EPS or abs(b - d) >= _EPS
@@ -526,11 +562,22 @@ def save_musicxml(
         raise ValueError(
             "De afzonderlijke melodie- en motiefstem is veranderd in MusicXML."
         )
+    if flute:
+        flute_score = stream.Score()
+        flute_score.insert(0, deepcopy(parsed.parts[-1]))
+        actual_flute = _sounding(flute_score)
+        expected_flute = sorted((n.pitch, n.start, n.end) for n in flute)
+        if len(actual_flute) != len(expected_flute) or any(
+            p != q or abs(a - c) >= _EPS or abs(b - d) >= _EPS
+            for (p, a, b), (q, c, d) in zip(actual_flute, expected_flute)
+        ) or not isinstance(parsed.parts[-1].getInstrument(), instrument.Flute):
+            raise ValueError("Fluitpartij of instrument gewijzigd in MusicXML.")
     return {
         "all_notes_exact_after_export": True,
         "melody_voice_exact_after_export": True,
         "notes": len(expected),
-        "staves": 2,
+        "staves": len(staffs),
+        "flute_part_exact_after_export": True if flute else None,
         "measures": len(bars),
         "key_signature_sharps": signature.sharps,
         "structural_timing": True,
