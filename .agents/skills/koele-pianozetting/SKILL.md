@@ -25,11 +25,17 @@ Een zetting juist uitdunnen of vierstemmig maken: skill `vierstemmig-reduceren`.
    melodiebron**).
 2. **Akkoorden kiezen** (`"akkoorden"`); `zetter.py` zet alt/tenor/bas met de regels als harde eisen.
    Twijfel over één maat: `../koele/probeer.py <naam> <sectie> <maat> 'kand1' 'kand2'` toetst varianten
-   zonder de bron te wijzigen.
+   zonder de bron te wijzigen. Meldt de zetter `geen regelgoede verbinding naar X`, dan laat
+   `../koele/waarom.py <naam>` zien welke regel elke kandidaat op die plek blokkeert (parallel, overlap,
+   sprong, verborgen kwint), met de melodie- en tegenstemnoten eromheen.
 3. **Bouwen = controleren**: `../.venv/bin/python ../koele/maak_partituren.py [naam ...]`. Dit draait regels,
    stemcontrole, greep (≤ 1 octaaf per hand), grijze rusten en opmaak in één keer. Klaar als elk stuk
-   `<naam>: ok` meldt (exit 0); `LET OP`-regels beoordeel je zelf. `geen regelgoede verbinding naar X` =
-   kies een ander akkoord of omkering, versoepel de regels niet.
+   `<naam>: ok` meldt (exit 0); `LET OP`-regels beoordeel je zelf: wrijvende tegenstem, een leidtoon in de
+   tegenstem die niet stapsgewijs oplost, en de zachte codes
+   `T2` (verdubbelde terts in majeur), `KAAL` (geen terts), `HB5`/`HB8` (binnenstem springt naar kwint/octaaf
+   met een stapsgewijze bas), `N9`, `D5` en `OV`. Veel `T2` of `KAAL` in één stuk wijst op te magere
+   akkoordkeuze of een slash-bas op de terts; los dat op in `"akkoorden"`, niet in de code. `geen regelgoede
+   verbinding naar X` = kies een ander akkoord of omkering, versoepel de regels niet.
 4. **Kleur meten**: `../koele/kleurstats.py` → doel 15–25 % kleur, 10–15 % omkeringen.
 5. **Bekijken**: render alleen de PDF-pagina's waar de controle iets meldt, plus een steekproef
    (`pdftoppm -r 80 -png -f <p> -l <p> "pdf/<bestand>.pdf" tmp/<naam>`). Kijk kritisch naar herhaalde noten in
@@ -76,6 +82,10 @@ Een zetting juist uitdunnen of vierstemmig maken: skill `vierstemmig-reduceren`.
 - **Harmonisch ritme**: in 4/4 en 2/2 meestal 2 akkoorden per maat; hele maten alleen bij stilstand of slot.
 - **Baslijn**: doorgaande bassen (`C G:B Am`, `F C:E Dm`); kwartsext alleen cadenserend.
 - **Cadensen afwisselen**; herhaalde regels de tweede keer anders harmoniseren. Canon: elke regel hetzelfde schema.
+- **Bedrieglijk slot (V → VI)**: VI in grondligging, de leidtoon stijgt naar de grondtoon van VI. Zonder opgegeven bas
+  wijkt `zetter.py` stilzwijgend uit naar de tertsbas (sextakkoord, kostenpost 12) als de grondligging duurder is;
+  dat zie je terug als `D5`/`T2` in de controle. Forceer dan de bas (`Gm:G`) en geef het volgende akkoord zo nodig
+  ook een bas (`Eb:Bb`) voor een lopende baslijn. Voorbeeld: `muziekgroep_25_oct/bron/gezang_320.py`, maat 14.
 - **Voorspel**: elk lied zonder intro krijgt er een (2–4 maten, meestal de slotregel), eindigend op Vsus4 → V met
   de bovenstem op de kwint; pas `"regels"` aan (maatnummers verschuiven). Bestaande intro's: vorm houden.
 - **Overgang voorspel → zang** (automatisch, `voorspel_pauze()`): fermates + caesuur aan het eind van de eerste
@@ -89,9 +99,18 @@ Een zetting juist uitdunnen of vierstemmig maken: skill `vierstemmig-reduceren`.
 - **Voller dan Koeles kale zetting**: `vul()` in maak_partituren.py (alleen partituur, niet in de controle).
 
 ## Speelbaarheid (harde eis van de gebruiker)
-- Per hand hoogstens een octaaf. Goed patroon: **links één lage noot, rechts drie** (melodie + alt + tenor).
-- `vul()` verplaatst de tenor naar de rechterhand als die binnen een octaaf onder de melodie past én ≥ F3 ligt
-  (`RH_MIN`, anders hulplijnen); alleen dan krijgt de bas een octaaf eronder (niet onder G1).
+- Per hand hoogstens een octaaf. Gewenst patroon (gebruiker): **links de bas, rechts drie noten** (melodie +
+  alt + tenor). Twee lagen zorgen daarvoor:
+  - `zetter.py` rekent per ligging zachte kosten (`RH_SPAN_KOST`, `RH_SPAN_PER`) als de tenor meer dan een
+    octaaf onder de hoogste melodienoot van het segment ligt of onder F3 (`RH_MIN`), zodat de zetting zelf al
+    in de rechterhand past. Resultaat op de stukken van 25 oktober: ruim twee derde van de tenornoten rechts.
+  - `vul()` in maak_partituren.py beslist **per tenornoot**: past hij (binnen een octaaf onder de melodie die
+    tijdens de noot klinkt, ≥ F3, onder de alt), dan wordt hij akkoordnoot in de rechterhand; anders samenklank
+    bij de bas in de linkerhand. Een liggende noot tegenover een bewegende stem wordt in overbonden noten
+    gedeeld (ties per akkoordnoot). Een overbonden tenornoot blijft met zijn vervolg in dezelfde hand.
+    Basoctaven alleen onder een losse basnoot, niet onder een samenklank en niet na een leidtoon (anders
+    springt de onderste lijn een septiem omlaag en meldt de controle `LT`). `vul()` geeft de telling
+    `{"rechts", "links"}` terug.
 - Popballads (Sela e.d.): `"linkerhand": "gebroken"` in STUK → gebroken akkoorden in de linkerhand.
 - Begeleidingsvariant zonder melodie in de piano: `"begeleiding": "akkoorden"` in STUK. Maten met zang krijgen
   rechts gesloten akkoorden (F3–D5, kleine bewegingen) en links alleen de bas; maten zonder zang houden de
@@ -117,7 +136,19 @@ Een zetting juist uitdunnen of vierstemmig maken: skill `vierstemmig-reduceren`.
   klank fluit zijn (anders “Tegenstem” met zangklank). Ligging: in het octaaf van de piano-bovenstem
   (ongeveer D4–E5), niet een octaaf hoger; de gebruiker vond B5–E6 te hoog. In het voorspel speelt de fluit de
   piano-bovenstem in dezelfde ligging mee. Stijl (voorbeeld: `muziekgroep_25_oct/bron/psalm_62_fluit.py`):
-  per regel afwisselend lange noten, een syncope (kwart + gepunteerde halve, of overgebonden over de maatstreep),
+  De fluit is de **hoogste stem**: een leidtoon daarin (de terts van een majeurakkoord vóór het akkoord een
+  kwart hoger, ook bij tussendominanten zoals A → D in e) gaat stapsgewijs omhoog of blijft liggen, en springt
+  niet weg; afspringen mag alleen in een middenstem (Hooning 5e, A&S unit 6). De controle meldt het als
+  `LET OP … leidtoon … in tegenstem`. Zet de bas dan niet op dezelfde leidtoon (`A`, niet `A:C#`): bas en fluit
+  zouden samen cis–d maken, parallelle octaven, en de zetter meldt `geen regelgoede verbinding`. Voorbeeld:
+  psalm 62 maat 18–19, fluit b–cis | d–a boven A → Dsus4 D. Tweede voorbeeld, psalm 19 (fluit) maat 22–23:
+  fluit fis–g terwijl de melodie d–d′ springt boven D → G. Met een D-akkoord moet de piano-fis ook naar g
+  (octaven met de fluit) en past door de octaafsprong van de melodie geen enkele ligging; de oplossing is een
+  akkoord zonder fis op die tel (`Bm:D`, bas blijft d), zodat de leidtoon alleen in de fluit ligt. Algemeen:
+  laat de leidtoon in de fluit oplossen en geef de piano op die tel geen eigen leidtoon die dezelfde kant op
+  moet (grondligging in plaats van een slash-bas op de leidtoon, of een akkoord zonder die toon). De controle
+  (`tegenstem_leidtonen`) meldt elke fluitleidtoon die wegspringt; psalm 19 maat 8, 23 en 26 zijn zo hersteld.
+  Stijl per regel: afwisselend lange noten, een syncope (kwart + gepunteerde halve, of overgebonden over de maatstreep),
   een korte kwartloop door akkoordtonen en een verbindingsnoot naar de volgende regel; op de lange slotnoot van
   de melodie beweegt de fluit, en waar de melodie stijgt gaat de fluit vaak omlaag. Alleen halve en hele noten
   klinkt te eenvoudig. De fluit telt mee in de zetting: een fluitnoot kan `geen regelgoede verbinding` geven,
@@ -129,9 +160,19 @@ Een zetting juist uitdunnen of vierstemmig maken: skill `vierstemmig-reduceren`.
 - Max. 2 mollen of 2 kruisen; let op te hoge zangnoten (bijv. hoge es). Transponeren:
   `../koele/transponeer.py <naam> <interval> <toonaard> <toonsoort>` (bijv. `psalm_134 M2 F -1`); daarna kan de
   oude harmonie breken (S7 e.d.) → opnieuw kiezen.
-- Uitgerekte regels of een te korte laatste regel: `"regels"` (maatnummers met nieuwe regel) of
-  `"spatium": 1.5–1.6` per stuk. MuseScore breekt zelf af bij te volle systemen. Veel tekstregels (vier of
-  vijf coupletten): spatium 1.2–1.4, zodat het stuk liefst op één pagina past.
+- Eén maat alleen op een volle regel (over de regel heen geduwd) of een te korte laatste regel: `"regels"`
+  (maatnummers met nieuwe regel) of `"spatium": 1.5–1.6` per stuk. MuseScore breekt zelf af bij te volle
+  systemen; drie noten in de rechterhand maken maten breder dan de oude tenor-in-de-linkerhand, dus na een
+  wijziging in `vul()` of de zetter opnieuw bouwen en de `OPMAAK`-meldingen nalopen. Veel tekstregels (vier
+  of vijf coupletten): spatium 1.2–1.4, zodat het stuk liefst op één pagina past.
+- **Pagina's in balans**: MuseScore vult pagina's van voren af aan, zodat een stuk van meer pagina's eindigt
+  met een halflege laatste pagina (gezang 303 met tussenspel: vijf regels op p2, drie op p3). `maak_partituren.py`
+  leest na het renderen per maat de pagina uit MuseScores mpos-export, verdeelt de regels zo dat een pagina
+  hoogstens één regel meer heeft dan de volgende (4 + 4 in plaats van 5 + 3), zet de paginabreuken in
+  `"paginas"` en bouwt het stuk opnieuw; de melding `nieuwe pagina bij maat …` toont waar. Regels schuiven
+  alleen naar een latere pagina (de eerste pagina draagt de titel). Wil je een andere verdeling, zet dan zelf
+  `"paginas"`; de balans voegt alleen breuken toe. `opmaak.py` meldt `pagina's niet in balans` als het toch
+  misgaat. Liever één pagina dan twee halve: dan spatium verkleinen.
 - **Partituuropmaak** (voorkeur gebruiker, vastgelegd in `koele/stijl.mss` en `ruim_bereik()`): A4, kleine
   titel (16 pt) en een laag titelkader zodat de muziek de ruimte krijgt, tekst donkerblauw, gitaarakkoorden
   donkerrood en vet. Kleuren en lettergroottes horen in `stijl.mss`, niet per stuk.
@@ -139,12 +180,29 @@ Een zetting juist uitdunnen of vierstemmig maken: skill `vierstemmig-reduceren`.
 ## Valkuilen
 - Back-up vóór elke herzetting: `cp bron/<naam>.py tmp/backup/<naam>_<reden>.py`.
 - Een regel in zetter.py versoepelen voor één verbinding breekt elders de controle (H8/AP8); pas het akkoord aan.
+- Zachte kosten in zetter.py niet 'even' bijstellen: elke kostenwijziging verschuift de liggingen van alle
+  bestaande stukken, en de controle toetst ook melodienoten tussen de akkoorden in, waar de zetter niet kijkt.
+  Bij een bewuste wijziging (zoals de rechterhandkosten in oktober 2026) daarna álle liedmappen opnieuw
+  controleren (`controleer.py` per map) en de stukken van de komende zondag opnieuw bouwen.
+- Harde regels in zetter.py (INF) snoeien paden die verderop de enige regelgoede zijn; de melding komt dan
+  maten later (`geen regelgoede verbinding`) en is moeilijk te herleiden. Septiem- en leidtoonoplossing zijn
+  daarom zware zachte kosten (`ZWAAR`): de zetter kiest ze alleen als er niets anders is, en de controle meldt
+  dan `S7`/`LT`, waarna het akkoord aangepast wordt. `waarom.py` laat zien wat er blokkeert.
+- De zetter houdt de piano vrij van een septiem of leidtoon die de melodie aan het eind van het segment zelf
+  heeft (ook als doorgang): anders lossen beide naar dezelfde toon op (parallelle octaven, `LT2`). Staat de
+  septiem alleen in de melodie, laat het akkoord dan zonder 7 (`Em` in plaats van `Em7`); de melodie levert hem.
+- Rust de melodie, dan is de alt de hoogste pianostem: de controle toetst buitenstemregels (verborgen kwint,
+  leidtoon, anti-parallel bij het weer inzetten van de melodie) op die alt; de zetter doet dat sinds oktober
+  2026 ook (`top1`/`top2` in `overgang()`).
 - Grijze (onzichtbare) rusten ontstaan als MusicXML-stemnummers per balk niet aaneensluiten (balk 1: 1, 2…;
   balk 2: 5, 6…). `nabewerk()` hernummert per maat; nieuwe stemmen altijd via die route laten lopen.
 - Spatium werkt alleen via `<spatium>` in `score_style.mss` binnen de .mscz (`ruim_bereik()` doet dat).
 - `transponeer.py` laat herstellingstekens (`n`) vallen: controleer na transponeren elke `Fn4` e.d. en zet ze terug.
-- De regelcontrole leidt de toonsoort af uit de voortekening (groot, mineur, dorisch). Mixolydisch met één kruis
-  leest als G groot, dus fis telt als leidtoon: vermijd dan F♯m en verdubbelde fissen in plaats van de regels
-  aan te passen.
+- De regelcontrole kent geen modi: per voortekening kiest ze groot of mineur (Krumhansl). D-mixolydisch met één
+  kruis leest als G groot, dus fis telt als leidtoon (D → G is dan V → I): vermijd verdubbelde fissen en laat
+  een fis in de bas stapsgewijs naar g gaan; de zetter behandelt de terts van elk majeurakkoord dat een kwart
+  omhoog gaat als leidtoon in de bas, ook bij tussendominanten. Zet in modale psalmen `"toonaard"` op de
+  finalis (`"D"` voor psalm 19, `"e"` voor psalm 62): de zetter neemt daaruit de leidtoon voor de
+  verdubbelingsregel en de spelling. De gitaarakkoorden en de harmonisatie zelf blijven modaal (zie Stijl).
 - Veel stukken tegelijk: per 3 stukken een agent met deze skill; wacht op hun meldingen en bouw daarna zelf
   alles opnieuw met één `maak_partituren.py`-run.

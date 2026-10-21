@@ -13,15 +13,25 @@ vierstemmige koraalzetting getoetst.
 Codes:
   P5/P8/P1  open parallelle kwinten/octaven/priemen (AP5/AP8: door tegenbeweging of octaafwissel)
   H5/H8     verborgen kwint/octaaf in de buitenstemmen (S springt, B gelijkbewegend)
+  HB5/HB8   verborgen kwint/octaaf tussen een stapsgewijze bas en een binnenstem die een kwart of meer springt
+  D5        verminderde kwint gevolgd door een reine kwint in hetzelfde stemmenpaar (A&S 6-16, Hooning 3f)
   KR        stemkruising (rechterhand onder linkerhand, of een stem kruist een liggende noot)
-  OV        overlap (stem gaat voorbij de vorige toon van de buurstem)
+  OV        overlap (stem gaat voorbij de vorige toon van de buurstem); in klavierstijl geen fout (A&S 6-12)
   LT2       verdubbelde leidtoon
   LT        leidtoon in een buitenstem lost bij V->I niet stapsgewijs op naar de tonica
   S7        akkoordseptiem lost niet dalend (of liggend) op
-  A2        overmatig melodisch interval of sprong > octaaf in een binnenstem
+  N9        none (add9) in een binnenstem of de bas lost niet dalend (of liggend) op
+  A2        overmatig of verminderd interval, septiemsprong of sprong > octaaf in een binnenstem
+  T2        verdubbelde terts in een majeurdrieklank (grond- of sextligging)
+  KAAL      drie of meer noten zonder terts (alleen grondtoon en kwint)
   LIG       ligging: meer dan een octaaf tussen S-A of A-T
   SPL       spelling van voortekens wijkt af van de akkoord-/toonsoortspelling
   OMV       buiten de zangomvang van S/A/T/B (alleen op verzoek)
+
+ZACHT bevat de codes die een stijlkeuze of een 'niet absolute' regel markeren; koele/controleer.py meldt
+ze als LET OP en keurt er niet op af.
+Bronnen: Aldwell & Schachter, Harmony and Voice Leading, unit 6 (A&S); Hooning, Harmonieleer hfst. 3b-3h, 5e,
+6c, 7e (martijnhooning.nl); Schouten, Eenvoudige muziekleer hfst. 8, 11, 19, 22. Zie README, stap 4.
 
 `python harmonie_regels.py --test` draait een synthetische test met bekende fouten.
 """
@@ -42,7 +52,11 @@ from transcribe_piano import KEY_PROFILES, fifths_index, key_spell_pc, spell_ver
 DIR = Path(__file__).resolve().parent
 RED, GREEN = "#E00000", "#00A000"
 RANGES = {"S": (60, 81), "A": (55, 74), "T": (48, 67), "B": (40, 60)}  # c'-a'', g-d'', c-g', E-c'
+# A&S 6-2: c'-g'', g-c'', c-g', E-c' met toegestane uitbreidingen; S en A hier iets ruimer (gemeentezang).
 SEVENTH = {"dom7": 10, "min7": 10, "maj7": 11, "m7b5": 10, "dim7": 9}
+NINTH = {"add9": 2, "madd9": 2}
+INNER_LEAPS = ("A2", "A3", "A4", "A5", "A6", "d3", "d4", "d5", "d7", "M7", "m7")  # verboden sprongen in binnenstemmen (Jeppesen: alle overmatige en verminderde; A&S/Hooning: septiem)
+ZACHT = {"T2", "KAAL", "HB5", "HB8", "N9", "D5", "OV"}  # stijlkeuze of 'niet absoluut': waarschuwing, geen fout
 LETTER_STEP = {"maj": (0, 2, 4), "min": (0, 2, 4), "dom7": (0, 2, 4, 6), "maj7": (0, 2, 4, 6),
                "min7": (0, 2, 4, 6), "dim": (0, 2, 4), "dim7": (0, 2, 4, 6), "m7b5": (0, 2, 4, 6),
                "sus4": (0, 3, 4), "sus2": (0, 1, 4), "add9": (0, 1, 2, 4), "maj6": (0, 2, 4, 5),
@@ -368,6 +382,24 @@ def check(sc: Score, omvang: bool = False, *, include_ids: bool = False) -> list
         if len({r.midi for r in lts}) >= 2 or len(lts) >= 2:
             for r in lts:
                 add(r, "LT2", v, "verdubbelde leidtoon")
+        # --- verdubbeling: grondtoon is de norm; terts in majeur niet (Hooning 3c, 6c); kwartsext: kwint
+        root, name, score = v.label
+        onset = [r for r in v.notes if r.on == v.on]
+        bass_pc = v.notes[0].midi % 12
+        if onset and score >= LABEL_MIN_SCORE and name == "maj":
+            terts = (root + 4) % 12
+            sopraan_terts = bass_pc == terts and v.notes[-1].midi % 12 == terts  # sextakkoord: S verdubbelen mag
+            if terts != lt and bass_pc != (root + 7) % 12 and not sopraan_terts \
+                    and sum(r.midi % 12 == terts for r in v.notes) >= 2:
+                for r in v.notes:
+                    if r.midi % 12 == terts:
+                        add(r, "T2", v, "verdubbelde terts in majeur" + (" (sextakkoord)" if bass_pc == terts else ""))
+        # --- kale samenklank: drie of meer noten, alleen grondtoon en kwint (kwint bóven de bas;
+        #     bas plus kwart is een sus4 en heeft per definitie geen terts)
+        pcs = {r.midi % 12 for r in v.notes}
+        if len(onset) >= 2 and len(v.notes) >= 3 and (len(pcs) == 1 or {(pc - bass_pc) % 12 for pc in pcs} == {0, 7}):
+            for r in onset:
+                add(r, "KAAL", v, "geen terts" + (" (alleen grondtoon)" if len(pcs) == 1 else " (grondtoon en kwint)"))
         # --- ligging
         upper = [s for s in ("S", "A", "T") if s in v.slots]
         for up, low in zip(upper, upper[1:]):
@@ -409,6 +441,8 @@ def check(sc: Score, omvang: bool = False, *, include_ids: bool = False) -> list
                 i1, i2 = u1 - l1, u2 - l2
                 if i1 % 12 == 7 and i2 % 12 == 7:
                     code = "P5" if i1 == i2 else "AP5"
+                elif i1 % 12 == 6 and i2 % 12 == 7 and np.sign(ra2.midi - ra1.midi) == np.sign(rb2.midi - rb1.midi):
+                    code = "D5"  # P5 -> d5 mag, d5 -> P5 'normally avoided' (A&S 6-16): de dissonant lost niet op
                 elif i1 % 12 == 0 and i2 % 12 == 0:
                     if i1 == 0 and i2 == 0:
                         code = "P1"
@@ -431,6 +465,17 @@ def check(sc: Score, omvang: bool = False, *, include_ids: bool = False) -> list
                     code = "H5" if i2 == 7 else "H8"
                     for r in (v.slots["S"], v.slots["B"]):
                         add(r, code, v, f"S springt {ds:+d}, B {db:+d}")
+        # verborgen kwint/octaaf tussen stapsgewijze bas en springende binnenstem (Hooning 3g: 'niet absoluut')
+        if "B" in v1.slots and "B" in v.slots:
+            b1, b2 = v1.slots["B"].midi, v.slots["B"].midi
+            db = b2 - b1
+            if db and abs(db) <= 2:
+                for s1, s2, r1, r2 in pairs:
+                    du = r2.midi - r1.midi
+                    if s2 in ("A", "T") and r2.on == v.on and du and np.sign(du) == np.sign(db) and abs(du) > 4:
+                        i2 = (r2.midi - b2) % 12
+                        if i2 in (7, 0) and (r1.midi - b1) % 12 != i2:
+                            add(r2, "HB5" if i2 == 7 else "HB8", v, f"{s2} springt {du:+d}, B stapsgewijs {db:+d}")
         # overlap en kruising van een liggende noot
         order = [s for s in ("B", "T", "A", "S") if s in v.slots]
         prev_slot = {r2.id: (s1, r1) for s1, s2, r1, r2 in pairs}
@@ -458,16 +503,28 @@ def check(sc: Score, omvang: bool = False, *, include_ids: bool = False) -> list
                 if s1 in ("S", "B") and r1.midi % 12 == lt and r2.midi - r1.midi not in (1, 0):
                     add(r1, "LT", v1, f"leidtoon in {s1} gaat naar {r2.spitch.nameWithOctave}")
         # septiem lost dalend op
-        if sc1 >= LABEL_MIN_SCORE and name1 in SEVENTH and root2 != root1:
+        # een septiem- of none-akkoord dat alleen ontstaat doordat de sopraan een doorgangsnoot inzet
+        # terwijl alle andere stemmen liggen, is geen harmonisch septiemakkoord (het label volgt de
+        # doorgang); S7/N9 gelden dan niet, tenzij het vorige verticaal al hetzelfde akkoord was
+        doorgang = (all(r.on < v1.on for r in v1.notes if v1.slot_of(r) != "S")
+                    and any(r.on == v1.on for r in v1.notes if v1.slot_of(r) == "S")
+                    and not (i >= 2 and vs[i - 2].label[0] == root1 and vs[i - 2].label[1] == name1))
+        if sc1 >= LABEL_MIN_SCORE and name1 in SEVENTH and root2 != root1 and not doorgang:
             sev = (root1 + SEVENTH[name1]) % 12
             for s1, s2, r1, r2 in pairs:
                 if r1.midi % 12 == sev and r2.midi - r1.midi not in (0, -1, -2):
                     add(r1, "S7", v1, f"septiem in {s1} gaat naar {r2.spitch.nameWithOctave}")
+        # none lost dalend op, net als de septiem (Schouten hfst. 22)
+        if sc1 >= LABEL_MIN_SCORE and name1 in NINTH and root2 != root1 and not doorgang:
+            nin = (root1 + NINTH[name1]) % 12
+            for s1, s2, r1, r2 in pairs:
+                if s1 != "S" and r1.midi % 12 == nin and r2.midi - r1.midi not in (0, -1, -2):
+                    add(r1, "N9", v1, f"none in {s1} gaat naar {r2.spitch.nameWithOctave}")
         # melodische intervallen in binnenstemmen
         for s1, s2, r1, r2 in pairs:
             if s2 in ("A", "T") and r2.on == v.on and r1.midi != r2.midi:
                 iv = interval.Interval(r1.spitch, r2.spitch)
-                if abs(r2.midi - r1.midi) > 12 or iv.simpleName in ("A2", "A4", "A5", "A6", "d3", "d4", "d7"):
+                if abs(r2.midi - r1.midi) > 12 or iv.simpleName in INNER_LEAPS:
                     add(r2, "A2", v, f"{s2}: {r1.spitch.name}->{r2.spitch.name} ({iv.simpleName}, {r2.midi - r1.midi:+d})")
     return findings
 
@@ -527,7 +584,14 @@ def _test():
     add(R, 10, ["E4", "A4"]); add(L, 10, ["A2", "C#3"])
     add(R, 12, ["C4", "E4"]); add(L, 12, ["G3", "E4"])  # E4 in L, C4 in R: kruising
     add(R, 14, ["D4", "B4"]); add(L, 14, ["G2", "G3"])  # G -> C met leidtoon in S naar g
-    add(R, 16, ["E4", "G4"]); add(L, 16, ["C3", "E3"])
+    add(R, 16, ["E4", "G4"]); add(L, 16, ["C3", "E3"])  # C met verdubbelde terts (T2)
+    add(R, 18, ["G4", "C5"]); add(L, 18, ["C3", "G3"])  # alleen grondtoon en kwint (KAAL)
+    add(R, 20, ["D4", "G4"]); add(L, 20, ["C3", "E3"])  # Cadd9: none d ...
+    add(R, 22, ["E4", "C5"]); add(L, 22, ["A2", "E3"])  # ... stijgt naar e (N9)
+    add(R, 24, ["E4", "C5"]); add(L, 24, ["C3", "G3"])
+    add(R, 26, ["A4", "B4"]); add(L, 26, ["D3", "F3"])  # bas stapsgewijs, alt springt naar kwint (HB5)
+    add(R, 28, ["D4", "G4"]); add(L, 28, ["B2", "F3"])  # G7/B: verminderde kwint B-F ...
+    add(R, 30, ["E4", "C5"]); add(L, 30, ["C3", "G3"])  # ... naar reine kwint C-G (D5)
     for p in (R, L):
         p.makeMeasures(inPlace=True)
         s.insert(0, p)
@@ -540,7 +604,7 @@ def _test():
     codes = Counter(x["code"] for x in f)
     for line in report_lines(f):
         print(line)
-    expect = {"P5", "P8", "LT2", "S7", "LT", "SPL", "KR"}
+    expect = {"P5", "P8", "LT2", "S7", "LT", "SPL", "KR", "T2", "KAAL", "N9", "HB5", "D5"}
     missing = expect - set(codes)
     print("gevonden:", dict(codes), "| ontbreekt:", missing or "-")
     return not missing

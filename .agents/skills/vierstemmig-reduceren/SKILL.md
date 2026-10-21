@@ -54,6 +54,7 @@ Deze regels uit de schoolharmonie mag je buigen **om een kleurtoon te behouden**
 - **Leidtoon in een binnenstem mag wegspringen** als de oplossingstoon tegelijk in een andere stem klinkt, bijvoorbeeld in de bas. Bach doet dat ook regelmatig.
 - **Papieren intervallen die consonant klinken** mogen. Een verminderde sext (F♯→D♭) klinkt als een reine kwint, een verminderde kwart als een grote terts. Een **overmatige secunde** in een binnenstem hoor je wel, en die blijft fout.
 - **Een stem mag even rusten**, dus drie stemmen, als de akkoordsuggestie compleet blijft.
+- **Slotakkoord.** Een slotakkoord zonder terts (`KAAL`) is in de zestiende-eeuwse stijl gewoon (Jeppesen); met terts moet die groot zijn.
 - **Ligging.** "Niet meer dan een octaaf tussen S–A en A–T" is een regel voor de vierstemmige koorzetting, geen wet. Hij geldt niet voor een cantus firmus die een eigen laag vormt (apart klavier, of twee octaven hoger op hetzelfde klavier). Ook in mannenkoor- en Anglicaanse zettingen zie je vaak meer dan een octaaf tussen alt en tenor.
 - **Notatie is geen registratie.** Een cantus firmus in de linkerhandbalk kan op een apart klavier klinken, of een of twee octaven hoger. Veel orgels hebben maar één klavier. Beoordeel dus wat er klinkt, niet in welke balk het staat.
 
@@ -68,7 +69,7 @@ Deze regels uit de schoolharmonie mag je buigen **om een kleurtoon te behouden**
 
    Kleurbehoud gaat boven een papieren regel, maar niet boven een hoorbare fout.
 4. **Controleer.**
-   - Stemvoering: `harmonie_regels.check` uit de repo (zie `controleer_harmonie.py`). Die wijst stemmen toe op toonhoogte. Kruisen stemmen, zoals een cantus firmus of pedaal door de handen heen, controleer dan per stem.
+   - Stemvoering: `harmonie_regels.check` uit de repo (zie `controleer_harmonie.py`). Die wijst stemmen toe op toonhoogte. Kruisen stemmen, zoals een cantus firmus of pedaal door de handen heen, controleer dan per stem. De zachte codes (`harmonie_regels.ZACHT`: `T2`, `KAAL`, `HB5`/`HB8`, `N9`, `D5`, `OV`) zijn bij een reductie juist informatief: `KAAL` zegt dat de terts is weggevallen, `T2` dat een terts dubbel staat waar de grondtoon beter was.
    - Weggevallen tonen:
 
      ```bash

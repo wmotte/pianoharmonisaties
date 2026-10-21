@@ -24,7 +24,8 @@ Notatie per stem:
 Optioneel in een sectie: "opmaat" (eerste maat is een opmaat), "kop" (tekst boven de eerste maat),
 "tempo" (kwarten per minuut), "voltas" ({maatindex binnen sectie: "1."} of {maatindex: ("1.", aantal_maten)};
 meerdere keren als "1.2.3.4."), "teksten" ({maatindex: "D.S."}).
-Optioneel in STUK: "regels"/"paginas" (maatnummers met nieuwe regel/pagina), "ondertitel", "componist",
+Optioneel in STUK: "regels"/"paginas" (maatnummers met nieuwe regel/pagina; pagina's worden daarnaast
+automatisch uitgebalanceerd, zie balanceer_paginas()), "ondertitel", "componist",
 "spatium" (kleinere notenbalk, standaard 1.75), "linkerhand": "gebroken" (popballad: gebroken akkoorden in de linkerhand in plaats van tenor + bas, zie vul()),
 "begeleiding": "akkoorden" (maten met zang: rechts alleen akkoorden zonder melodie, links de bas; voor-, tussen- en
 naspel houden de melodie, zie akkoordbegeleiding()).
@@ -35,6 +36,7 @@ Tekstregels: lettergrepen gescheiden door spaties, 'ge-' koppelt aan de volgende
 Gebruik (vanuit de liedmap): ../.venv/bin/python ../koele/maak_partituren.py [naam ...] [--alleen-xml] [--zonder-controle]
 """
 
+import copy
 import importlib.util
 import re
 import subprocess
@@ -342,13 +344,93 @@ def gitaarakkoorden(stuk, boven):
                 raise ValueError(f"{stuk['titel']} maat {m.number}: akkoordduur en basduur verschillen")
 
 
+def _grens(stem):
+    """Alle noot- en rustgrenzen (offsets) in een stem."""
+    uit = set()
+    for e in stem.notesAndRests:
+        uit.add(e.offset)
+        uit.add(e.offset + e.quarterLength)
+    return uit
+
+
+def _laagste(n):
+    return min(n.pitches, key=lambda p: p.midi) if n.isChord else n.pitch
+
+
+def _deel(e, punten):
+    """Deel element e op de (binnenliggende) offsets punten in overbonden stukken: [(offset, stuk), ...]."""
+    punten = sorted(g for g in punten if e.offset < g < e.offset + e.quarterLength)
+    if not punten:
+        return [(e.offset, e)]
+    randen = [e.offset] + punten + [e.offset + e.quarterLength]
+    oud = _tie(e)
+    uit = []
+    for i, (p0, p1) in enumerate(zip(randen, randen[1:])):
+        d = copy.deepcopy(e)
+        d.quarterLength = p1 - p0
+        if i > 0:
+            d.expressions, d.articulations, d.lyrics = [], [], []
+        if not e.isRest:
+            eerste, laatste = i == 0, i == len(randen) - 2
+            if eerste and oud in (None, "start"):
+                soort = "start"
+            elif laatste and oud in (None, "stop"):
+                soort = "stop"
+            else:
+                soort = "continue"
+            d.tie = tie.Tie(soort)
+        uit.append((p0, d))
+    return uit
+
+
+def _splits_op(stem, grenzen):
+    """Deel de elementen van stem die over een van de grenzen heen liggen in overbonden noten."""
+    for e in list(stem.notesAndRests):
+        stukken = _deel(e, grenzen)
+        if len(stukken) == 1:
+            continue
+        stem.replace(e, stukken[0][1])
+        for p0, d in stukken[1:]:
+            stem.insert(p0, d)
+
+
+def _voeg(stem, y):
+    """Voeg noot y (uit een andere stem van dezelfde maat) als akkoordtoon toe aan stem. Beide worden op
+    elkaars grenzen gesplitst (overbonden noten), daarna vormt elk deel een akkoord met wat er in stem
+    klinkt; een rust in stem wordt door de noot vervangen."""
+    t0, t1 = y.offset, y.offset + y.quarterLength
+    _splits_op(stem, {t0, t1})
+    for o, d in _deel(y, _grens(stem)):
+        e = next((e for e in stem.notesAndRests if e.offset == o), None)
+        if e is None:
+            stem.insert(o, d)
+            continue
+        if e.isRest:
+            d.stemDirection = e.stemDirection
+            stem.replace(e, d)
+            continue
+        akk = chord.Chord(list(e.pitches) + [d.pitch], quarterLength=e.quarterLength)
+        akk.stemDirection = e.stemDirection
+        akk.expressions, akk.articulations = list(e.expressions), list(e.articulations)
+        if d.expressions and not akk.expressions:
+            akk.expressions = [expressions.Fermata(type="upright")]
+        for n_, p_ in (zip(e.notes, e.pitches) if e.isChord else ((e, e.pitch),)):
+            if n_.tie is not None:
+                akk.setTie(n_.tie, p_)
+        if d.tie is not None:
+            akk.setTie(d.tie, d.pitch)
+        stem.replace(e, akk)
+
+
 def vul(boven, onder, gebroken=False):
     """Vollere, speelbare pianozetting (alleen voor de partituur, niet voor de regelcontrole).
 
-    Waar het kan neemt de rechterhand de tenor erbij (melodie + alt + tenor, binnen een octaaf) en houdt de
-    linkerhand alleen de bas; die bas krijgt dan bij frasebegin en -slot, op hele maten en in de slotcadens
-    een octaaf eronder (Koele: LH-octaven vooral aan regeleinden en in het slot). Elders blijft het 2 + 2.
-    Elke hand grijpt hoogstens een octaaf.
+    De rechterhand neemt de tenor erbij (melodie + alt + tenor, binnen een octaaf) en de linkerhand houdt de
+    bas; die bas krijgt bij frasebegin en -slot, op hele maten en in de slotcadens een octaaf eronder (Koele:
+    LH-octaven vooral aan regeleinden en in het slot). Een tenornoot die niet in de rechterhand past (meer
+    dan een octaaf onder de melodie, of onder F3) komt als samenklank bij de bas in de linkerhand. Een
+    liggende noot tegenover een bewegende stem wordt in overbonden noten gedeeld. Elke hand grijpt hoogstens
+    een octaaf. Geeft de telling {"rechts": n, "links": n} van de verplaatste tenornoten.
 
     gebroken=True (popballads, "linkerhand": "gebroken" in de bron): de linkerhand speelt in plaats van bas + tenor
     gebroken akkoorden vanaf de bas (grondtoon, kwint, octaaf in achtsten/kwarten); de akkoordtonen komen uit
@@ -360,28 +442,36 @@ def vul(boven, onder, gebroken=False):
         return max((n.pitch.midi for t, n in sop if not n.isRest and t < t1 and t + n.quarterLength > t0),
                    default=None)
 
-    # 1. per maat: kan de tenor naar de rechterhand?
-    ok = []
+    # 1. per tenornoot: past hij in de rechterhand? Binnen een octaaf onder de hoogste melodienoot die
+    #    tijdens de noot klinkt (of onder de alt als de melodie rust), niet onder F3 en onder de alt.
+    #    Bij een gebroken linkerhand telt het per maat: alle tenornoten naar rechts of geen.
+    plan = []  # (maat onder, alt, bas, tenornoot, naar rechts)
+    ok = []  # per maat: alle tenornoten naar rechts
     for mb, mo in zip(bm, om):
-        alt, ten = _stem(mb, "2"), _stem(mo, "1")
-        goed = alt is not None and ten is not None
-        if goed:
-            an, tn = list(alt.notesAndRests), list(ten.notesAndRests)
-            goed = len(an) == len(tn) and all(
-                x.offset == y.offset and x.quarterLength == y.quarterLength and x.isRest == y.isRest
-                and (x.isRest or (_tie(x) == _tie(y) and y.pitch.midi < x.pitch.midi)) for x, y in zip(an, tn))
-            if goed:
-                for y in tn:
-                    if y.isRest:
-                        continue
-                    hoog = sop_max(mb.offset + y.offset, mb.offset + y.offset + y.quarterLength)
-                    if hoog is None or hoog - y.pitch.midi > SPAN or y.pitch.midi < RH_MIN:
-                        goed = False
-        ok.append(goed)
-    # overbindingen over de maatstreep: beide maten dezelfde keuze
+        alt, ten, bas = _stem(mb, "2"), _stem(mo, "1"), _stem(mo, "2")
+        if alt is None or ten is None or bas is None:
+            ok.append(False)
+            continue
+        alles = True
+        for y in ten.notes:
+            y0, y1 = y.offset, y.offset + y.quarterLength
+            boven = [x for x in alt.notes if x.offset < y1 and x.offset + x.quarterLength > y0]
+            hoog = sop_max(mb.offset + y0, mb.offset + y1)
+            if hoog is None:
+                hoog = max((x.pitch.midi for x in boven), default=None)
+            past = (hoog is not None and hoog - y.pitch.midi <= SPAN and y.pitch.midi >= RH_MIN
+                    and all(x.pitch.midi > y.pitch.midi for x in boven))
+            plan.append([mo, alt, bas, y, past])
+            alles = alles and past
+        ok.append(alles)
+    # een overbonden tenornoot blijft met zijn vervolg in dezelfde hand
     veranderd = True
     while veranderd:
         veranderd = False
+        for p1, p2 in zip(plan, plan[1:]):
+            if _tie(p1[3]) in ("start", "continue") and p1[4] != p2[4]:
+                p1[4] = p2[4] = False
+                veranderd = True
         for i in range(len(om) - 1):
             ten = _stem(om[i], "1")
             laatste = ten.notesAndRests[-1] if ten is not None and len(ten.notesAndRests) else None
@@ -392,25 +482,22 @@ def vul(boven, onder, gebroken=False):
     klank = [(mb.offset + n.offset, mb.offset + n.offset + n.quarterLength, n.pitch.midi)
              for mb, mo in zip(bm, om) for st in (_stem(mb, "2"), _stem(mo, "1")) if st is not None
              for n in st.notes]
-    # 2. tenor verplaatsen
-    for goed, mb, mo in zip(ok, bm, om):
-        if not goed:
+    # 2. tenor verplaatsen: naar de alt (drieklank in de rechterhand) of, als hij daar niet past, als
+    #    samenklank bij de bas (linkerhand). Gebroken linkerhand: alleen hele maten naar rechts.
+    telling = {"rechts": 0, "links": 0}
+    for mo, alt, bas, y, past in plan:
+        if gebroken and not ok[om.index(mo)]:
             continue
-        alt, ten = _stem(mb, "2"), _stem(mo, "1")
-        for x, y in zip(list(alt.notesAndRests), list(ten.notesAndRests)):
-            if x.isRest:
-                continue
-            akk = chord.Chord([y.pitch, x.pitch], quarterLength=x.quarterLength)
-            akk.tie, akk.stemDirection = x.tie, x.stemDirection
-            akk.expressions, akk.articulations = list(x.expressions), list(x.articulations)
-            if y.expressions and not akk.expressions:
-                akk.expressions = [expressions.Fermata(type="upright")]
-            alt.replace(x, akk)
-        mo.remove(ten)
+        _voeg(alt if past else bas, y)
+        telling["rechts" if past else "links"] += 1
+    for mo in om:
+        ten = _stem(mo, "1")
+        if ten is not None and (not gebroken or ok[om.index(mo)]):
+            mo.remove(ten)
     if gebroken:
         _breek(om, ok, klank)
         _enkel(om)
-        return
+        return telling
     # 3. frasegrenzen uit de melodie: een noot van >= 3 tellen of gevolgd door een rust sluit een frase af
     begin, eind = set(), set()
     for (t0, n0), (t1, n1) in zip(sop, sop[1:]):
@@ -423,11 +510,12 @@ def vul(boven, onder, gebroken=False):
         begin.add(sop[0][0])
     # 4. basoctaven, alleen in maten waar de linkerhand alleen de bas speelt
     groepen = []
-    for goed, mo in zip(ok, om):
+    for mo in om:
         bas = _stem(mo, "2")
         for n in (bas.notesAndRests if bas is not None else []):
             if n.isRest:
                 continue
+            goed = not n.isChord  # een samenklank bas + tenor krijgt geen octaaf
             if _tie(n) in ("stop", "continue") and groepen:
                 groepen[-1][2].append(n)
                 groepen[-1][1].append(goed)
@@ -437,6 +525,10 @@ def vul(boven, onder, gebroken=False):
         laatste = k == len(groepen) - 1
         if not all(goeds) or groep[0].pitch.midi - 12 < (OCTAAF_MIN - 5 if laatste else OCTAAF_MIN):
             continue
+        # na een leidtoon (halve toon eronder) geen octaaf: de onderste lijn zou dan een septiem omlaag
+        # springen en de controle ziet de leidtoon niet meer stapsgewijs oplossen (LT)
+        if k and _laagste(groepen[k - 1][2][-1]).midi == groep[0].pitch.midi - 1:
+            continue
         if not (t in begin or t in eind or sum(x.quarterLength for x in groep) >= 4 or k >= len(groepen) - 2):
             continue
         for x in groep:
@@ -445,6 +537,7 @@ def vul(boven, onder, gebroken=False):
             akk.expressions, akk.articulations = list(x.expressions), list(x.articulations)
             x.activeSite.replace(x, akk)
     _enkel(om)
+    return telling
 
 
 LIGGING = (53, 74)  # rechterhandakkoorden in de akkoordbegeleiding: F3 t/m D5
@@ -984,6 +1077,21 @@ def grijze_rusten(mscz):
                    for n in z.namelist() if n.endswith(".mscx"))
 
 
+def balanceer_paginas(stuk, mscz):
+    """Verdeelt de systemen gelijkmatig over de pagina's: zet stuk["paginas"] op de maatnummers waar pagina 2,
+    3, ... moeten beginnen (opmaak.balans, bestaande "paginas" blijven staan). Geeft de nieuw toegevoegde
+    maatnummers; leeg als de verdeling al in balans is."""
+    import opmaak
+    starts = opmaak.balans(opmaak.systemen_per_pagina(mscz))
+    if not starts:
+        return []
+    eerste = 0 if stuk["secties"][0].get("opmaat") else 1
+    nummers = [eerste + i for i in starts]
+    oud = set(stuk.get("paginas", []))
+    stuk["paginas"] = sorted(oud | set(nummers))
+    return [n for n in nummers if n not in oud]
+
+
 def controle(b, sc, mscz, pdf):
     """Alle automatische controles van één gebouwd stuk; lijst met problemen (leeg = goed).
     Waarschuwingen van de stemcontrole (tegenstem wrijft) worden getoond maar keuren niet af."""
@@ -998,7 +1106,7 @@ def controle(b, sc, mscz, pdf):
         grijs = grijze_rusten(mscz)
         if grijs:
             problemen.append(f"GRIJS {grijs} onzichtbare rusten in de .mscz")
-        problemen += [f"OPMAAK {m}" for m in opmaak.controleer(pdf)]
+        problemen += [f"OPMAAK {m}" for m in opmaak.controleer(mscz)]
     return problemen, waarschuwingen
 
 
@@ -1032,6 +1140,16 @@ def main(args):
             mscore(["-S", str(stijl), "-o", str(mscz), str(xml)], mscz)
             ruim_bereik(mscz, stuk.get("spatium"))
             mscore(["-o", str(pdf), str(mscz)], pdf)
+            nieuw = balanceer_paginas(stuk, mscz)
+            if nieuw:
+                # pagina's uit balans (bijv. 5 regels op p2, 3 op p3): breuken zetten en opnieuw bouwen
+                print(f"{b.stem}: nieuwe pagina bij maat {', '.join(map(str, nieuw))} (balans)")
+                sc = bouw(stuk)
+                sc.write("musicxml", fp=xml)
+                nabewerk(xml)
+                mscore(["-S", str(stijl), "-o", str(mscz), str(xml)], mscz)
+                ruim_bereik(mscz, stuk.get("spatium"))
+                mscore(["-o", str(pdf), str(mscz)], pdf)
         if not met_controle:
             print(f"{b.stem}: gebouwd (zonder controle)")
             continue

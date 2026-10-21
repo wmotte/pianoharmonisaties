@@ -27,6 +27,10 @@ import maak_partituren as mp
 
 INF = float("inf")
 BEREIK = {"B": (33, 60), "T": (45, 67), "A": (50, 74)}
+RH_MIN = 53  # F3: de laagste tenor die nog in de rechterhand past (maak_partituren.RH_MIN)
+RH_SPAN_KOST = 12  # zachte kosten als de tenor niet in de rechterhand past
+RH_SPAN_PER = 2.0  # extra per halve toon te ver
+ZWAAR = 500  # zware zachte regel: septiem of leidtoon (bas, of alt als hoogste stem) lost niet stapsgewijs op
 
 
 def parse_akkoorden(tekst):
@@ -141,6 +145,12 @@ def kandidaten(seg, S, teg):
     smin = min([m for on, end, m in S if on < seg["end"] and end > seg["on"]], default=None)
     smax = max([m for on, end, m in S if on < seg["end"] and end > seg["on"]], default=None)
     plafond = (smin - 1) if smin is not None else 76
+    # septiem in de melodie aan het eind van het segment (ook als doorgang): dan niet ook in de piano,
+    # anders lossen beide naar dezelfde toon op (parallelle octaven) of blijft de piano-septiem hangen
+    s_pcs = {m % 12 for on, end, m in S if on < seg["end"] and end > seg["on"]}
+    s_eind = next((m % 12 for on, end, m in S if on < seg["end"] <= end), None)
+    sept_in_s = akk.septiem is not None and akk.septiem == s_eind
+    nodig = akk.nodig - ({akk.septiem} if sept_in_s else set())
     uit = []
     bassen = dict(akk.bassen[:1] if seg["slot"] else akk.bassen)
     for b in range(*BEREIK["B"]):
@@ -158,12 +168,14 @@ def kandidaten(seg, S, teg):
                     continue
                 stemmen = [b, t, a] + ([s0] if s0 is not None and s0 % 12 in akk.alle else [])
                 pcs = [m % 12 for m in stemmen]
-                if not akk.nodig <= set(pcs):
+                if not nodig <= set(pcs):
                     continue
-                if akk.septiem is not None and pcs.count(akk.septiem) > 1:
+                if akk.septiem is not None and (pcs.count(akk.septiem) > 1 or (sept_in_s and akk.septiem in pcs[:3])):
                     continue
                 if akk.majeur and akk.terts in seg["lts"] and pcs.count(akk.terts) > 1:
                     continue
+                if pcs.count(seg["lt"]) > 1 or (seg["lt"] in s_pcs and seg["lt"] in pcs[:3]):
+                    continue  # leidtoon van de toonaard nooit verdubbeld (LT2), ook niet met een doorgang in de melodie
                 k = bassen[b % 12] * (2.5 if seg["dur"] >= 4 else 1)
                 if akk.kwint is not None and akk.kwint not in pcs:
                     k += 2.5
@@ -174,6 +186,12 @@ def kandidaten(seg, S, teg):
                 if t - b < 3 and b < 48:
                     k += 3  # dichte ligging laag in de bas klinkt modderig
                 k += abs(a - 62) * 0.05 + abs(t - 55) * 0.05 + abs(b - 45) * 0.03
+                # tenor binnen de rechterhand (melodie + alt + tenor in één greep, bas apart): hoogstens
+                # een octaaf onder de hoogste melodienoot van het segment en niet onder F3 (zie vul())
+                if smax is not None and smax - t > 12:
+                    k += RH_SPAN_KOST + (smax - t - 12) * RH_SPAN_PER
+                if t < RH_MIN:
+                    k += RH_SPAN_KOST + (RH_MIN - t) * RH_SPAN_PER
                 uit.append(((b, t, a), k))
     return uit
 
@@ -186,6 +204,9 @@ def parallel(p1, q1, p2, q2):
 
 
 def overgang(vorig, nu, seg_v, seg, S, teg):
+    """Kosten van de verbinding vorig -> nu (INF = verboden). Septiem- en leidtoonoplossing zijn zware
+    zachte regels (ZWAAR): hard zou paden afsnijden die verderop de enige regelgoede zijn; waar de zetter
+    er toch doorheen moet, meldt de controle (harmonie_regels) S7 of LT en past men het akkoord aan."""
     (b1, t1, a1), (b2, t2, a2) = vorig, nu
     s1, s2 = klinkt(S, seg["on"], voor=True), klinkt(S, seg["on"])
     g1, g2 = klinkt(teg, seg["on"], voor=True), klinkt(teg, seg["on"])
@@ -194,6 +215,10 @@ def overgang(vorig, nu, seg_v, seg, S, teg):
     namen = list(oud)
     # sopraan sluit direct aan (geen rust ertussen)?
     s_direct = s1 is not None and any(end == seg["on"] and m == s1 for on, end, m in S)
+    # hoogste klinkende pianostem aan weerszijden: rust de melodie, dan is dat de alt. De controle
+    # (harmonie_regels) deelt stemmen op hoogte in en toetst de buitenstemregels dan op de alt.
+    s_aan = any(on < seg["on"] <= end for on, end, m in S)  # melodie klinkt tot aan deze inzet
+    top1, top2 = (s1 if s_aan else a1), (s2 if s2 is not None else a2)
     for i in range(len(namen)):
         for j in range(i + 1, len(namen)):
             x, y = namen[i], namen[j]
@@ -201,12 +226,17 @@ def overgang(vorig, nu, seg_v, seg, S, teg):
                 continue  # melodie en tegenstem liggen vast
             if parallel(oud[x], oud[y], nieuw[x], nieuw[y]):
                 return INF
+    for y in ("B", "T"):
+        if parallel(top1, oud[y], top2, nieuw[y]):
+            return INF
     k = abs(a2 - a1) + abs(t2 - t1) * 0.9 + max(0, abs(b2 - b1) - 7) * 0.3
-    # verborgen kwint/octaaf buitenstemmen
-    if s1 is not None and s2 is not None:
-        ds, db = s2 - s1, b2 - b1
-        if ds and db and (ds > 0) == (db > 0) and abs(ds) > 2 and (s2 - b2) % 12 in (0, 7) \
-                and (s1 - b1) % 12 != (s2 - b2) % 12:
+    # verborgen kwint/octaaf buitenstemmen (sopraan, of de alt als de melodie rust)
+    for p1, p2 in {(s1, s2), (top1, top2)}:
+        if p1 is None or p2 is None:
+            continue
+        ds, db = p2 - p1, b2 - b1
+        if ds and db and (ds > 0) == (db > 0) and abs(ds) > 2 and (p2 - b2) % 12 in (0, 7) \
+                and (p1 - b1) % 12 != (p2 - b2) % 12:
             return INF
     # overlap
     if a2 < t1 or t2 > a1 or t2 < b1 or b2 > t1:
@@ -223,18 +253,24 @@ def overgang(vorig, nu, seg_v, seg, S, teg):
             n1, n2 = akk1.namen.get(v1 % 12, "C"), akk2.namen.get(v2 % 12, "C")
             if abs("CDEFGAB".index(n1[0]) - "CDEFGAB".index(n2[0])) in (1, 6):
                 return INF
-    # septiem oplossen
+    # septiem dalend (of liggend) oplossen (S7 in harmonie_regels)
     akk_v = seg_v["akk"]
     if akk_v is not None and akk_v.septiem is not None and seg["akk"] is not None:
         for v1, v2 in ((a1, a2), (t1, t2), (b1, b2)):
             if v1 % 12 == akk_v.septiem and v2 - v1 not in (0, -1, -2):
-                k += 10
-    # leidtoon in alt/tenor stapsgewijs omhoog bij V -> I
-    if seg_v["lt"] is not None and akk_v is not None and seg["akk"] is not None and akk_v.majeur \
-            and akk_v.terts == seg_v["lt"] and (seg["akk"].root - akk_v.root) % 12 == 5:
+                k += ZWAAR
+    # leidtoon bij V -> I (ook tussendominanten: de terts van elk majeurakkoord dat een kwart omhoog gaat,
+    # want harmonie_regels bepaalt de toonaard per maat en ziet D -> G ook in D-mixolydisch als V -> I):
+    # in de bas stapsgewijs omhoog (zwaar), in alt/tenor bij voorkeur (Hooning 5e: afspringen alleen in een
+    # middenstem)
+    if akk_v is not None and seg["akk"] is not None and akk_v.majeur and akk_v.terts is not None \
+            and (seg["akk"].root - akk_v.root) % 12 == 5:
+        if b1 % 12 == akk_v.terts and b2 - b1 != 1:
+            k += ZWAAR
         for v1, v2 in ((a1, a2), (t1, t2)):
-            if v1 % 12 == seg_v["lt"] and v2 - v1 != 1:
-                k += 2.5
+            if v1 % 12 == akk_v.terts and v2 - v1 != 1:
+                # de alt is de hoogste stem als de melodie rust: dan buitenstem
+                k += ZWAAR if (not s_aan and v1 == a1) else 2.5
     # gelijke beweging van alle drie onderstemmen vermijden
     if (a2 - a1) * (t2 - t1) > 0 and (t2 - t1) * (b2 - b1) > 0:
         k += 1.5

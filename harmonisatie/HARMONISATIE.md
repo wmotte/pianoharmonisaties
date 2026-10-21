@@ -31,17 +31,19 @@ pianoklank van Koele mee.
 ## Zelf gebruiken
 
 Voer de opdrachten uit vanuit de hoofdmap van deze repository. Python 3.12 is
-de gebruikte ontwikkelomgeving. Installeer de afhankelijkheden eenmalig:
+de gebruikte ontwikkelomgeving. De harmoniser krijgt een eigen virtuele omgeving,
+`.venv-harmonisatie`. De transcriptiescripts gebruiken `.venv` met andere pakketten.
+Installeer de afhankelijkheden voor de harmoniser eenmalig:
 
 ```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements-harmonizer.txt
+python3.12 -m venv .venv-harmonisatie
+.venv-harmonisatie/bin/python -m pip install -r requirements-harmonizer.txt
 ```
 
 Daarna kun je bijvoorbeeld de meegeleverde melodie van Psalm 49 harmoniseren:
 
 ```bash
-.venv/bin/python harmonisatie/harmoniseer.py \
+.venv-harmonisatie/bin/python harmonisatie/harmoniseer.py \
   harmonisatie/voorbeelden/psalm_49.melodie.json \
   --output harmonisatie/uitvoer/psalm_49 \
   --complete --search exact --exclude-group psalm_49
