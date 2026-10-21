@@ -22,9 +22,12 @@ Notatie per stem:
     |  ||  :|  |:  |]   maatstreep, dubbele streep, herhaling, slotstreep
 
 Optioneel in een sectie: "opmaat" (eerste maat is een opmaat), "kop" (tekst boven de eerste maat),
-"tempo" (kwarten per minuut), "voltas" ({maatindex binnen sectie: "1."} of {maatindex: ("1.", aantal_maten)}), "teksten" ({maatindex: "D.S."}).
+"tempo" (kwarten per minuut), "voltas" ({maatindex binnen sectie: "1."} of {maatindex: ("1.", aantal_maten)};
+meerdere keren als "1.2.3.4."), "teksten" ({maatindex: "D.S."}).
 Optioneel in STUK: "regels"/"paginas" (maatnummers met nieuwe regel/pagina), "ondertitel", "componist",
-"spatium" (kleinere notenbalk, standaard 1.75), "linkerhand": "gebroken" (popballad: gebroken akkoorden in de linkerhand in plaats van tenor + bas, zie vul()).
+"spatium" (kleinere notenbalk, standaard 1.75), "linkerhand": "gebroken" (popballad: gebroken akkoorden in de linkerhand in plaats van tenor + bas, zie vul()),
+"begeleiding": "akkoorden" (maten met zang: rechts alleen akkoorden zonder melodie, links de bas; voor-, tussen- en
+naspel houden de melodie, zie akkoordbegeleiding()).
 
 Tekstregels: lettergrepen gescheiden door spaties, 'ge-' koppelt aan de volgende lettergreep,
 '_' slaat een noot over, '~' wordt een spatie.
@@ -249,10 +252,12 @@ def bouw_sectie(stuk, sec, startnummer, laatste, vorige_maat, met_zang):
         te = expressions.TextExpression(txt)
         bovenste[idx].insert(bovenste[idx].highestTime if txt.startswith(("D.S", "D.C", "Fine")) else 0, te)
     for idx, volta in sec.get("voltas", {}).items():
-        # {maatindex: "1."} of {maatindex: ("1.", aantal_maten)}
+        # {maatindex: "1."} of {maatindex: ("1.", aantal_maten)}; meerdere keren als "1.2.3.4."
         nummer, lengte = (volta, 1) if isinstance(volta, str) else volta
+        nummers = [int(n) for n in nummer.split(".") if n]
+        nummer = str(nummers[0]) if len(nummers) == 1 else f"{nummers[0]}-{nummers[-1]}"
         for b in balken:
-            rb = spanner.RepeatBracket(b[idx:idx + lengte], number=int(nummer.rstrip(".")))
+            rb = spanner.RepeatBracket(b[idx:idx + lengte], number=nummer)
             b[idx].insert(0, rb)
     if sec.get("segno") is not None:
         bovenste[sec["segno"]].insert(0, repeat.Segno())
@@ -442,6 +447,284 @@ def vul(boven, onder, gebroken=False):
     _enkel(om)
 
 
+LIGGING = (53, 74)  # rechterhandakkoorden in de akkoordbegeleiding: F3 t/m D5
+MIDDEN = 64  # E4: voorkeursmidden van die akkoorden
+
+
+def _ligging(pcs, vorige, boven_bas):
+    """Gesloten ligging van de toonklassen binnen een octaaf, boven de bas en zo dicht mogelijk bij de vorige."""
+    beste, kosten = None, None
+    for start in range(max(LIGGING[0], boven_bas + 1), LIGGING[1] + 1):
+        if start % 12 not in pcs:
+            continue
+        noten = [start]
+        while len(noten) < len(pcs):
+            p = noten[-1] + 1
+            while p % 12 not in pcs:
+                p += 1
+            noten.append(p)
+        if noten[-1] > LIGGING[1] or noten[-1] - noten[0] > SPAN:
+            continue
+        k = abs(sum(noten) / len(noten) - MIDDEN) * 0.3
+        if vorige:
+            k += sum(min(abs(p - q) for q in vorige) for p in noten)
+        if kosten is None or k < kosten:
+            beste, kosten = noten, k
+    return beste
+
+
+def _losse_bindingen(maat, stemmen, soort):
+    """Bindingen naar of uit een herschreven buurmaat weghalen ('start' aan het eind, 'stop' aan het begin)."""
+    if stemmen is not None and not maat.voices:
+        return  # alleen de bas, die blijft doorklinken
+    for v in (maat.voices or [maat]):
+        if stemmen is not None and v.id not in stemmen:
+            continue
+        noten = list(v.notes)
+        for n in noten[-1:] if soort == "start" else noten[:1]:
+            if n.tie is None:
+                continue
+            if soort == "start" and n.tie.type in ("start", "continue"):
+                n.tie = tie.Tie("stop") if n.tie.type == "continue" else None
+            elif soort == "stop" and n.tie.type in ("stop", "continue"):
+                n.tie = tie.Tie("start") if n.tie.type == "continue" else None
+
+
+def _spel(p, namen):
+    """Toonhoogte p (midi) gespeld volgens het akkoordsymbool (Db, niet C#)."""
+    t = pitch.Pitch(namen[p % 12]) if p % 12 in namen else pitch.Pitch(midi=p)
+    t.octave = 4
+    t.octave += (p - t.midi) // 12
+    return t
+
+
+def _stilte(zangmaat):
+    """Vensters (begin, eind) binnen de maat waarin de zang rust of een noot aanhoudt (vanaf de tweede tel van
+    een noot van minstens twee tellen, overbindingen meegerekend)."""
+    delen = []  # (begin, eind, rust)
+    for n in zangmaat.recurse().notesAndRests:
+        t0, t1 = Fraction(n.offset), Fraction(n.offset) + Fraction(n.quarterLength)
+        vervolg = not n.isRest and n.tie is not None and n.tie.type in ("stop", "continue")
+        if vervolg and delen and not delen[-1][2]:
+            delen[-1] = (delen[-1][0], t1, False)
+        elif vervolg:
+            delen.append((t0 - 1, t1, False))  # aangehouden uit de vorige maat
+        else:
+            delen.append((t0, t1, n.isRest))
+    vensters = []
+    for t0, t1, rust in delen:
+        if not rust:
+            if t1 - t0 < 2:
+                continue
+            t0 += 1
+        t0 = max(t0, Fraction(0))
+        if vensters and vensters[-1][1] == t0:
+            vensters[-1] = (vensters[-1][0], t1)
+        else:
+            vensters.append((t0, t1))
+    return vensters
+
+
+# linkerhandfiguren per twee tellen (b = bas, m = midden, t = top); ze wisselen elkaar af
+LH_FIGUREN = ([("b", 0.5), ("m", 0.5), ("t", 1)],
+              [("b", 0.5), ("m", 0.5), ("t", 0.5), ("m", 0.5)],
+              [("b", 1.5), ("m", 0.5)])
+
+
+def _inzetten(zangmaat, t0, t1):
+    """Aantal nieuw gezongen noten in [t0, t1)."""
+    return sum(1 for n in zangmaat.recurse().notes
+               if t0 <= Fraction(n.offset) < t1 and (n.tie is None or n.tie.type == "start"))
+
+
+def _omkering(ligging, op, ondergrens):
+    """Dezelfde gesloten ligging een omkering hoger (op) of lager, of None als die buiten LIGGING valt."""
+    if op:
+        nieuw = ligging[1:] + [ligging[0] + 12]
+    else:
+        nieuw = [ligging[-1] - 12] + ligging[:-1]
+    return nieuw if max(LIGGING[0], ondergrens) <= nieuw[0] and nieuw[-1] <= LIGGING[1] else None
+
+
+def _rh_figuur(t0, t1, ligging, inzetten, k, ondergrens):
+    """Rechterhand voor één akkoord van twee tellen, afhankelijk van de zang: onder een drukke melodie
+    afwisselend aangehouden of met een 'duw' op 2-en (4. + 8); onder een rustige melodie beweegt de bovenstem
+    op tel 2 naar de volgende akkoordtoon (kleine tegenmelodie). Andere duren: één aanslag."""
+    d = t1 - t0
+    if d != 2 or t0 % 1:
+        return [(t0, ligging, d)]
+    if inzetten >= 3:
+        return [(t0, ligging, d)] if k % 2 == 0 else [(t0, ligging, Fraction(3, 2)), (t0 + Fraction(3, 2), ligging, Fraction(1, 2))]
+    ander = _omkering(ligging, k % 2 == 0, ondergrens) or _omkering(ligging, k % 2 == 1, ondergrens)
+    return [(t0, ligging, 1), (t0 + 1, ander, 1)] if ander else [(t0, ligging, d)]
+
+
+def akkoordbegeleiding(stuk, zang, boven, onder):
+    """Begeleidingsvariant ("begeleiding": "akkoorden"): in elke maat waarin gezongen wordt speelt de rechterhand
+    akkoorden uit "akkoorden" (gesloten ligging, zonder melodie) en de linkerhand gebroken akkoorden vanaf de
+    gezette bas. Maten zonder zang (voorspel, tussenspel, naspel) houden de pianozetting met melodie, en op een
+    'R' in "akkoorden" (zoals de opmaat na het voorspel) speelt de rechterhand de melodie mee, zodat de piano
+    daar niet stilvalt.
+
+    Per akkoord van twee tellen kiest _rh_figuur() een figuur naar de drukte van de zang, anders één aanslag.
+    Bij meer dan drie toonklassen (septiem, add9) vervalt in de rechterhand de grondtoon,
+    die al in de bas klinkt. Rust de zang een tel of langer of houdt ze een lange noot aan, dan speelt de rechterhand daar een kort loopje in
+    achtsten door de akkoordtonen (afwisselend op en neer), zoals de opvullingen in de Sela-uitgaven.
+    De linkerhand breekt elke basnoot van een tel of langer onder de rechterhand, met de figuren uit LH_FIGUREN
+    om en om (een andere cycluslengte dan de rechterhand, zodat het patroon niet steeds hetzelfde klinkt); waar de zang
+    een tel stilstaat loopt de linkerhand in achtsten door. Elke basnoot komt in het octaaf dat het dichtst bij de
+    vorige ligt, zodat de baslijn doorloopt in plaats van te springen."""
+    import zetter
+
+    zm, bm, om = _maten(zang), _maten(boven), _maten(onder)
+    akkmaten = [m for sec in stuk["secties"] for m in zetter.parse_akkoorden(sec["akkoorden"])]
+    if len(akkmaten) != len(bm):
+        raise ValueError(f"{stuk['titel']}: akkoordbegeleiding vraagt akkoorden in elke sectie")
+    zingt = [any(not n.isRest for n in m.recurse().notesAndRests) for m in zm]
+    vorige, sym, vol, loopjes, rh_k, lh_k, vorige_bas = None, None, None, 0, 0, 0, None
+    for i, (akkm, mb, mo) in enumerate(zip(akkmaten, bm, om)):
+        if not zingt[i]:
+            vorige = None
+            continue
+        # linkerhand: alleen de bas (stem 2, of de enige stem als de tenor al naar rechts is)
+        for v in list(mo.voices):
+            if v.id != "2":
+                mo.remove(v)
+        _enkel([mo])
+        bassen = [p.midi for n in mo.recurse().notes for p in n.pitches]
+        # rechterhand: oude inhoud weg, akkoorden erin
+        oud = list(mb.recurse().notesAndRests)
+        fermate = any(isinstance(e, expressions.Fermata) for n in oud for e in n.expressions)
+        sopraan = next((v for v in mb.voices if v.id == "1"), mb)
+        melodie = [(Fraction(n.offset), n) for n in sopraan.notesAndRests if not n.isRest]
+        for v in list(mb.voices):
+            mb.remove(v)
+        for n in list(mb.notesAndRests):
+            mb.remove(n)
+        aanslagen = []  # [figuur zonder bas, duur, volledig symbool]
+        for s, d in akkm:
+            if (s == "=" and aanslagen and aanslagen[-1][0] is not None
+                    and duration.Duration(aanslagen[-1][1] + d).type != "complex"):
+                aanslagen[-1][1] += d
+                continue
+            if s != "=":
+                sym, vol = (None, None) if s == "R" else (s.partition(":")[0], s)
+            aanslagen.append([sym, d, vol])
+        stil = _stilte(zm[i])
+        o, liggingen = Fraction(0), []
+        for s, d, v_sym in aanslagen:
+            d = Fraction(d)
+            if s is None:
+                # zonder akkoord ('R', bijv. de opmaat na het voorspel) speelt de piano de melodie mee
+                t = o
+                for t0, n in melodie:
+                    if o <= t0 and t0 + Fraction(n.quarterLength) <= o + d:
+                        if t0 > t:
+                            mb.insert(t, note.Rest(quarterLength=t0 - t))
+                        n.stemDirection = "unspecified"
+                        mb.insert(t0, n)
+                        t = t0 + Fraction(n.quarterLength)
+                if t < o + d:
+                    mb.insert(t, note.Rest(quarterLength=o + d - t))
+                o += d
+                continue
+            ak = zetter.Akkoord(s)
+            pcs = ak.alle - {ak.root} if len(ak.alle) > 3 else ak.alle
+            ondergrens = max(bassen, default=0) + 1
+            vorige = _ligging(pcs, vorige, ondergrens - 1)
+            eerste = vorige
+            # loopje in de eerste zangrust van minstens een tel binnen dit akkoord (niet op de eerste tel)
+            loop = None
+            for a, e in stil:
+                w0, w1 = -(-max(a, o + 1) // 1), min(e, o + d) // 1
+                if w1 - w0 >= 1:
+                    lengte = min(w1 - w0, 2)
+                    loop = (w1 - lengte, w1)
+                    break
+            delen = [(o, loop[0] if loop else o + d)] + ([(loop[1], o + d)] if loop and loop[1] < o + d else [])
+            gebruikt = [eerste]
+            for t0, t1 in delen:
+                if t1 <= t0:
+                    continue
+                for a, lg, q in _rh_figuur(t0, t1, vorige, _inzetten(zm[i], t0, t1), rh_k, ondergrens):
+                    mb.insert(a, chord.Chord([_spel(p, ak.namen) for p in lg], quarterLength=q))
+                    vorige = lg
+                    gebruikt.append(lg)
+                rh_k += 1
+            liggingen.append((o, o + d, [min(min(lg) for lg in gebruikt)], v_sym))
+            if loop:
+                tonen = vorige + [vorige[0] + 12]
+                reeks = tonen[:3] + [tonen[-1]] if loop[1] - loop[0] == 2 else tonen[-3:-1]
+                if loopjes % 2:
+                    reeks = reeks[::-1]
+                loopjes += 1
+                for k, p in enumerate(reeks):
+                    mb.insert(loop[0] + Fraction(k, 2), note.Note(_spel(p, ak.namen), quarterLength=0.5))
+            o += d
+        if fermate:
+            mb.notesAndRests.last().expressions.append(expressions.Fermata(type="upright"))
+        # linkerhand gebroken: per basnoot bas-midden-top onder de rechterhand; een basnoot die over meer
+        # akkoorden doorloopt (Em -> C/E) breekt per akkoord
+        for n in list(mo.notes):
+            t, d = Fraction(n.offset), Fraction(n.quarterLength)
+            segmenten = [(max(t, x[0]), min(t + d, x[1]), x) for x in liggingen if x[0] < t + d and x[1] > t]
+            if d < 1 or n.tie is not None or n.expressions or not segmenten or segmenten[0][0] != t:
+                continue
+            basis = min(p.midi for p in n.pitches)
+            basnaam = min(n.pitches, key=lambda x: x.midi).name
+            patroon = []
+            for s0, s1, ligging in segmenten:
+                ak = zetter.Akkoord(ligging[3])
+                pcs = ak.alle | {ak.bas}
+                rh_min = min(ligging[2])
+                namen = dict(ak.namen)
+                namen[basis % 12] = basnaam
+                # baslijn laten doorlopen: het octaaf (bij voorkeur C2-E3, anders vanaf A1; ruimte voor een kwint
+                # onder de rechterhand) dat het dichtst bij de vorige basnoot ligt
+                kandidaten = [basis + 12 * k for k in range(-3, 2) if 36 <= basis + 12 * k <= 52
+                              and basis + 12 * k + 7 < rh_min]
+                kandidaten = kandidaten or [basis + 12 * k for k in range(-3, 2) if 33 <= basis + 12 * k <= 52
+                                            and basis + 12 * k + 7 < rh_min]
+                if kandidaten:
+                    laag = min(kandidaten, key=lambda p: abs(p - (vorige_bas if vorige_bas is not None else basis)))
+                else:
+                    laag = basis
+                    if laag > 52 and laag - 12 >= 33:
+                        laag -= 12
+                    while laag + 12 >= rh_min and laag - 12 >= 33:
+                        laag -= 12
+                vorige_bas = laag
+                op = [p for p in range(laag + 1, laag + 13) if p % 12 in pcs and p < rh_min]
+                rest = s1 - s0
+                if not op or rest < 1:
+                    patroon.append((laag, rest, namen))
+                    continue
+                # midden bij voorkeur de kwint boven de bas (bas-kwint-octaaf), anders de op één na hoogste toon
+                top, mid = op[-1], (laag + 7 if laag + 7 in op[:-1] else op[-2] if len(op) > 1 else op[-1])
+                stap = {"b": laag, "m": mid, "t": top}
+                while rest >= 2:
+                    t0 = s1 - rest
+                    # houdt de zang een tel stil (lange noot of rust), dan loopt de linkerhand in achtsten door
+                    stilstand = not _inzetten(zm[i], t0, t0 + 1) or not _inzetten(zm[i], t0 + 1, t0 + 2)
+                    figuur = LH_FIGUREN[1] if stilstand else LH_FIGUREN[lh_k % len(LH_FIGUREN)]
+                    patroon += [(stap[x], q, namen) for x, q in figuur]
+                    lh_k += 1
+                    rest -= 2
+                if rest >= 1:
+                    patroon += [(laag, 0.5, namen), (mid, 0.5, namen)]
+                    rest -= 1
+                if rest > 0:
+                    patroon.append((top, rest, namen))
+            mo.remove(n)
+            for p, q, namen in patroon:
+                mo.insert(t, note.Note(_spel(p, namen), quarterLength=q))
+                t += Fraction(q)
+        # bindingen van en naar niet-herschreven buurmaten
+        for j, soort in ((i - 1, "start"), (i + 1, "stop")):
+            if 0 <= j < len(bm) and not zingt[j]:
+                _losse_bindingen(bm[j], None, soort)
+                _losse_bindingen(om[j], {"1"}, soort)
+
 def _enkel(maten):
     """Maat met nog maar één stem (tenor weg): stem opheffen, anders zet MuseScore een onzichtbare
     (grijze) hele rust in stem 1."""
@@ -538,8 +821,12 @@ def bouw(stuk, met_zang=True):
     if stuk.get("ondertitel"):
         score.metadata.lyricist = stuk["ondertitel"]
     tegen = stream.Part()
-    tegen.partName, tegen.partAbbreviation = "Tegenstem", "Teg."
-    tegen.insert(0, instrument.Soprano())
+    # "tegenstemnaam": (naam, afkorting) in STUK, bijv. ("Dwarsfluit", "Fl.") voor een fluitbovenstem
+    tegen.partName, tegen.partAbbreviation = stuk.get("tegenstemnaam", ("Tegenstem", "Teg."))
+    instr = instrument.Flute() if "fluit" in tegen.partName.lower() else instrument.Soprano()
+    instr.partName = instr.instrumentName = tegen.partName
+    instr.partAbbreviation = instr.instrumentAbbreviation = tegen.partAbbreviation
+    tegen.insert(0, instr)
     tegen.insert(0, clef.TrebleClef())
     zang = stream.Part()
     zang.partName, zang.partAbbreviation = stuk.get("zangnaam", "Zang"), "Z."
@@ -603,6 +890,8 @@ def bouw(stuk, met_zang=True):
     score.insert(0, layout.StaffGroup([boven, onder], symbol="brace", barTogether=True))
     if met_zang:
         vul(boven, onder, gebroken=stuk.get("linkerhand") == "gebroken")
+        if stuk.get("begeleiding") == "akkoorden":
+            akkoordbegeleiding(stuk, zang, boven, onder)
         gitaarakkoorden(stuk, boven)
     return score
 
@@ -641,10 +930,14 @@ def fermate_duur(tekst):
     return re.sub(r"<Fermata\b[^>]*>.*?</Fermata>", zet, tekst, flags=re.S)
 
 
+TITELKADER = 6  # hoogte titelkader in sp (MuseScore-import: 10)
+
+
 def ruim_bereik(mscz, spatium=None):
     """Zet het bereik van de zangstemmen ruim, zodat MuseScore geen noten rood kleurt.
     Met spatium: kleinere notenbalk voor dit stuk (de MusicXML-import negeert die uit stijl.mss).
-    Fermates krijgen 150% afspeelduur, ook na opnieuw bouwen vanuit MusicXML."""
+    Fermates krijgen 150% afspeelduur, ook na opnieuw bouwen vanuit MusicXML.
+    Het titelkader wordt lager (TITELKADER sp), zodat er meer ruimte is voor de muziek."""
     with zipfile.ZipFile(mscz) as z:
         delen = {n: z.read(n) for n in z.namelist()}
     for n, data in delen.items():
@@ -652,6 +945,7 @@ def ruim_bereik(mscz, spatium=None):
             tekst = data.decode("utf-8")
             for tag, waarde in (("minPitchP", 21), ("minPitchA", 21), ("maxPitchP", 108), ("maxPitchA", 108)):
                 tekst = re.sub(rf"<{tag}>\d+</{tag}>", f"<{tag}>{waarde}</{tag}>", tekst)
+            tekst = re.sub(r"(<VBox>\s*<height>)[\d.]+(</height>)", rf"\g<1>{TITELKADER}\g<2>", tekst, count=1)
             delen[n] = fermate_duur(tekst).encode("utf-8")
         if spatium and n.endswith(".mss"):
             delen[n] = re.sub(rb"<spatium>[\d.]+</spatium>", f"<spatium>{spatium}</spatium>".encode(), data)

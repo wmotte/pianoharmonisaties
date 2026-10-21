@@ -226,6 +226,10 @@ __marimo__/
 # Prive bladmuziek om te oefenen (niet committen).
 /bariton/
 /muziekgroep_11_oct/
+/muziekgroep_25_oct/
 
 # Lokale Claude Code-status.
 /.claude/scheduled_tasks.lock
+
+# Engelse zettingen: gedownloade partituren en uitvoer (auteursrecht onzeker, niet committen)
+/engelse_zettingen/data/

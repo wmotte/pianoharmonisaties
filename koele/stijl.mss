@@ -9,6 +9,10 @@
     <Spatium>1.75</Spatium>
     <lyricsOddFontSize>11</lyricsOddFontSize>
     <lyricsEvenFontSize>11</lyricsEvenFontSize>
+    <lyricsOddColor r="31" g="58" b="147" a="255"/>
+    <lyricsEvenColor r="31" g="58" b="147" a="255"/>
+    <chordSymbolAColor r="160" g="30" b="30" a="255"/>
+    <chordSymbolAFontStyle>1</chordSymbolAFontStyle>
     <minSystemDistance>12</minSystemDistance>
     <genCourtesyTimesig>0</genCourtesyTimesig>
     <lyricsMinDistance>1.2</lyricsMinDistance>
@@ -16,5 +20,9 @@
     <minHarmonyDistance>1</minHarmonyDistance>
     <harmonyHarmonyDistance>1</harmonyHarmonyDistance>
     <lastSystemFillLimit>0.5</lastSystemFillLimit>
+    <titleFontSize>16</titleFontSize>
+    <subTitleFontSize>11</subTitleFontSize>
+    <composerFontSize>9</composerFontSize>
+    <lyricistFontSize>9</lyricistFontSize>
   </Style>
 </museScore>
