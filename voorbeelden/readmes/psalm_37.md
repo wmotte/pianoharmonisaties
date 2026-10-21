@@ -1,47 +1,48 @@
-# Psalm 37 – Gerrit Koele
+# Psalm 37
 
-- **YouTube-video:** [https://www.youtube.com/watch?v=b9ReiRKeBxg](https://www.youtube.com/watch?v=b9ReiRKeBxg)
+- **Opname:** [https://www.youtube.com/watch?v=b9ReiRKeBxg](https://www.youtube.com/watch?v=b9ReiRKeBxg)
 - **Titel:** Psalm 37 | Christelijke pianomuziek van Gerrit Koele
 - **Uploaddatum:** 19 januari 2026
 
-## Bestanden in deze map
+## Bestanden
 
 - Audio: `../mp3/2026-01-19 - Psalm 37 ｜ Christelijke pianomuziek van Gerrit Koele [b9ReiRKeBxg].mp3`
-- Ongecorrigeerde partituur: `../ongecorrigeerd/2026-01-19 - Psalm 37 ｜ Christelijke pianomuziek van Gerrit Koele [b9ReiRKeBxg].musicxml`
-- Formele harmoniecontrole (fouten in rood, vóór herzetting): `../controle/2026-01-19 - Psalm 37 ｜ Christelijke pianomuziek van Gerrit Koele [b9ReiRKeBxg].musicxml`
-- Gecorrigeerde partituur: `../gecorrigeerd/2026-01-19 - Psalm 37 ｜ Christelijke pianomuziek van Gerrit Koele [b9ReiRKeBxg].musicxml`
+- Transcriptie: `../ongecorrigeerd/2026-01-19 - Psalm 37 ｜ Christelijke pianomuziek van Gerrit Koele [b9ReiRKeBxg].musicxml`
+- Harmoniecontrole (meldingen rood): `../controle/2026-01-19 - Psalm 37 ｜ Christelijke pianomuziek van Gerrit Koele [b9ReiRKeBxg].musicxml`
+- Herzette binnenstemmen: `../gecorrigeerd/2026-01-19 - Psalm 37 ｜ Christelijke pianomuziek van Gerrit Koele [b9ReiRKeBxg].musicxml`
+- Hypercorrectie: `../hypercorrectie/2026-01-19 - Psalm 37 ｜ Christelijke pianomuziek van Gerrit Koele [b9ReiRKeBxg].musicxml`
 
-## Secties en maatsoorten
+## Delen en maatsoorten
 
-Psalm 37 is een klassiek voorbeeld van een stuk waarin Gerrit Koele het **voorspel in een driekwartsmaat (3/4)** speelt en vervolgens voor het **koraal en naspel overgaat naar 4/4**.
+Het voorspel staat in 3/4, het koraal en het naspel in 4/4. De delen zijn afzonderlijk verwerkt
+(`--split-sections`). De stiltes rond 48,6 en 106,4 seconden zijn de snijpunten; ze staan vastgelegd
+in `splits.json`.
 
-### Maatwisseling: 3/4 Voorspel → 4/4 Koraal → 4/4 Naspel
+| Deel | Maten | Maatsoort | Tempo |
+|---|---|---|---|
+| Voorspel | 1–18 | 3/4 | ♩ = 66 |
+| Koraal | 19–44 | 4/4 | ♩ = 112 |
+| Naspel | 45–59 | 4/4 | ♩ = 108 |
 
-Met de automatische sectiesplitsing (`--split-sections`) worden de stiltes rond 48.6s en 106.3s gedetecteerd:
+De samengevoegde partituur schakelt bij maat 19 over van 3/4 naar 4/4, met dubbele maatstrepen op de
+overgangen en de namen van de delen. Geen van de delen heeft afwijkende maten.
 
-1. **Voorspel (m1–m18):** 3/4, meditatief tempo ♩ = 66, **0 afwijkende maten**.
-2. **Koraal (m19–m44):** 4/4, zangtempo ♩ = 112, **0 afwijkende maten**, syncopen 2%.
-3. **Naspel (m45–m59):** 4/4, tempo ♩ = 108, **0 afwijkende maten**, syncopen 8%.
+## Toonsoort: twee mollen (C-dorisch)
 
-De samengevoegde partituur schakelt bij maat 19 automatisch over van 3/4 naar 4/4, bevat dubbele maatstrepen op de overgangen en draagt duidelijke repetitietekens (`[Voorspel]`, `[Koraal]`, `[Naspel]`).
+De melodie van Psalm 37 stamt uit het Geneefse psalter en staat in de eerste modus (dorisch),
+getransponeerd naar C: C – D – Es – F – G – A – Bes – C. In het koraalboek van Gerrit Koele staat het
+stuk met twee mollen genoteerd. De instelling `"key": "2b"` in `splits.json` legt die voortekening vast.
+Het dorische profiel behoudt de A; verhoogde leidtonen en tussendominanten krijgen een spelling die
+aansluit bij hun harmonische functie.
 
-### Toonsoort: 2 mollen (C-dorisch)
+## Harmoniecontrole en herzetting
 
-In het koraalboek van Gerrit Koele staat Psalm 37 genoteerd met **twee mollen** (B♭, E♭). De melodie van Psalm 37 stamt uit het Geneefse Psalter en staat in modus 1 (dorisch) getransponeerd naar C: C – D – E♭ – F – G – A♮ – B♭ – C.
-
-De instelling `"key": "2b"` in `splits.json` legt de voortekening met twee mollen vast.
-Het dorische profiel behoudt de A♮. Verhoogde leidtonen en tussendominanten krijgen een
-spelling die aansluit bij hun harmonische functie.
-
-### Harmonie-analyse
-
-Bij de formele harmonie-analyse heeft de samengevoegde partituur 53 meldingen op 348 verticalen (15.2 per 100).
-- In de controlepartituur (`../controle/`) zijn al deze 53 meldingen rood gemarkeerd met de bijbehorende regelcode (`LIG`, `H8`, `OV`, `S7`, etc.).
-- In stap 5 (`../gecorrigeerd/`) zijn 11 binnenstemnoten (1,4%) herzet, waardoor het aantal fouten daalt van 53 naar 43. De formele controle omvat ook meldingen over de buitenstemmen en de wijde pianoligging.
+De meldingen betreffen vooral wijde liggingen, verborgen octaven en stemoverlap. De herzetting van de
+binnenstemmen wijzigt ongeveer één procent van de noten. De aantallen per code staan in het
+[controlerapport](../harmonie_controle.md) en het [correctierapport](../harmonie_correctie.md).
 
 ## Hypercorrectie
 
-De [hypercorrectie](../hypercorrectie/2026-01-19%20-%20Psalm%2037%20%EF%BD%9C%20Christelijke%20pianomuziek%20van%20Gerrit%20Koele%20%5Bb9ReiRKeBxg%5D.musicxml) behoudt de melodie en herzet ook de bas.
-Aangehouden binnenstemmen kunnen gericht opnieuw worden aangeslagen om de stemvoering te verbeteren.
-Het [rapport](../hypercorrectie/hypercorrectie.md) vermeldt het resultaat van de volledige
-regelcontrole en de vergelijking van klankvariatie en harmonische verwantschap.
+De hypercorrectie behoudt de melodie en herzet ook de bas. Aangehouden binnenstemmen kunnen gericht
+opnieuw worden aangeslagen om de stemvoering te verbeteren. Het [rapport](../hypercorrectie/hypercorrectie.md)
+geeft het resultaat van de regelcontrole en de vergelijking van klankvariatie en harmonische verwantschap.

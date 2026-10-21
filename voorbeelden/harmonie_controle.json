@@ -1,0 +1,90 @@
+{
+ "2025-11-29 - 'De Lofzang van Maria' ｜ Piano ｜ Adventsmuziek van Gerrit Koele [e8Sz1o3a8pA]": {
+  "n_verticalen": 882,
+  "totaal": 248,
+  "per_100": 28.1,
+  "codes": {
+   "P8": 65,
+   "KAAL": 48,
+   "H5": 30,
+   "LIG": 22,
+   "AP8": 18,
+   "AP5": 12,
+   "OV": 11,
+   "N9": 10,
+   "S7": 8,
+   "H8": 8,
+   "A2": 7,
+   "T2": 4,
+   "P5": 4,
+   "KR": 1
+  },
+  "maten": 163
+ },
+ "2026-01-19 - Psalm 37 ｜ Christelijke pianomuziek van Gerrit Koele [b9ReiRKeBxg]": {
+  "n_verticalen": 348,
+  "totaal": 60,
+  "per_100": 17.2,
+  "codes": {
+   "LIG": 13,
+   "H8": 10,
+   "OV": 8,
+   "A2": 6,
+   "KAAL": 4,
+   "S7": 4,
+   "P8": 4,
+   "KR": 2,
+   "AP8": 2,
+   "SPL": 2,
+   "AP5": 2,
+   "P5": 2,
+   "N9": 1
+  },
+  "maten": 89
+ },
+ "2026-04-04 - 'U zij de glorie' ｜ Christelijke pianomuziek van Gerrit Koele [i7hRZbaeYpw]": {
+  "n_verticalen": 686,
+  "totaal": 243,
+  "per_100": 35.4,
+  "codes": {
+   "LIG": 34,
+   "LT2": 31,
+   "OV": 30,
+   "T2": 24,
+   "H5": 22,
+   "A2": 19,
+   "AP8": 18,
+   "N9": 15,
+   "S7": 14,
+   "AP5": 8,
+   "P5": 8,
+   "P8": 8,
+   "H8": 6,
+   "LT": 2,
+   "KAAL": 2,
+   "HB5": 1,
+   "HB8": 1
+  },
+  "maten": 132
+ },
+ "2026-04-22 - Psalm 85 ｜ Christelijke pianomuziek van Gerrit Koele [qfzzrg627Ho]": {
+  "n_verticalen": 271,
+  "totaal": 41,
+  "per_100": 15.1,
+  "codes": {
+   "H5": 10,
+   "H8": 6,
+   "LIG": 6,
+   "S7": 4,
+   "T2": 3,
+   "KAAL": 2,
+   "AP8": 2,
+   "OV": 2,
+   "HB8": 2,
+   "P8": 2,
+   "KR": 1,
+   "N9": 1
+  },
+  "maten": 54
+ }
+}

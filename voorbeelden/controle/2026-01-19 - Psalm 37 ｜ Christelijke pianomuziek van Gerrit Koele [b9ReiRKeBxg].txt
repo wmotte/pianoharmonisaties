@@ -1,0 +1,60 @@
+maat    2 tel 2     | KR   | R C4    | rechterhand C4 onder linkerhand D4
+maat    2 tel 2.5   | KR   | L G3    | B kruist liggende C4
+maat    2 tel 3     | OV   | L D3    | T onder vorige B (G3)
+maat    3 tel 2     | KAAL | L G2    | geen terts (grondtoon en kwint)
+maat    3 tel 2     | KAAL | L D3    | geen terts (grondtoon en kwint)
+maat    3 tel 2     | KAAL | L G3    | geen terts (grondtoon en kwint)
+maat    3 tel 2     | KAAL | R D4    | geen terts (grondtoon en kwint)
+maat    4 tel 2.5   | S7   | L F3    | septiem in T gaat naar G3
+maat    4 tel 3.5   | P8   | R C5    | S-T: G/G -> C/C
+maat    4 tel 3.5   | P8   | L C4    | S-T: G/G -> C/C
+maat    5 tel 1.5   | A2   | R F4    | T: G->F (m7, +10)
+maat    5 tel 1.5   | OV   | R F4    | T boven vorige A (E-4)
+maat    5 tel 3.5   | N9   | R G4    | none in A gaat naar D4
+maat    6 tel 1     | OV   | R D4    | A onder vorige T (F4)
+maat    6 tel 3     | AP8  | R C5    | S-B: G/G -> C/C
+maat    6 tel 3     | AP8  | L C3    | S-B: G/G -> C/C
+maat    6 tel 3.5   | LIG  | L G3    | S-T meer dan een octaaf
+maat    7 tel 1.5   | LIG  | L G3    | S-T meer dan een octaaf
+maat    7 tel 3.5   | OV   | R A4    | S onder vorige T (B-4)
+maat   10 tel 3.5   | LIG  | L G2    | S-T meer dan een octaaf
+maat   11 tel 2.5   | LIG  | L G2    | S-T meer dan een octaaf
+maat   12 tel 1.5   | LIG  | L A-2   | S-T meer dan een octaaf
+maat   12 tel 2.5   | LIG  | L G2    | S-T meer dan een octaaf
+maat   12 tel 3.5   | LIG  | L F2    | S-T meer dan een octaaf
+maat   13 tel 2     | OV   | R D4    | A onder vorige T (A-4)
+maat   13 tel 2     | OV   | R G4    | S onder vorige A (B-4)
+maat   14 tel 3     | P8   | L C3    | B-A: D/D -> C/C
+maat   14 tel 3     | P8   | R C4    | B-A: D/D -> C/C
+maat   23 tel 1     | H8   | R C5    | S springt +5, B +1
+maat   23 tel 1     | H8   | L C3    | S springt +5, B +1
+maat   24 tel 2     | LIG  | L E-3   | A-T meer dan een octaaf
+maat   28 tel 2     | LIG  | L B-2   | S-T meer dan een octaaf
+maat   28 tel 3     | A2   | R C4    | T: B-->C (M2, +14)
+maat   28 tel 3     | OV   | L C3    | B boven vorige T (B-2)
+maat   43 tel 1     | A2   | R A-3   | T: B->A- (A2, -3)
+maat   44 tel 1     | S7   | L E-3   | septiem in T gaat naar E-4
+maat   45 tel 1     | H8   | R C5    | S springt +19, B +12
+maat   45 tel 1     | H8   | L C3    | S springt +19, B +12
+maat   48 tel 2     | A2   | R A-4   | T: D->A- (d5, +6)
+maat   48 tel 2     | OV   | R F4    | B boven vorige T (D4)
+maat   48 tel 3     | SPL  | R E-4   | verwacht D#
+maat   48 tel 4     | S7   | R F4    | septiem in S gaat naar C5
+maat   49 tel 1     | H8   | R C5    | S springt +7, B +5
+maat   49 tel 1     | H8   | L C3    | S springt +7, B +5
+maat   51 tel 1     | LIG  | L C3    | A-T meer dan een octaaf
+maat   51 tel 3     | LIG  | L F3    | A-T meer dan een octaaf
+maat   52 tel 1     | A2   | R G4    | T: F->G (M2, +14)
+maat   52 tel 1     | AP5  | R D5    | S-T: C/F -> D/G
+maat   52 tel 1     | AP5  | R G4    | S-T: C/F -> D/G
+maat   58 tel 1     | H8   | R C5    | S springt +5, B +1
+maat   58 tel 1     | H8   | L C3    | S springt +5, B +1
+maat   59 tel 2     | LIG  | L E-3   | A-T meer dan een octaaf
+maat   69 tel 2     | LIG  | L G3    | S-T meer dan een octaaf
+maat   78 tel 1     | A2   | R A-3   | T: B->A- (A2, -3)
+maat   83 tel 3     | SPL  | R E-4   | verwacht D#
+maat   83 tel 4     | S7   | R F4    | septiem in S gaat naar C5
+maat   84 tel 1     | H8   | R C5    | S springt +7, B +5
+maat   84 tel 1     | H8   | L C3    | S springt +7, B +5
+maat   87 tel 2     | P5   | R D4    | S-T: C/F -> D/G
+maat   87 tel 2     | P5   | R G3    | S-T: C/F -> D/G

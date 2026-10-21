@@ -1,11 +1,16 @@
 maat    2 tel 2     | KR   | R C4    | rechterhand C4 onder linkerhand D4
 maat    2 tel 2.5   | KR   | L G3    | B kruist liggende C4
+maat    3 tel 2     | KAAL | L G2    | geen terts (grondtoon en kwint)
+maat    3 tel 2     | KAAL | L D3    | geen terts (grondtoon en kwint)
+maat    3 tel 2     | KAAL | L G3    | geen terts (grondtoon en kwint)
+maat    3 tel 2     | KAAL | R D4    | geen terts (grondtoon en kwint)
 maat    4 tel 3.5   | P8   | R C5    | S-T: G/G -> C/C
 maat    4 tel 3.5   | P8   | L C4    | S-T: G/G -> C/C
 maat    5 tel 1     | P8   | R B-4   | S-T: C/C -> B-/B-
 maat    5 tel 1     | P8   | L B-3   | S-T: C/C -> B-/B-
 maat    5 tel 1     | S7   | L B-3   | septiem in T gaat naar F4
 maat    5 tel 1.5   | OV   | R F4    | T boven vorige A (E-4)
+maat    5 tel 3.5   | N9   | R G4    | none in A gaat naar D4
 maat    6 tel 1     | OV   | R D4    | A onder vorige T (F4)
 maat    6 tel 3     | AP8  | R C5    | S-B: G/G -> C/C
 maat    6 tel 3     | AP8  | L C3    | S-B: G/G -> C/C

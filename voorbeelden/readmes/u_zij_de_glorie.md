@@ -1,29 +1,33 @@
-# U zij de glorie – Gerrit Koele
+# U zij de glorie
 
-- **YouTube-video:** [https://www.youtube.com/watch?v=i7hRZbaeYpw](https://www.youtube.com/watch?v=i7hRZbaeYpw)
+- **Opname:** [https://www.youtube.com/watch?v=i7hRZbaeYpw](https://www.youtube.com/watch?v=i7hRZbaeYpw)
 - **Titel:** 'U zij de glorie' | Christelijke pianomuziek van Gerrit Koele
 - **Uploaddatum:** 4 april 2026
 
-## Bestanden in deze map
+## Bestanden
 
 - Audio: `../mp3/2026-04-04 - 'U zij de glorie' ｜ Christelijke pianomuziek van Gerrit Koele [i7hRZbaeYpw].mp3`
-- Ongecorrigeerde partituur: `../ongecorrigeerd/2026-04-04 - 'U zij de glorie' ｜ Christelijke pianomuziek van Gerrit Koele [i7hRZbaeYpw].musicxml`
-- Formele harmoniecontrole (fouten in rood, vóór herzetting): `../controle/2026-04-04 - 'U zij de glorie' ｜ Christelijke pianomuziek van Gerrit Koele [i7hRZbaeYpw].musicxml`
-- Gecorrigeerde partituur: `../gecorrigeerd/2026-04-04 - 'U zij de glorie' ｜ Christelijke pianomuziek van Gerrit Koele [i7hRZbaeYpw].musicxml`
+- Transcriptie: `../ongecorrigeerd/2026-04-04 - 'U zij de glorie' ｜ Christelijke pianomuziek van Gerrit Koele [i7hRZbaeYpw].musicxml`
+- Harmoniecontrole (meldingen rood): `../controle/2026-04-04 - 'U zij de glorie' ｜ Christelijke pianomuziek van Gerrit Koele [i7hRZbaeYpw].musicxml`
+- Herzette binnenstemmen: `../gecorrigeerd/2026-04-04 - 'U zij de glorie' ｜ Christelijke pianomuziek van Gerrit Koele [i7hRZbaeYpw].musicxml`
+- Hypercorrectie: `../hypercorrectie/2026-04-04 - 'U zij de glorie' ｜ Christelijke pianomuziek van Gerrit Koele [i7hRZbaeYpw].musicxml`
 
-## Toelichting
+## Toonsoorten
 
-'U zij de glorie' bevat meerdere toonsoortwisselingen (G groot -> C groot -> F groot).
+Het stuk moduleert twee keer, telkens een kwart omhoog: G groot, C groot, F groot. De transcriptie
+noteert elk deel in zijn eigen voortekening, zodat de partituur niet vol losse voortekens komt te staan.
 
-In de oorspronkelijke transcriptie zaten 192 meldingen op 686 verticalen, waaronder 31 verdubbelde leidtonen
-(`LT2`) en 30 stemoverlappen (`OV`). In de controlepartituur (`../controle/`) zijn al deze fouten rood gemarkeerd.
+## Harmoniecontrole en herzetting
 
-Door herzetting van 42 binnenstemnoten daalde het aantal meldingen naar 129. Verdubbelde leidtonen zijn
-teruggebracht van 31 naar 6; enharmonische spelfouten zijn in deze partituur niet gemeld. De spelling wordt per verticaal bepaald.
+De transcriptie bevat veel verdubbelde leidtonen (`LT2`) en stemoverlappen (`OV`). In de
+controlepartituur zijn ze rood gemarkeerd met de regelcode onder de noot. Na herzetting van de
+binnenstemmen, met melodie en bas ongewijzigd, zijn de verdubbelde leidtonen grotendeels verdwenen en
+is het aantal overlappen afgenomen. Meldingen over de buitenstemmen, zoals verborgen kwinten, blijven staan.
+De aantallen per code staan in het [controlerapport](../harmonie_controle.md) en het
+[correctierapport](../harmonie_correctie.md).
 
 ## Hypercorrectie
 
-De [hypercorrectie](../hypercorrectie/2026-04-04%20-%20%27U%20zij%20de%20glorie%27%20%EF%BD%9C%20Christelijke%20pianomuziek%20van%20Gerrit%20Koele%20%5Bi7hRZbaeYpw%5D.musicxml) behoudt de melodie en herzet ook de bas.
-Aangehouden binnenstemmen kunnen gericht opnieuw worden aangeslagen om de stemvoering te verbeteren.
-Het [rapport](../hypercorrectie/hypercorrectie.md) vermeldt het resultaat van de volledige
-regelcontrole en de vergelijking van klankvariatie en harmonische verwantschap.
+De hypercorrectie behoudt de melodie en herzet ook de bas. Aangehouden binnenstemmen kunnen gericht
+opnieuw worden aangeslagen om de stemvoering te verbeteren. Het [rapport](../hypercorrectie/hypercorrectie.md)
+geeft het resultaat van de regelcontrole en de vergelijking van klankvariatie en harmonische verwantschap.

@@ -1,0 +1,203 @@
+{
+ "2025-11-29 - 'De Lofzang van Maria' ｜ Piano ｜ Adventsmuziek van Gerrit Koele [e8Sz1o3a8pA]": {
+  "instellingen": {
+   "algoritme": "contextual-voice-leading-2",
+   "beam": 32
+  },
+  "noten": 1510,
+  "gewijzigd": 32,
+  "hergespeld": 0,
+  "voor": {
+   "n_verticalen": 882,
+   "totaal": 248,
+   "per_100": 28.1,
+   "codes": {
+    "P8": 65,
+    "KAAL": 48,
+    "H5": 30,
+    "LIG": 22,
+    "AP8": 18,
+    "AP5": 12,
+    "OV": 11,
+    "N9": 10,
+    "S7": 8,
+    "H8": 8,
+    "A2": 7,
+    "T2": 4,
+    "P5": 4,
+    "KR": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 882,
+   "totaal": 166,
+   "per_100": 18.8,
+   "codes": {
+    "KAAL": 48,
+    "H5": 30,
+    "LIG": 22,
+    "AP8": 14,
+    "N9": 11,
+    "AP5": 10,
+    "H8": 8,
+    "S7": 7,
+    "T2": 4,
+    "A2": 4,
+    "OV": 3,
+    "P5": 2,
+    "HB8": 2,
+    "KR": 1
+   }
+  }
+ },
+ "2026-01-19 - Psalm 37 ｜ Christelijke pianomuziek van Gerrit Koele [b9ReiRKeBxg]": {
+  "instellingen": {
+   "algoritme": "contextual-voice-leading-2",
+   "beam": 32
+  },
+  "noten": 810,
+  "gewijzigd": 11,
+  "hergespeld": 2,
+  "voor": {
+   "n_verticalen": 348,
+   "totaal": 60,
+   "per_100": 17.2,
+   "codes": {
+    "LIG": 13,
+    "H8": 10,
+    "OV": 8,
+    "A2": 6,
+    "KAAL": 4,
+    "S7": 4,
+    "P8": 4,
+    "KR": 2,
+    "AP8": 2,
+    "SPL": 2,
+    "AP5": 2,
+    "P5": 2,
+    "N9": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 348,
+   "totaal": 48,
+   "per_100": 13.8,
+   "codes": {
+    "LIG": 12,
+    "H8": 10,
+    "P8": 6,
+    "OV": 5,
+    "KAAL": 4,
+    "S7": 3,
+    "A2": 3,
+    "KR": 2,
+    "AP8": 2,
+    "N9": 1
+   }
+  }
+ },
+ "2026-04-04 - 'U zij de glorie' ｜ Christelijke pianomuziek van Gerrit Koele [i7hRZbaeYpw]": {
+  "instellingen": {
+   "algoritme": "contextual-voice-leading-2",
+   "beam": 32
+  },
+  "noten": 1708,
+  "gewijzigd": 42,
+  "hergespeld": 0,
+  "voor": {
+   "n_verticalen": 686,
+   "totaal": 243,
+   "per_100": 35.4,
+   "codes": {
+    "LIG": 34,
+    "LT2": 31,
+    "OV": 30,
+    "T2": 24,
+    "H5": 22,
+    "A2": 19,
+    "AP8": 18,
+    "N9": 15,
+    "S7": 14,
+    "AP5": 8,
+    "P5": 8,
+    "P8": 8,
+    "H8": 6,
+    "LT": 2,
+    "KAAL": 2,
+    "HB5": 1,
+    "HB8": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 686,
+   "totaal": 182,
+   "per_100": 26.5,
+   "codes": {
+    "LIG": 30,
+    "H5": 22,
+    "OV": 21,
+    "T2": 21,
+    "N9": 16,
+    "S7": 11,
+    "AP8": 10,
+    "P8": 10,
+    "KAAL": 8,
+    "AP5": 6,
+    "H8": 6,
+    "LT2": 6,
+    "A2": 6,
+    "P5": 4,
+    "HB5": 3,
+    "LT": 1,
+    "HB8": 1
+   }
+  }
+ },
+ "2026-04-22 - Psalm 85 ｜ Christelijke pianomuziek van Gerrit Koele [qfzzrg627Ho]": {
+  "instellingen": {
+   "algoritme": "contextual-voice-leading-2",
+   "beam": 32
+  },
+  "noten": 583,
+  "gewijzigd": 3,
+  "hergespeld": 0,
+  "voor": {
+   "n_verticalen": 271,
+   "totaal": 41,
+   "per_100": 15.1,
+   "codes": {
+    "H5": 10,
+    "H8": 6,
+    "LIG": 6,
+    "S7": 4,
+    "T2": 3,
+    "KAAL": 2,
+    "AP8": 2,
+    "OV": 2,
+    "HB8": 2,
+    "P8": 2,
+    "KR": 1,
+    "N9": 1
+   }
+  },
+  "na": {
+   "n_verticalen": 271,
+   "totaal": 44,
+   "per_100": 16.2,
+   "codes": {
+    "H5": 10,
+    "LIG": 7,
+    "H8": 6,
+    "KAAL": 5,
+    "T2": 3,
+    "S7": 3,
+    "AP8": 2,
+    "OV": 2,
+    "HB8": 2,
+    "P8": 2,
+    "KR": 1,
+    "N9": 1
+   }
+  }
+ }
+}

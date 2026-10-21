@@ -1,0 +1,248 @@
+maat    1 tel 3.5   | LIG  | L G4    | S-T meer dan een octaaf
+maat    2 tel 1     | H5   | R D5    | S springt -3, B -12
+maat    2 tel 1     | H5   | L G3    | S springt -3, B -12
+maat    3 tel 2     | S7   | R D5    | septiem in S gaat naar C4
+maat    3 tel 3.5   | LIG  | L C4    | S-T meer dan een octaaf
+maat    5 tel 2     | LIG  | L D4    | S-T meer dan een octaaf
+maat    5 tel 3.5   | LIG  | L G4    | S-T meer dan een octaaf
+maat    6 tel 1     | H5   | R D5    | S springt -3, B -12
+maat    6 tel 1     | H5   | L G3    | S springt -3, B -12
+maat   13 tel 1     | AP8  | R G5    | S-B: D/D -> G/G
+maat   13 tel 1     | AP8  | L G2    | S-B: D/D -> G/G
+maat   13 tel 1     | KAAL | L G2    | geen terts (alleen grondtoon)
+maat   13 tel 1     | KAAL | R G4    | geen terts (alleen grondtoon)
+maat   13 tel 1     | KAAL | R G5    | geen terts (alleen grondtoon)
+maat   13 tel 3.5   | LIG  | L B-3   | S-T meer dan een octaaf
+maat   14 tel 1     | H5   | R D5    | S springt -3, B -7
+maat   14 tel 1     | H5   | L G2    | S springt -3, B -7
+maat   14 tel 2     | AP8  | R G4    | S-B: D/D -> G/G
+maat   14 tel 2     | AP8  | L G3    | S-B: D/D -> G/G
+maat   17 tel 3     | LIG  | L G3    | S-T meer dan een octaaf
+maat   18 tel 2     | KAAL | L G3    | geen terts (grondtoon en kwint)
+maat   18 tel 2     | KAAL | R G4    | geen terts (grondtoon en kwint)
+maat   21 tel 3     | A2   | R D5    | T: F->D (m3, -15)
+maat   21 tel 3     | OV   | R B-5   | S onder vorige T (F6)
+maat   23 tel 2     | T2   | R G4    | verdubbelde terts in majeur
+maat   23 tel 2     | T2   | R G5    | verdubbelde terts in majeur
+maat   23 tel 3     | LIG  | L B-3   | S-T meer dan een octaaf
+maat   25 tel 3     | AP5  | L G2    | B-T: F/C -> G/D
+maat   25 tel 3     | AP5  | R D4    | B-T: F/C -> G/D
+maat   26 tel 4     | KR   | L F2    | B kruist liggende D4
+maat   29 tel 1     | T2   | R A4    | verdubbelde terts in majeur
+maat   29 tel 1     | T2   | R A5    | verdubbelde terts in majeur
+maat   30 tel 2     | KAAL | L E-4   | geen terts (grondtoon en kwint)
+maat   30 tel 2     | KAAL | R B-4   | geen terts (grondtoon en kwint)
+maat   30 tel 2     | KAAL | R B-5   | geen terts (grondtoon en kwint)
+maat   30 tel 2     | P8   | R B-5   | S-T: C/C -> B-/B-
+maat   30 tel 2     | P8   | R B-4   | S-T: C/C -> B-/B-
+maat   30 tel 3     | AP5  | R A5    | S-B: B-/E- -> A/D
+maat   30 tel 3     | AP5  | L D3    | S-B: B-/E- -> A/D
+maat   32 tel 1     | P5   | L G3    | B-T: C/G -> G/D
+maat   32 tel 1     | P5   | L D4    | B-T: C/G -> G/D
+maat   33 tel 3     | KAAL | R G4    | geen terts (alleen grondtoon)
+maat   33 tel 3     | KAAL | R G5    | geen terts (alleen grondtoon)
+maat   35 tel 2     | S7   | R D5    | septiem in S gaat naar C4
+maat   35 tel 3.5   | LIG  | L C4    | S-T meer dan een octaaf
+maat   37 tel 2     | LIG  | L D4    | S-T meer dan een octaaf
+maat   37 tel 3.5   | LIG  | L G4    | S-T meer dan een octaaf
+maat   38 tel 1     | H5   | R D5    | S springt -5, B -12
+maat   38 tel 1     | H5   | L G3    | S springt -5, B -12
+maat   44 tel 1     | H5   | R A4    | S springt -3, B -5
+maat   44 tel 1     | H5   | L D3    | S springt -3, B -5
+maat   45 tel 2.5   | N9   | L A3    | none in B gaat naar B-3
+maat   46 tel 2     | KAAL | L G3    | geen terts (grondtoon en kwint)
+maat   46 tel 2     | KAAL | R G4    | geen terts (grondtoon en kwint)
+maat   50 tel 2     | AP8  | R G4    | S-B: D/D -> G/G
+maat   50 tel 2     | AP8  | L G3    | S-B: D/D -> G/G
+maat   54 tel 1     | H5   | R A6    | S springt -5, B -24
+maat   54 tel 1     | H5   | L D4    | S springt -5, B -24
+maat   56 tel 1     | LIG  | L B-3   | A-T meer dan een octaaf
+maat   56 tel 2.5   | S7   | L B-3   | septiem in B gaat naar D3
+maat   59 tel 1     | P5   | R A4    | S-B: C/F -> A/D
+maat   59 tel 1     | P5   | L D2    | S-B: C/F -> A/D
+maat   61 tel 1     | H5   | R A3    | S springt -3, B -13
+maat   61 tel 1     | H5   | L D2    | S springt -3, B -13
+maat   61 tel 3.5   | LIG  | L D3    | S-T meer dan een octaaf
+maat   62 tel 3     | KAAL | L G2    | geen terts (grondtoon en kwint)
+maat   62 tel 3     | KAAL | R D6    | geen terts (grondtoon en kwint)
+maat   62 tel 3     | KAAL | R D7    | geen terts (grondtoon en kwint)
+maat   64 tel 1     | P8   | R B-5   | S-T: C/C -> B-/B-
+maat   64 tel 1     | P8   | R B-4   | S-T: C/C -> B-/B-
+maat   64 tel 2     | P8   | R C6    | S-T: B-/B- -> C/C
+maat   64 tel 2     | P8   | R C5    | S-T: B-/B- -> C/C
+maat   64 tel 3     | P8   | R A5    | S-T: C/C -> A/A
+maat   64 tel 3     | P8   | R A4    | S-T: C/C -> A/A
+maat   69 tel 1     | KAAL | L G2    | geen terts (alleen grondtoon)
+maat   69 tel 1     | KAAL | R G4    | geen terts (alleen grondtoon)
+maat   69 tel 1     | KAAL | R G5    | geen terts (alleen grondtoon)
+maat   69 tel 4     | P8   | R F5    | S-T: G/G -> F/F
+maat   69 tel 4     | P8   | R F4    | S-T: G/G -> F/F
+maat   70 tel 1     | KAAL | L G2    | geen terts (alleen grondtoon)
+maat   70 tel 1     | KAAL | R G4    | geen terts (alleen grondtoon)
+maat   70 tel 1     | KAAL | R G5    | geen terts (alleen grondtoon)
+maat   70 tel 1     | P8   | R G5    | S-T: F/F -> G/G
+maat   70 tel 1     | P8   | R G4    | S-T: F/F -> G/G
+maat   70 tel 2     | P8   | R A5    | S-T: G/G -> A/A
+maat   70 tel 2     | P8   | R A4    | S-T: G/G -> A/A
+maat   70 tel 3     | P8   | R B-5   | S-T: A/A -> B-/B-
+maat   70 tel 3     | P8   | R B-4   | S-T: A/A -> B-/B-
+maat   72 tel 2     | P8   | R C6    | S-T: B-/B- -> C/C
+maat   72 tel 2     | P8   | R C5    | S-T: B-/B- -> C/C
+maat   72 tel 3     | P8   | R B-5   | S-T: C/C -> B-/B-
+maat   72 tel 3     | P8   | R B-4   | S-T: C/C -> B-/B-
+maat   72 tel 4     | P8   | R A5    | S-T: B-/B- -> A/A
+maat   72 tel 4     | P8   | R A4    | S-T: B-/B- -> A/A
+maat   73 tel 1     | P8   | R G5    | S-T: A/A -> G/G
+maat   73 tel 1     | P8   | R G4    | S-T: A/A -> G/G
+maat   73 tel 2     | P8   | R F5    | S-T: G/G -> F/F
+maat   73 tel 2     | P8   | R F4    | S-T: G/G -> F/F
+maat   73 tel 2.5   | LIG  | L A2    | A-T meer dan een octaaf
+maat   73 tel 3     | LIG  | L D3    | A-T meer dan een octaaf
+maat   75 tel 1     | A2   | R B-5   | T: A->B- (m2, +13)
+maat   75 tel 1     | OV   | R B-5   | T boven vorige S (A5)
+maat   75 tel 1     | P8   | R B-6   | S-T: A/A -> B-/B-
+maat   75 tel 1     | P8   | R B-5   | S-T: A/A -> B-/B-
+maat   75 tel 2     | P8   | R D7    | S-T: B-/B- -> D/D
+maat   75 tel 2     | P8   | R D6    | S-T: B-/B- -> D/D
+maat   75 tel 3     | P8   | R C7    | S-T: D/D -> C/C
+maat   75 tel 3     | P8   | R C6    | S-T: D/D -> C/C
+maat   75 tel 4     | P8   | R B-6   | S-T: C/C -> B-/B-
+maat   75 tel 4     | P8   | R B-5   | S-T: C/C -> B-/B-
+maat   76 tel 1     | A2   | R A4    | T: B-->A (m2, -13)
+maat   76 tel 1     | H5   | R A5    | S springt -13, B -17
+maat   76 tel 1     | H5   | L D2    | S springt -13, B -17
+maat   76 tel 1     | KAAL | L D2    | geen terts (grondtoon en kwint)
+maat   76 tel 1     | KAAL | R A4    | geen terts (grondtoon en kwint)
+maat   76 tel 1     | KAAL | R A5    | geen terts (grondtoon en kwint)
+maat   76 tel 1     | OV   | R A5    | S onder vorige T (B-5)
+maat   76 tel 1     | P8   | R A5    | S-T: B-/B- -> A/A
+maat   76 tel 1     | P8   | R A4    | S-T: B-/B- -> A/A
+maat   76 tel 4     | KAAL | L G2    | geen terts (alleen grondtoon)
+maat   76 tel 4     | KAAL | R G4    | geen terts (alleen grondtoon)
+maat   76 tel 4     | KAAL | R G5    | geen terts (alleen grondtoon)
+maat   78 tel 1     | KAAL | L G2    | geen terts (grondtoon en kwint)
+maat   78 tel 1     | KAAL | R D4    | geen terts (grondtoon en kwint)
+maat   78 tel 1     | KAAL | R D5    | geen terts (grondtoon en kwint)
+maat   78 tel 3     | P8   | R G5    | S-T: D/D -> G/G
+maat   78 tel 3     | P8   | R G4    | S-T: D/D -> G/G
+maat   78 tel 4     | P8   | R F5    | S-T: G/G -> F/F
+maat   78 tel 4     | P8   | R F4    | S-T: G/G -> F/F
+maat   79 tel 1     | P8   | R G5    | S-T: F/F -> G/G
+maat   79 tel 1     | P8   | R G4    | S-T: F/F -> G/G
+maat   79 tel 2     | P8   | R E-5   | S-T: G/G -> E-/E-
+maat   79 tel 2     | P8   | L E-4   | S-T: G/G -> E-/E-
+maat   79 tel 3     | KAAL | L G2    | geen terts (grondtoon en kwint)
+maat   79 tel 3     | KAAL | R D4    | geen terts (grondtoon en kwint)
+maat   79 tel 3     | KAAL | R D5    | geen terts (grondtoon en kwint)
+maat   81 tel 3     | P8   | R B-5   | S-T: G/G -> B-/B-
+maat   81 tel 3     | P8   | R B-4   | S-T: G/G -> B-/B-
+maat   81 tel 4     | P8   | R A5    | S-T: B-/B- -> A/A
+maat   81 tel 4     | P8   | R A4    | S-T: B-/B- -> A/A
+maat   82 tel 1     | P8   | R B-5   | S-T: A/A -> B-/B-
+maat   82 tel 1     | P8   | R B-4   | S-T: A/A -> B-/B-
+maat   82 tel 2     | P8   | R C6    | S-T: B-/B- -> C/C
+maat   82 tel 2     | P8   | R C5    | S-T: B-/B- -> C/C
+maat   82 tel 3     | P8   | R A5    | S-T: C/C -> A/A
+maat   82 tel 3     | P8   | R A4    | S-T: C/C -> A/A
+maat   83 tel 1     | P8   | R A6    | S-T: A/A -> A/A
+maat   83 tel 4     | KAAL | L D2    | geen terts (alleen grondtoon)
+maat   83 tel 4     | KAAL | R D6    | geen terts (alleen grondtoon)
+maat   83 tel 4     | KAAL | R D7    | geen terts (alleen grondtoon)
+maat   86 tel 1     | P8   | R C6    | S-T: B-/B- -> C/C
+maat   86 tel 1     | P8   | R C5    | S-T: B-/B- -> C/C
+maat   86 tel 2     | H5   | R A5    | S springt -3, B -19
+maat   86 tel 2     | H5   | L D2    | S springt -3, B -19
+maat   86 tel 2     | KAAL | L D2    | geen terts (grondtoon en kwint)
+maat   86 tel 2     | KAAL | R A4    | geen terts (grondtoon en kwint)
+maat   86 tel 2     | KAAL | R A5    | geen terts (grondtoon en kwint)
+maat   86 tel 2     | P8   | R A5    | S-T: C/C -> A/A
+maat   86 tel 2     | P8   | R A4    | S-T: C/C -> A/A
+maat   87 tel 1     | KAAL | L G2    | geen terts (alleen grondtoon)
+maat   87 tel 1     | KAAL | R G4    | geen terts (alleen grondtoon)
+maat   87 tel 1     | KAAL | R G5    | geen terts (alleen grondtoon)
+maat   92 tel 2.5   | AP5  | R G3    | S-B: F/B- -> G/C
+maat   92 tel 2.5   | AP5  | L C2    | S-B: F/B- -> G/C
+maat   92 tel 3.5   | H8   | R C4    | S springt +3, B +5
+maat   92 tel 3.5   | H8   | L C3    | S springt +3, B +5
+maat   92 tel 4     | A2   | R F#3   | T: B-->F# (d4, -4)
+maat   92 tel 4     | H5   | R A3    | S springt -3, B -10
+maat   92 tel 4     | H5   | L D2    | S springt -3, B -10
+maat   92 tel 4     | OV   | R A3    | S onder vorige T (B-3)
+maat   94 tel 2     | N9   | L F2    | none in B gaat naar D3
+maat   95 tel 3.5   | OV   | R C4    | T boven vorige S (B-3)
+maat   95 tel 3.5   | P8   | L C3    | B-T: G/G -> C/C
+maat   95 tel 3.5   | P8   | R C4    | B-T: G/G -> C/C
+maat   96 tel 2     | AP8  | R G4    | S-B: D/D -> G/G
+maat   96 tel 2     | AP8  | L G2    | S-B: D/D -> G/G
+maat   97 tel 3.5   | AP5  | R A3    | S-B: F/B- -> A/D
+maat   97 tel 3.5   | AP5  | L D3    | S-B: F/B- -> A/D
+maat  100 tel 3     | N9   | L F2    | none in B gaat naar D3
+maat  101 tel 3.5   | N9   | L C2    | none in B gaat naar G2
+maat  102 tel 1     | A2   | R F#3   | T: C->F# (d5, -6)
+maat  103 tel 2.5   | N9   | L D3    | none in B gaat naar G3
+maat  104 tel 1     | S7   | L E-2   | septiem in B gaat naar B-2
+maat  104 tel 1.5   | S7   | R A4    | septiem in S gaat naar E-4
+maat  106 tel 3     | N9   | L F2    | none in B gaat naar D3
+maat  108 tel 1.5   | AP8  | R D4    | S-B: C/C -> D/D
+maat  108 tel 1.5   | AP8  | L D2    | S-B: C/C -> D/D
+maat  109 tel 3.5   | S7   | L F2    | septiem in B gaat naar D3
+maat  111 tel 3     | AP8  | R G4    | S-B: D/D -> G/G
+maat  111 tel 3     | AP8  | L G2    | S-B: D/D -> G/G
+maat  111 tel 3     | KAAL | L G2    | geen terts (alleen grondtoon)
+maat  111 tel 3     | KAAL | R G3    | geen terts (alleen grondtoon)
+maat  111 tel 3     | KAAL | R G4    | geen terts (alleen grondtoon)
+maat  112 tel 3.5   | N9   | L F2    | none in B gaat naar D3
+maat  114 tel 1     | OV   | R C4    | T boven vorige S (B-3)
+maat  114 tel 1     | P8   | L C3    | B-T: G/G -> C/C
+maat  114 tel 1     | P8   | R C4    | B-T: G/G -> C/C
+maat  114 tel 1.5   | AP8  | L D2    | B-A: C/C -> D/D
+maat  114 tel 1.5   | AP8  | R D4    | B-A: C/C -> D/D
+maat  115 tel 3     | N9   | L F2    | none in B gaat naar D3
+maat  116 tel 4.5   | H8   | R C5    | S springt +3, B +5
+maat  116 tel 4.5   | H8   | L C3    | S springt +3, B +5
+maat  117 tel 1     | H5   | R A4    | S springt -3, B -10
+maat  117 tel 1     | H5   | L D2    | S springt -3, B -10
+maat  117 tel 1     | OV   | R A4    | S onder vorige A (B-4)
+maat  117 tel 3.5   | H8   | R G5    | S springt +12, B +5
+maat  117 tel 3.5   | H8   | L G3    | S springt +12, B +5
+maat  118 tel 2     | S7   | R C5    | septiem in A gaat naar D5
+maat  119 tel 4.5   | A2   | R A4    | T: E-->A (A4, +6)
+maat  119 tel 4.5   | OV   | R A4    | T boven vorige S (G4)
+maat  120 tel 1.5   | AP8  | R D5    | S-B: C/C -> D/D
+maat  120 tel 1.5   | AP8  | L D2    | S-B: C/C -> D/D
+maat  122 tel 3     | LIG  | L D4    | S-A meer dan een octaaf
+maat  123 tel 1     | LIG  | L C4    | S-A meer dan een octaaf
+maat  123 tel 3     | LIG  | L E-4   | S-A meer dan een octaaf
+maat  124 tel 1     | LIG  | L C4    | S-A meer dan een octaaf
+maat  124 tel 4.5   | LIG  | L C4    | S-A meer dan een octaaf
+maat  126 tel 2     | OV   | R D4    | T boven vorige S (C4)
+maat  128 tel 3     | AP5  | R A4    | S-B: G/C -> A/D
+maat  128 tel 3     | AP5  | L D2    | S-B: G/C -> A/D
+maat  128 tel 3     | KAAL | L D2    | geen terts (grondtoon en kwint)
+maat  128 tel 3     | KAAL | R D4    | geen terts (grondtoon en kwint)
+maat  128 tel 3     | KAAL | R A4    | geen terts (grondtoon en kwint)
+maat  132 tel 3.5   | AP5  | R G3    | S-B: F/B- -> G/C
+maat  132 tel 3.5   | AP5  | L C2    | S-B: F/B- -> G/C
+maat  132 tel 4.5   | H8   | R C4    | S springt +3, B +5
+maat  132 tel 4.5   | H8   | L C3    | S springt +3, B +5
+maat  133 tel 1     | A2   | R F#3   | T: B-->F# (d4, -4)
+maat  133 tel 1     | H5   | R A3    | S springt -3, B -10
+maat  133 tel 1     | H5   | L D2    | S springt -3, B -10
+maat  133 tel 1     | OV   | R A3    | S onder vorige T (B-3)
+maat  134 tel 3     | N9   | L F2    | none in B gaat naar D3
+maat  135 tel 4.5   | OV   | R C4    | T boven vorige S (B-3)
+maat  135 tel 4.5   | P8   | L C3    | B-T: G/G -> C/C
+maat  135 tel 4.5   | P8   | R C4    | B-T: G/G -> C/C
+maat  136 tel 1     | AP8  | L D2    | B-A: C/C -> D/D
+maat  136 tel 1     | AP8  | R D4    | B-A: C/C -> D/D
+maat  139 tel 2.5   | N9   | R D4    | none in T gaat naar E-4
+maat  141 tel 1     | LIG  | L C4    | S-A meer dan een octaaf
+maat  142 tel 1     | LIG  | L D4    | S-A meer dan een octaaf
+maat  154 tel 3     | S7   | R G4    | septiem in S gaat naar D4
+maat  155 tel 1     | H5   | R D4    | S springt -5, B -2
+maat  155 tel 1     | H5   | R G3    | S springt -5, B -2
+maat  160 tel 1     | H5   | R D5    | S springt +9, B +2
+maat  160 tel 1     | H5   | L G3    | S springt +9, B +2
+maat  160 tel 1     | LIG  | L B-3   | S-T meer dan een octaaf
+maat  162 tel 1     | H5   | R A4    | S springt -3, B -5
+maat  162 tel 1     | H5   | L D3    | S springt -3, B -5

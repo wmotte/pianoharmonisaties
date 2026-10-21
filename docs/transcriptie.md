@@ -290,7 +290,8 @@ Daarbij noteert het ook de harmonische trap in Romeinse cijfers en de ligging va
 
 Het script onderscheidt voorspel, koraal, tussenspel en naspel aan de hand van terugkerende melodieën.
 Een passage geldt als couplet als haar reeks melodische intervallen minstens 32 tellen later
-bijna letterlijk terugkomt. Per deel verzamelt het gegevens over de opbouw van de begeleiding,
+bijna letterlijk terugkomt. Staan voor een stuk snijpunten en namen van de delen in `splits.json`,
+dan gebruikt het script die indeling. Per deel verzamelt het gegevens over de opbouw van de begeleiding,
 de toonhoogte, dynamiek en akkoorden. Ook slotwendingen bij fermates, basbewegingen,
 orgelpunten en octaafverdubbelingen worden gemeten.
 
@@ -298,14 +299,6 @@ Uit de ruwe MIDI haalt het daarnaast informatie over pedaalgebruik, legato, gebr
 en vertraging aan het slot. Stukken uit verzamelvideo's tellen niet mee in de statistiek over de vorm.
 De uitleg van de resultaten staat in [stijlanalyse.md](../stijlanalyse.md).
 Paragraaf 0 van dat bestand beschrijft welke metingen betrouwbaar zijn en waar voorzichtigheid nodig is.
-
-## De stijlanalyse lezen
-
-De [stijlanalyse](../stijlanalyse.md) bevat een actualisatie over de beperkingen van de oude metingen.
-De vormpercentages zijn historische beschrijvingen en zijn niet volledig reproduceerbaar uit
-de huidige conversies. Ook zegt het aantal noten in één aanslag niet hoeveel stemmen er klinken:
-een eerder aangeslagen noot kan nog doorklinken. Gebruik de oude cijfers daarom niet als vaste
-regels voor een nieuwe begeleiding.
 
 ## Bekende beperkingen en oplossingen
 
@@ -342,13 +335,13 @@ Je kunt met de onderstaande commando's ook afbeeldingen maken.
 Zo vergelijk je de oorspronkelijke partituur met de controle en de gecorrigeerde versie:
 
 ```bash
-# 1. Oorspronkelijke transcriptie (stap 2):
+# 1. Oorspronkelijke transcriptie:
 "/Applications/MuseScore 4.app/Contents/MacOS/mscore" -o uit_origineel.png "midi/<stuk>.musicxml"
 
-# 2. Harmonie-controle (stap 4, overtredingen in rood):
+# 2. Harmoniecontrole (meldingen in rood):
 "/Applications/MuseScore 4.app/Contents/MacOS/mscore" -o uit_controle.png "midi_controle/<stuk>.musicxml"
 
-# 3. Gecorrigeerde versie (stap 5, gewijzigde noten groen, restfouten rood):
+# 3. Gecorrigeerde versie (gewijzigde noten groen, resterende meldingen rood):
 "/Applications/MuseScore 4.app/Contents/MacOS/mscore" -o uit_gecorrigeerd.png "midi_gecorrigeerd/<stuk>.musicxml"
 ```
 

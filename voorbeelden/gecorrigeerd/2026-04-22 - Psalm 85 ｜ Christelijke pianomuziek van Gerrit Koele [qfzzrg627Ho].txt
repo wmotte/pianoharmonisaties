@@ -1,7 +1,16 @@
+maat    2 tel 2     | T2   | L E4    | verdubbelde terts in majeur (sextakkoord)
+maat    2 tel 2     | T2   | R E4    | verdubbelde terts in majeur (sextakkoord)
 maat    2 tel 2.5   | KR   | L D4    | B kruist liggende E4
+maat    2 tel 3     | T2   | L E4    | verdubbelde terts in majeur (sextakkoord)
+maat    4 tel 4     | KAAL | L D4    | geen terts (grondtoon en kwint)
+maat    4 tel 4     | KAAL | R A4    | geen terts (grondtoon en kwint)
 maat    5 tel 1     | H8   | R E5    | S springt +7, B +2
 maat    5 tel 1     | H8   | L E3    | S springt +7, B +2
+maat    5 tel 4     | KAAL | L B3    | geen terts (grondtoon en kwint)
+maat    5 tel 4     | KAAL | R B4    | geen terts (grondtoon en kwint)
+maat    5 tel 4     | KAAL | R F#5   | geen terts (grondtoon en kwint)
 maat    7 tel 2.5   | S7   | L C3    | septiem in B gaat naar D2
+maat    7 tel 3     | N9   | L D2    | none in B gaat naar D4
 maat   13 tel 1     | H5   | R D4    | S springt -4, B -7
 maat   13 tel 1     | H5   | L G2    | S springt -4, B -7
 maat   13 tel 2     | AP8  | R G5    | S-B: D/D -> G/G
@@ -13,8 +22,10 @@ maat   18 tel 2     | LIG  | L E3    | A-T meer dan een octaaf
 maat   19 tel 1     | LIG  | L D3    | A-T meer dan een octaaf
 maat   20 tel 1     | LIG  | L E3    | A-T meer dan een octaaf
 maat   21 tel 3     | LIG  | L B2    | A-T meer dan een octaaf
+maat   23 tel 5     | HB8  | R C4    | T springt +5, B stapsgewijs +1
 maat   25 tel 1     | H5   | R A4    | S springt +5, B +2
 maat   25 tel 1     | H5   | L D3    | S springt +5, B +2
+maat   34 tel 5     | HB8  | R C4    | T springt +5, B stapsgewijs +1
 maat   35 tel 2     | S7   | R G4    | septiem in S gaat naar D4
 maat   35 tel 3     | H5   | R D4    | S springt -5, B -2
 maat   35 tel 3     | H5   | L G2    | S springt -5, B -2

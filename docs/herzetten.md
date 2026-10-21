@@ -4,7 +4,7 @@
 
 Voer de commando's uit vanuit de hoofdmap, met de transcriptieomgeving in `.venv`.
 
-## Stap 5 – `corrigeer_harmonie.py` (binnenstemmen herzetten)
+## Binnenstemmen herzetten met `corrigeer_harmonie.py`
 
 ```bash
 .venv/bin/python corrigeer_harmonie.py                       # alle stukken (rekentijd afhankelijk van de zetting)
@@ -33,7 +33,8 @@ Ze beoordeelt lokale verbindingen en muzikale voorkeuren, geen volledige frasen 
 Gewijzigde noten worden groen, met de oorspronkelijke noot als toelichting.
 Noten waarvoor de harmoniecontrole nog een melding geeft, worden rood.
 De partituren komen in `midi_gecorrigeerd/` en de rapporten in
-`harmonie_correctie.md` en `harmonie_correctie.json`.
+`harmonie_correctie.md` en `harmonie_correctie.json`. Het rapport telt per stuk de gewijzigde en
+hergespelde noten en de meldingen per code vóór en na de herzetting.
 
 Met `--input-dir` en `--output-dir` kies je andere mappen voor de partituren.
 `--report-dir` bepaalt waar de rapporten komen. Verander je het algoritme of het aantal
@@ -41,14 +42,16 @@ bewaarde alternatieven (`--beam`), dan berekent het script bestaande resultaten 
 Verwerk je alleen een selectie, dan blijven de rapportregels van andere stukken bewaard.
 Levert je selectie geen stukken op, dan stopt het script met een foutmelding en blijven de rapporten intact.
 
-De vier voorbeeldpartituren zijn met deze methode berekend.
-De overige stukken in het verzamelrapport hebben nog de eerder opgeslagen resultaten.
+De vier voorbeeldpartituren in `voorbeelden/gecorrigeerd/` zijn met deze methode berekend.
+Het bijbehorende rapport is [voorbeelden/harmonie_correctie.md](../voorbeelden/harmonie_correctie.md).
 Ook na correctie kunnen er meldingen zijn, zowel in de gewijzigde binnenstemmen als in de vaste buitenstemmen.
+Het totaal kan zelfs gelijk blijven of licht stijgen: de zoektocht weegt de regels af tegen het behoud van
+de oorspronkelijke binnenstemmen, en zachte waarschuwingen kunnen daarbij toenemen.
 Minder meldingen betekent op zichzelf nog niet dat de muziek beter klinkt.
 
 ## Hypercorrectie: vaste melodie, vrije bas en binnenstemmen
 
-Bij stap 6 mag `hypercorrectie.py` naast de binnenstemmen ook de bas aanpassen.
+`hypercorrectie.py` mag naast de binnenstemmen ook de bas aanpassen.
 Het zoekt naar een zetting zonder meldingen van de volledige standaardcontrole uit `harmonie_regels.py`.
 De melodie blijft vast, inclusief nootnamen, voortekens, duur en bindingen.
 

@@ -8,7 +8,7 @@
   <identification>
     <creator type="composer">Gerrit Koele (automatische transcriptie)</creator>
     <encoding>
-      <encoding-date>2026-09-19</encoding-date>
+      <encoding-date>2026-10-21</encoding-date>
       <software>music21 v.10.5.0</software>
       <supports element="beam" type="yes" />
       <supports element="stem" type="yes" />
@@ -25,11 +25,11 @@
     <score-part id="Pb1a2f3561b2b8360c3e264e92aef2b3a">
       <part-name>Piano</part-name>
       <part-abbreviation>Pno</part-abbreviation>
-      <score-instrument id="I38464554dc353f5382abdf814ccc2d8f">
+      <score-instrument id="I8e25219919eb5726ef51b6e96c7d5be8">
         <instrument-name>Piano</instrument-name>
         <instrument-abbreviation>Pno</instrument-abbreviation>
       </score-instrument>
-      <midi-instrument id="I38464554dc353f5382abdf814ccc2d8f">
+      <midi-instrument id="I8e25219919eb5726ef51b6e96c7d5be8">
         <midi-channel>1</midi-channel>
         <midi-program>1</midi-program>
       </midi-instrument>
@@ -254,7 +254,7 @@
     </measure>
     <!--========================= Measure 2 ==========================-->
     <measure implicit="no" number="2">
-      <note>
+      <note color="#E00000">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -262,7 +262,12 @@
         <duration>40320</duration>
         <voice>1</voice>
         <type>whole</type>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>1</staff>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>T2</text>
+        </lyric>
       </note>
       <note>
         <chord />
@@ -313,7 +318,7 @@
         <staff>2</staff>
         <beam number="1">end</beam>
       </note>
-      <note dynamics="83.33">
+      <note color="#E00000" dynamics="83.33">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -322,8 +327,13 @@
         <voice>2</voice>
         <type>eighth</type>
         <stem>down</stem>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>2</staff>
         <beam number="1">begin</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>T2</text>
+        </lyric>
       </note>
       <note color="#E00000" dynamics="80.00">
         <pitch>
@@ -342,7 +352,7 @@
           <text>KR</text>
         </lyric>
       </note>
-      <note dynamics="82.22">
+      <note color="#E00000" dynamics="82.22">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -350,7 +360,12 @@
         <duration>20160</duration>
         <voice>2</voice>
         <type>half</type>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>2</staff>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>T2</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 3 ==========================-->
@@ -541,7 +556,7 @@
         <type>quarter</type>
         <staff>1</staff>
       </note>
-      <note dynamics="94.44">
+      <note color="#E00000" dynamics="94.44">
         <pitch>
           <step>A</step>
           <octave>4</octave>
@@ -549,7 +564,12 @@
         <duration>10080</duration>
         <voice>1</voice>
         <type>quarter</type>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>1</staff>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>KAAL</text>
+        </lyric>
       </note>
       <backup>
         <duration>40320</duration>
@@ -622,7 +642,7 @@
         <type>eighth</type>
         <staff>2</staff>
       </note>
-      <note dynamics="64.44">
+      <note color="#E00000" dynamics="64.44">
         <pitch>
           <step>D</step>
           <octave>4</octave>
@@ -630,7 +650,12 @@
         <duration>10080</duration>
         <voice>4</voice>
         <type>quarter</type>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>2</staff>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>KAAL</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 5 ==========================-->
@@ -729,7 +754,7 @@
         <type>quarter</type>
         <staff>1</staff>
       </note>
-      <note color="#00A000">
+      <note color="#E00000">
         <pitch>
           <step>B</step>
           <alter>0</alter>
@@ -739,14 +764,14 @@
         <voice>1</voice>
         <type>quarter</type>
         <accidental>natural</accidental>
-        <notehead color="#00A000" parentheses="no">normal</notehead>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>1</staff>
         <lyric name="1" number="1">
           <syllabic>single</syllabic>
-          <text>was A4</text>
+          <text>KAAL</text>
         </lyric>
       </note>
-      <note>
+      <note color="#E00000">
         <chord />
         <pitch>
           <step>F</step>
@@ -756,6 +781,7 @@
         <duration>10080</duration>
         <voice>1</voice>
         <type>quarter</type>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>1</staff>
       </note>
       <backup>
@@ -797,7 +823,7 @@
         <type>quarter</type>
         <staff>2</staff>
       </note>
-      <note dynamics="81.11">
+      <note color="#E00000" dynamics="81.11">
         <pitch>
           <step>B</step>
           <octave>3</octave>
@@ -805,7 +831,12 @@
         <duration>10080</duration>
         <voice>2</voice>
         <type>quarter</type>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>2</staff>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>KAAL</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 6 ==========================-->
@@ -1041,7 +1072,7 @@
           <text>S7</text>
         </lyric>
       </note>
-      <note dynamics="63.33">
+      <note color="#E00000" dynamics="63.33">
         <pitch>
           <step>D</step>
           <octave>2</octave>
@@ -1049,7 +1080,12 @@
         <duration>10080</duration>
         <voice>2</voice>
         <type>quarter</type>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>2</staff>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>N9</text>
+        </lyric>
       </note>
       <note dynamics="84.44">
         <pitch>
@@ -3187,7 +3223,7 @@
         <type>quarter</type>
         <staff>1</staff>
       </note>
-      <note>
+      <note color="#E00000">
         <pitch>
           <step>C</step>
           <octave>4</octave>
@@ -3195,7 +3231,12 @@
         <duration>20160</duration>
         <voice>1</voice>
         <type>half</type>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>1</staff>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>HB8</text>
+        </lyric>
       </note>
       <note>
         <chord />
@@ -4655,7 +4696,7 @@
         <type>half</type>
         <staff>1</staff>
       </note>
-      <note>
+      <note color="#E00000">
         <pitch>
           <step>C</step>
           <octave>4</octave>
@@ -4663,7 +4704,12 @@
         <duration>10080</duration>
         <voice>1</voice>
         <type>quarter</type>
+        <notehead color="#E00000" parentheses="no">normal</notehead>
         <staff>1</staff>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>HB8</text>
+        </lyric>
       </note>
       <note>
         <chord />

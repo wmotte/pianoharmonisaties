@@ -6,11 +6,9 @@ een bas met enige zelfstandigheid en een begeleiding die kan wisselen tussen
 liggende stemmen en gebroken akkoorden. Je krijgt MIDI om af te spelen en
 MusicXML om in MuseScore te openen, verder uit te werken of af te drukken.
 
-De map bevat de gekozen basisversie en vijf complete voorbeelden. Het zijn
-gegenereerde harmonisaties van Psalm 6, 16, 49, 61 en 84, geen transcripties van
-Koeles eigen uitvoeringen. Bij de vergelijking met drie psalmen was deze
-basisversie telkens versie B. De latere proef met een andere akkoordherkenning
-is niet in dit model overgenomen.
+De map bevat het model en vijf complete voorbeelden. Het zijn gegenereerde
+harmonisaties van Psalm 6, 16, 49, 61 en 84, geen transcripties van Koeles
+eigen uitvoeringen.
 
 ## Meteen bekijken
 
@@ -51,8 +49,8 @@ Daarna kun je bijvoorbeeld de meegeleverde melodie van Psalm 49 harmoniseren:
 
 Het startscript gebruikt automatisch [model.json](model.json). De eigenlijke
 code staat in [harmonizer](../harmonizer); houd deze twee mappen in dezelfde
-repository. Voor generatie zijn de oorspronkelijke opnamen en de map
-`private_data` niet nodig. Er is ook geen GPU of modeldienst nodig.
+repository. Voor generatie zijn de oorspronkelijke opnamen niet nodig.
+Er is ook geen GPU of modeldienst nodig.
 
 Kies een lege uitvoermap. Daar verschijnen `candidate.mid` en
 `candidate.musicxml`, naast de gebruikte melodie, het effectieve model, de
@@ -60,10 +58,10 @@ noten van de zetting en een rapport. `--complete` vraagt om een tonicaslot voor
 een volledig koraal. Laat die optie weg bij een los fragment. Voor een expliciet
 majeurslot in een mineurkoraal kun je `--terminal-quality major` toevoegen.
 
-`--exclude-group` is vooral nuttig bij corpusvergelijkingen: de generator weigert
-een model waarin die liedgroep als training staat. Alle vijf voorbeeldpsalmen
-zijn uit de training van dit model gehouden. Bij een eigen melodie kun je deze
-optie weglaten.
+Met `--exclude-group` weigert de generator een model waarin die liedgroep als
+bron is gebruikt. Zo is te controleren dat een voorbeeld niet op zijn eigen
+transcriptie leunt; alle vijf voorbeeldpsalmen zijn buiten het model gehouden.
+Bij een eigen melodie kun je deze optie weglaten.
 
 MuseScore is alleen nodig als je meteen een PDF en een controle na herimport
 wilt laten maken. Voeg op macOS bijvoorbeeld toe:
@@ -152,17 +150,14 @@ een voorkeur voor een bepaalde basligging. Meerdere doelen kunnen naast elkaar
 blijven bestaan. Een interne frase hoeft dus niet op de tonica te eindigen.
 
 Het model biedt ook cadensvoorbereidingen en bewegende akkoordfiguren aan.
-De uiteindelijke keuze hangt mede af van de beschikbare stemvoering. Dit is
-nog geen uitgewerkt harmonieplan voor iedere volledige frase. Juist de
-verbinding tussen aanloop, slot en volgende inzet blijft een zwak punt in
-sommige uitkomsten.
+De uiteindelijke keuze hangt mede af van de beschikbare stemvoering. De
+generator maakt vooraf geen harmonieplan voor een volledige frase. De verbinding
+tussen aanloop, slot en volgende inzet is daardoor in sommige uitkomsten zwak.
 
 De modus en de geleerde akkoordenschat bepalen de beschikbare harmonische
 kleur. Chromatische tonen en dissonanten vragen om context; alleen tellen hoeveel
-noten buiten een drieklank vallen geeft geen bruikbaar muzikaal oordeel. De code
-bevat daarom ook controles op botsingen en melodische doorgang. De uitgebreidere
-experimentele binnenstemzoekers en oplossingscontracten uit het onderzoek zijn
-niet allemaal ingeschakeld in het meegeleverde model.
+noten buiten een drieklank vallen geeft geen bruikbaar muzikaal oordeel. De
+generator controleert daarom ook op botsingen en melodische doorgang.
 
 ## Het eigen karakter van deze aanpak
 
@@ -175,9 +170,8 @@ harmonisatie te krijgen.
 Het model is leesbare JSON. Daardoor is na te gaan welke voorbeelden en
 voorkeuren een rol spelen, en kun je een wijziging vergelijken met precies
 dezelfde melodie. Het bestand [manifest.json](manifest.json) legt de modelversie,
-de codeversie via bestandskenmerken en de vijf meegeleverde uitgaven vast.
-Lokale bronpaden zijn uit het verpakte model verwijderd; de muzikale gegevens
-en bronidentiteiten zijn behouden.
+de codeversie en de vijf meegeleverde voorbeelden vast. Het model bevat de
+muzikale gegevens en de herkomst per figuur, maar geen paden naar lokale bestanden.
 
 Er wordt voor deze harmonisaties geen neuraal netwerk gefinetuned. De relatie
 met Koeles spel zit in het gebruikte corpus en de muzikale keuzes die daaruit

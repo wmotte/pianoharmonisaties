@@ -234,3 +234,10 @@ __marimo__/
 
 # Engelse zettingen: gedownloade partituren en uitvoer (auteursrecht onzeker, niet committen)
 /engelse_zettingen/data/
+
+# Lokale rapporten van controleer_harmonie.py en corrigeer_harmonie.py over het volledige corpus.
+/harmonie_controle.md
+/harmonie_controle.json
+/harmonie_correctie.md
+/harmonie_correctie.json
+/code_review.md

@@ -10,6 +10,7 @@ Voer de commando's uit vanuit de hoofdmap, met de transcriptieomgeving in `.venv
 .venv/bin/python controleer_harmonie.py                      # alle stukken (~1 min); overslaan als uitvoer nieuwer is
 .venv/bin/python controleer_harmonie.py --only "Psalm 85" --force
 .venv/bin/python controleer_harmonie.py --omvang             # ook de zangomvang van S/A/T/B toetsen (OMV)
+.venv/bin/python controleer_harmonie.py --input-dir voorbeelden/ongecorrigeerd --output-dir voorbeelden/controle --report-dir voorbeelden
 ```
 
 `controleer_harmonie.py` toetst de partituren in `midi/` aan de regels van de klassieke
@@ -25,6 +26,8 @@ maat 12 tel 3 | P5 | T G3 | met S: D4-A4 -> E4-B4
 
 Het verzamelrapport `harmonie_controle.md` telt de meldingen per code en per stuk.
 Het vermeldt ook het aantal meldingen per honderd samenklanken.
+Met `--input-dir`, `--output-dir` en `--report-dir` kies je andere mappen voor de partituren,
+de gemarkeerde uitvoer en de rapporten.
 
 ## Hoe het programma de stemmen volgt
 
@@ -183,9 +186,14 @@ van afwijken, bijvoorbeeld met octaven in de melodie of grote afstanden tussen d
 Bij de transcripties in `midi/` kunnen meldingen ook ontstaan doordat het transcriptiemodel een noot
 mist of een extra noot meent te horen. Bekijk daarom de partituur voordat je een gemelde noot corrigeert.
 
-## Opgeslagen rapporten
+## Rapport van de voorbeelden
 
-De [volledige controle](../harmonie_controle.md) geeft de aantallen meldingen per code en per stuk.
-Dezelfde gegevens staan in [JSON](../harmonie_controle.json).
-Deze rapporten horen bij de opgeslagen berekeningen. De README houdt geen aparte kopie van de tellingen bij.
+Voor de vier meegeleverde voorbeelden staat het verzamelrapport in
+[voorbeelden/harmonie_controle.md](../voorbeelden/harmonie_controle.md), met dezelfde gegevens in
+[JSON](../voorbeelden/harmonie_controle.json). Het is gemaakt met:
+
+```bash
+.venv/bin/python controleer_harmonie.py --input-dir voorbeelden/ongecorrigeerd --output-dir voorbeelden/controle --report-dir voorbeelden --force
+```
+
 Na een wijziging aan de regelcontrole kun je de stukken opnieuw controleren met `--force`.

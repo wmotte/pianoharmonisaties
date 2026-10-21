@@ -36,7 +36,7 @@ python3.12 -m venv .venv-harmonisatie
 
 Kies een lege uitvoermap. Daar verschijnen onder meer `candidate.musicxml` en `candidate.mid`.
 Open de MusicXML in MuseScore om de partituur te bekijken of verder te bewerken.
-Voor deze generatie zijn de oorspronkelijke opnamen en de map `private_data` niet nodig.
+Voor deze generatie zijn de oorspronkelijke opnamen niet nodig.
 
 De harmoniser is experimenteel. De gegenereerde zettingen zijn geïnspireerd op Koeles stijl.
 Het zijn geen uitvoeringen van Gerrit Koele.
@@ -105,9 +105,9 @@ wat de codes betekenen, welke bronnen zijn gebruikt en wat de controle niet kan 
 Een melding kan ook ontstaan door een transcriptiefout of door gangbare pianopraktijk,
 zoals een wijde ligging. Bekijk daarom de partituur voordat je een noot corrigeert.
 
-De aantallen meldingen per code en per stuk staan in het
-[opgeslagen controlerapport](harmonie_controle.md), met dezelfde gegevens in
-[JSON](harmonie_controle.json). Die rapporten horen bij de opgeslagen berekeningen.
+Het script schrijft ook een verzamelrapport met de aantallen meldingen per code en per stuk.
+Voor de vier meegeleverde voorbeelden staat dat rapport in
+[voorbeelden/harmonie_controle.md](voorbeelden/harmonie_controle.md).
 
 Om de binnenstemmen te laten aanpassen met behoud van melodie en bas, gebruik je:
 
@@ -124,14 +124,11 @@ Minder regelmeldingen betekent op zichzelf niet dat de muziek beter klinkt.
 
 ## De stijlanalyse lezen
 
-[stijlanalyse.md](stijlanalyse.md) beschrijft Koeles pianospel en de automatische metingen.
-Lees eerst de actualisatie bovenaan dat document. De oude vormpercentages zijn historische
-beschrijvingen en zijn niet volledig reproduceerbaar uit de huidige conversies.
-Ook bewijst een aanslag met drie noten geen driestemmige zetting: een vierde stem kan nog doorklinken.
-Die metingen zijn daarom geen vaste voorschriften voor een nieuwe begeleiding.
-
+[stijlanalyse.md](stijlanalyse.md) beschrijft Koeles pianospel op basis van automatische metingen
+over alle 49 opnamen: vorm, akkoordvocabulaire, cadensen, modulaties, slot en speelwijze.
+Het document geeft zelf aan welke metingen betrouwbaar zijn en welke met voorbehoud te lezen zijn.
 De [transcriptiehandleiding](docs/transcriptie.md#stap-3--analyse_stijlpy-stijlanalyse)
-beschrijft hoe je de stijlanalyse uitvoert en welke gegevens het script verzamelt.
+beschrijft hoe je de analyse zelf uitvoert en welke gegevens het script verzamelt.
 
 ## Voorbeelden
 
@@ -146,9 +143,17 @@ In [voorbeelden/](voorbeelden/) staan vier uitgewerkte transcripties:
 
 Bij elk stuk vind je de audio, de oorspronkelijke MusicXML-partituur, de gemarkeerde controle
 en de gecorrigeerde versie. De [toelichtingen per stuk](voorbeelden/readmes/) bevatten links
-naar de oorspronkelijke YouTube-uitvoeringen.
-Ook zijn er [versies met een aangepaste bas](voorbeelden/hypercorrectie/), met een
-[rapport over de hypercorrectie](voorbeelden/hypercorrectie/hypercorrectie.md).
+naar de oorspronkelijke YouTube-uitvoeringen. De rapporten van de controle en de correctie
+staan in dezelfde map. Ook zijn er [versies met een aangepaste bas](voorbeelden/hypercorrectie/),
+met een [rapport over de hypercorrectie](voorbeelden/hypercorrectie/hypercorrectie.md).
+
+## Eigen pianozettingen maken
+
+De map [koele/](koele/) bevat de scripts waarmee eigen zettingen van liederen worden gebouwd:
+van een tekstbron met melodie, liedtekst en vierstemmige pianozetting naar MuseScore en PDF,
+met gitaarakkoorden boven de pianobalk. Dezelfde regelcontrole als hierboven toetst de stemvoering.
+De liederen zelf zijn niet meegeleverd. De [toelichting](koele/README.md) beschrijft het invoerformaat
+en de scripts.
 
 ## Naslag
 
@@ -158,4 +163,5 @@ Ook zijn er [versies met een aangepaste bas](voorbeelden/hypercorrectie/), met e
 | [Transcriptie](docs/transcriptie.md) | Opties, berekeningen, probleemoplossing en afbeeldingen maken met MuseScore. |
 | [Harmoniecontrole](docs/harmoniecontrole.md) | Regelcodes, muziektheoretische bronnen en beperkingen van de controle. |
 | [Begeleiding herzetten](docs/herzetten.md) | Binnenstemmen aanpassen, hypercorrectie en muzikale voorkeuren. |
-| [Stijlanalyse](stijlanalyse.md) | Metingen en muzikale duiding, met voorbehouden bij de historische cijfers. |
+| [Stijlanalyse](stijlanalyse.md) | Vorm, harmonie en speelwijze in 49 opnamen, met de betrouwbaarheid van de metingen. |
+| [Eigen zettingen](koele/README.md) | Liederen vanuit een tekstbron omzetten naar MuseScore en PDF met een eigen pianobegeleiding. |

@@ -1,31 +1,52 @@
-# koele — pianozettingen in de stijl van Gerrit Koele
+# Eigen pianozettingen in de stijl van Gerrit Koele
 
-Gereedschap om liederen uit `bron/*.py` om te zetten naar MuseScore (`.mscz`) en PDF met een eigen,
-regelgecontroleerde pianobegeleiding. De liederen zelf staan in privémappen (`muziekgroep_<datum>/`, gitignored);
-werkwijze en stijlkeuzes staan in de skill `.agents/skills/koele-pianozetting/SKILL.md`.
-Gitaarakkoorden staan boven de bovenste pianobalk en volgen de eigen harmonisatie plus de werkelijk gezette
-bas (slashakkoorden bij omkeringen). Elke maat geeft houvast; binnen een maat verschijnen alleen gewijzigde
-harmonieën. Kleurakkoorden blijven behouden, doorgangsnoten en arpeggio's krijgen geen extra symbolen.
+De scripts in deze map zetten een lied om naar MuseScore (`.mscz`) en PDF, met een eigen vierstemmige
+pianobegeleiding en gitaarakkoorden boven de bovenste pianobalk. De stemvoering wordt getoetst aan
+dezelfde regels als de harmoniecontrole in de hoofdmap (`harmonie_regels.py`).
 
-Alle scripts draai je vanuit een liedmap met `bron/`:
+## Invoer
+
+Elk lied is een Python-bestand in de map `bron/` van een liedmap. Het bevat de zangmelodie met tekst,
+eventueel een tegenstem, en de vier stemmen van de pianozetting in een korte tekstnotatie.
+Zo staat `Bb3/4` voor een bes in het kleine octaaf als kwartnoot, `R/4` voor een kwartrust en
+`M6/4` vooraan in een maat voor een maatwissel. Per sectie zijn verder tempo, opmaat, volta’s en
+herhalingstekens op te geven. Het volledige formaat staat in de docstring van `maak_partituren.py`.
+De liedmappen zelf zijn niet meegeleverd.
+
+## Gebruik
+
+Draai de scripts vanuit een liedmap met `bron/`:
 
 ```sh
-cd muziekgroep_11_oct
-../.venv/bin/python ../koele/maak_partituren.py [naam ...]   # bouwen + alle controles
+cd <liedmap>
+../.venv/bin/python ../koele/maak_partituren.py [naam ...]
 ```
+
+De uitvoer komt in `musescore/`, `pdf/` en `tmp/` in de liedmap. Voor de PDF is MuseScore 4 nodig;
+het pad naar MuseScore staat bovenaan `maak_partituren.py`.
 
 | Script | Doel |
 |---|---|
-| `maak_partituren.py` | Bouwt XML, MuseScore en PDF; draait regels, stemcontrole, greep, grijze rusten en opmaak. Exit 1 bij problemen. Opties: `--alleen-xml`, `--zonder-controle`. Bronnotatie in de docstring. Na het renderen balanceert `balanceer_paginas()` de regels over de pagina's (zet `"paginas"` en bouwt opnieuw). `vul()` legt per tenornoot de tenor in de rechterhand (melodie + alt + tenor binnen een octaaf) of als samenklank bij de bas. |
-| `zetter.py` | Zet alt, tenor en bas bij gegeven akkoorden (`"akkoorden"`): parallellen, overlap, sprongen en verborgen kwinten als harde eisen; septiem- en leidtoonoplossing als zware zachte kosten; zachte kosten sturen de tenor binnen het bereik van de rechterhand. |
-| `controleer.py` | Regel- en stemcontrole per bron (ook los te draaien); zachte codes uit `harmonie_regels.ZACHT` en een leidtoon in de tegenstem die niet stapsgewijs oplost als `LET OP`. |
+| `maak_partituren.py` | Bouwt MusicXML, MuseScore-bestand en PDF en draait alle controles: regels, stemcontrole, greep, grijze rusten en opmaak. Exitcode 1 bij problemen. Opties: `--alleen-xml`, `--zonder-controle`. Na het renderen worden de regels over de pagina’s in balans gebracht. |
+| `zetter.py` | Zet alt, tenor en bas bij een gegeven akkoordenreeks. Parallellen, overlap, grote sprongen en verborgen kwinten zijn harde eisen; de oplossing van septiem en leidtoon weegt zwaar mee. Zachte kosten houden de tenor binnen het bereik van de rechterhand. |
+| `controleer.py` | Regel- en stemcontrole per bron, ook los te draaien. Zachte codes uit `harmonie_regels.ZACHT` verschijnen als `LET OP` en keuren de zetting niet af. |
 | `greep.py` | Speelbaarheid: geen hand grijpt meer dan een octaaf. |
-| `opmaak.py` | Lay-out: geen regel met één uitgerekte maat, geen te korte laatste regel, pagina's in balans (hoogstens één regel verschil met de volgende pagina). Leest positie, breedte en pagina per maat uit MuseScores mpos-export (`systemen_per_pagina()`); `balans()` berekent waar pagina 2, 3, … moeten beginnen. |
+| `opmaak.py` | Lay-out: geen regel met één uitgerekte maat, geen te korte laatste regel, pagina’s in balans met hoogstens één regel verschil. Leest positie en breedte per maat uit de MuseScore-export. |
 | `probeer.py` | Toetst akkoordvarianten voor één maat zonder de bron te wijzigen. |
-| `waarom.py` | Laat bij `geen regelgoede verbinding` zien welke regel elke kandidaat blokkeert. |
+| `waarom.py` | Laat bij een verbinding zonder regelgoede oplossing zien welke regel elke kandidaat blokkeert. |
 | `kleurstats.py` | Aandeel kleurakkoorden en omkeringen per bron. |
-| `transponeer.py` | Transponeert een bron (stemmen en akkoorden). |
+| `transponeer.py` | Transponeert een bron, stemmen en akkoorden. |
 | `stijl.mss` | MuseScore-stijl voor alle partituren. |
 
-Regels zelf: `harmonie_regels.py` in de repo-root. Commits van liedmappen of bladmuziek worden geweigerd door
-`.githooks/pre-commit` (activeren met `git config core.hooksPath .githooks`).
+## Gitaarakkoorden
+
+De akkoordsymbolen volgen de gekozen harmonisatie en de werkelijk gezette bas; bij een omkering staat
+een slashakkoord. Elke maat krijgt een symbool, binnen een maat verschijnen alleen gewijzigde harmonieën.
+Kleurakkoorden blijven behouden; doorgangsnoten en arpeggio’s krijgen geen eigen symbool.
+
+## Werkwijze en privémateriaal
+
+De werkwijze en stijlkeuzes achter de zettingen staan in de skill
+[`koele-pianozetting`](../.agents/skills/koele-pianozetting/SKILL.md).
+Liedmappen en bladmuziek horen niet in deze repository. De hook `.githooks/pre-commit`
+weigert zulke commits; activeer hem met `git config core.hooksPath .githooks`.

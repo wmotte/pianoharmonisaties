@@ -11,6 +11,7 @@ en samengevat over alle stukken: harmonie_controle.json en harmonie_controle.md.
 
 Gebruik:
   .venv/bin/python controleer_harmonie.py [--only "Psalm 85"] [--omvang] [--force]
+  .venv/bin/python controleer_harmonie.py --input-dir voorbeelden/ongecorrigeerd --output-dir voorbeelden/controle --report-dir voorbeelden
 """
 import argparse
 import json
@@ -31,17 +32,27 @@ def main():
     ap.add_argument("--only", help="alleen stukken waarvan de bestandsnaam dit bevat")
     ap.add_argument("--omvang", action="store_true", help="ook de zangomvang van S/A/T/B toetsen (OMV)")
     ap.add_argument("--force", action="store_true", help="ook opnieuw doen als de uitvoer al nieuwer is")
+    ap.add_argument("--input-dir", type=Path, default=DIR / "midi", help="map met partituren")
+    ap.add_argument("--output-dir", type=Path, default=OUT, help="map voor gemarkeerde partituren en meldingen")
+    ap.add_argument("--report-dir", type=Path, default=DIR, help="map voor harmonie_controle.json en .md")
     args = ap.parse_args()
+    if args.input_dir.resolve() == args.output_dir.resolve():
+        ap.error("bron- en uitvoermap moeten verschillen")
 
-    OUT.mkdir(exist_ok=True)
-    files = sorted((DIR / "midi").glob("*.musicxml"))
+    out_dir = args.output_dir
+    out_dir.mkdir(parents=True, exist_ok=True)
+    args.report_dir.mkdir(parents=True, exist_ok=True)
+    jpath = args.report_dir / "harmonie_controle.json"
+    files = sorted(args.input_dir.glob("*.musicxml"))
     if args.only:
         files = [f for f in files if args.only in f.name]
-    prev = json.loads((DIR / "harmonie_controle.json").read_text()) if (DIR / "harmonie_controle.json").exists() else {}
-    stems = {p.stem for p in (DIR / "midi").glob("*.musicxml")}
+    if not files:
+        ap.error("geen MusicXML-bestanden gevonden voor deze selectie")
+    prev = json.loads(jpath.read_text()) if jpath.exists() else {}
+    stems = {p.stem for p in args.input_dir.glob("*.musicxml")}
     results = {k: v for k, v in prev.items() if k in stems}
     for f in files:
-        out_xml = OUT / f.name
+        out_xml = out_dir / f.name
         if not args.force and out_xml.exists() and out_xml.stat().st_mtime > f.stat().st_mtime and f.stem in prev:
             results[f.stem] = prev[f.stem]
             continue
@@ -51,7 +62,7 @@ def main():
             mark(sc)
             sc.write(out_xml, " – controle")
             lines = report_lines(findings)
-            (OUT / f"{f.stem}.txt").write_text("\n".join(lines) + "\n")
+            (out_dir / f"{f.stem}.txt").write_text("\n".join(lines) + "\n")
             s = summary(findings, len(sc.verticals))
             s["maten"] = max((v.measure for v in sc.verticals), default=0)
             results[f.stem] = s
@@ -60,11 +71,11 @@ def main():
         except Exception as e:  # noqa: BLE001
             print(f"MISLUKT {f.stem}: {e}", file=sys.stderr)
             raise
-    (DIR / "harmonie_controle.json").write_text(json.dumps(results, indent=1, ensure_ascii=False))
-    write_md(results)
+    jpath.write_text(json.dumps(results, indent=1, ensure_ascii=False))
+    write_md(results, args.report_dir / "harmonie_controle.md")
 
 
-def write_md(results: dict):
+def write_md(results: dict, path: Path | None = None):
     tot = Counter()
     n_vert = 0
     for s in results.values():
@@ -73,7 +84,8 @@ def write_md(results: dict):
     codes = [c for c, _ in tot.most_common()]
     lines = ["# Formele harmonie-controle", "",
              f"{len(results)} stukken, {n_vert} verticalen, {sum(tot.values())} meldingen "
-             f"({100 * sum(tot.values()) / max(1, n_vert):.1f} per 100 verticalen). Codes: zie `harmonie_regels.py`.", "",
+             f"({100 * sum(tot.values()) / max(1, n_vert):.1f} per 100 verticalen). "
+             "De betekenis van de codes staat in docs/harmoniecontrole.md.", "",
              "## Totaal per code", "", "| code | aantal | per 100 verticalen |", "|---|---|---|"]
     for c in codes:
         lines.append(f"| {c} | {tot[c]} | {100 * tot[c] / max(1, n_vert):.1f} |")
@@ -82,7 +94,7 @@ def write_md(results: dict):
     for stem, s in sorted(results.items(), key=lambda kv: -kv[1]["per_100"]):
         lines.append(f"| {stem[:45]} | {s.get('maten', '')} | {s['n_verticalen']} | {s['totaal']} | {s['per_100']} | "
                      + " | ".join(str(s["codes"].get(c, 0)) for c in codes) + " |")
-    (DIR / "harmonie_controle.md").write_text("\n".join(lines) + "\n")
+    (path or DIR / "harmonie_controle.md").write_text("\n".join(lines) + "\n")
 
 
 if __name__ == "__main__":
