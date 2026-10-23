@@ -222,6 +222,8 @@ def overgang(vorig, nu, seg_v, seg, S, teg):
     for i in range(len(namen)):
         for j in range(i + 1, len(namen)):
             x, y = namen[i], namen[j]
+            if {x, y} == {"S", "G"} and oud["S"] == oud["G"] and nieuw["S"] == nieuw["G"]:
+                continue  # tegenstem zingt unisono met de melodie mee: verdubbeling, de piano kan daar niets aan doen
             if parallel(oud[x], oud[y], nieuw[x], nieuw[y]):
                 return INF
     for y in ("B", "T"):

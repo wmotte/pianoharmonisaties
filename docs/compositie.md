@@ -94,7 +94,7 @@ eerste register aan op het einde van de zangsectie. Het krijgt een eigen tonisch
 slot. Het rapport vermeldt welke bedoelde motiefnoten behouden zijn gebleven.
 Dit beschrijft de constructie en vormt geen automatische muzikale goedkeuring.
 
-De fluit gebruikt D4–E5 en mag onder de zang komen. De piano-bovenstem gebruikt
+De fluit gebruikt C4–D5, springt hoogstens een terts en mag onder de zang komen. De piano-bovenstem gebruikt
 D5–G5 en behoudt de melodie. Zo nodig vervalt een binnenstem.
 Rusten geven ademruimte. Korte verbindingen worden op doorgang en oplossing getoetst.
 Tegenbeweging is een voorkeur en geen verplichting.

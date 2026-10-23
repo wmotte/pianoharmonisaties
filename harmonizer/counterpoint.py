@@ -224,12 +224,18 @@ def _slots(melody, seed):
     return result
 
 
+FLUIT_LAAG, FLUIT_HOOG = 60, 74  # C4-D5
+FLUIT_SPRONG = 4  # hoogstens een grote terts
+
+
 def _countervoice(arrangement, melody, profile="flute", seed=0, beam_width=32):
     """Return an independently checked variant; never return a weakened fallback."""
     if profile not in ("flute", "piano"):
         raise ValueError("Tegenstemprofiel moet flute of piano zijn.")
     offset = arrangement.melody_offset
-    low, high = (62, 76) if profile == "flute" else (74, 79)
+    # dwarsfluit: C4-D5 (daarboven en met grote sprongen kreeg de fluitist het lastig); piano-bovenstem D5-G5
+    low, high = (FLUIT_LAAG, FLUIT_HOOG) if profile == "flute" else (74, 79)
+    max_sprong = FLUIT_SPRONG if profile == "flute" else 7
     part = "flute" if profile == "flute" else "piano"
     leading = leading_tones(melody.tonic, melody.mode)
     source = extract_motifs(melody)[0]
@@ -287,7 +293,7 @@ def _countervoice(arrangement, melody, profile="flute", seed=0, beam_width=32):
                 if profile == "piano" and hand_assignment([n, *(p for p in base if p.start < n.end - EPS and p.end > n.start + EPS)]) is None:
                     continue
                 move = pitch - path[-1].pitch if path else 0
-                if abs(move) > 7:
+                if abs(move) > max_sprong:
                     continue
                 local = abs(pitch - target) * 0.15 + abs(pitch - center) * 0.05
                 if path:

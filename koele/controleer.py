@@ -12,6 +12,9 @@
 4. Leidtoon in de tegenstem: de tegenstem is de hoogste stem, dus de terts van een majeurakkoord dat
    naar het akkoord een kwart hoger gaat (V -> I, ook tussendominanten) moet stapsgewijs omhoog of
    blijven liggen (Hooning 5e: afspringen alleen in een middenstem). Waarschuwing.
+5. Dwarsfluit ("tegenstemnaam" met 'fluit'): bereik C4-D5 en sprongen hoogstens een grote terts tussen
+   aansluitende noten (na een rust mag de fluit elders inzetten). Stemmelding: daarboven en met grotere
+   sprongen kreeg de fluitist het lastig.
 
 Gebruik (vanuit de liedmap): ../.venv/bin/python ../koele/controleer.py [naam ...]
 Afsluitcode 1 als er meldingen uit stap 1 of 2 zijn.
@@ -98,6 +101,8 @@ def stemcontrole(stuk):
                     for iv, naam in ((7, "kwinten"), (0, "octaven")):
                         if i1 % 12 == iv and i2 % 12 == iv:
                             if naam == "octaven" and i1 == 0 and i2 == 0:
+                                if {sa, sb} == {"tegenstem", "1"}:
+                                    continue  # tegenstem zingt unisono met de melodie mee: verdubbeling, geen stemvoering
                                 naam = "priemen"
                             m, tel = nu[sa][2], nu[sa][3]
                             meldingen.append(f"maat {m} tel {tel:g}: parallelle {naam} {stemnaam(sa)}-{stemnaam(sb)} "
@@ -134,6 +139,31 @@ def tegenstem_leidtonen(stuk):
     return uit
 
 
+FLUIT_BEREIK = (60, 74)  # C4-D5
+FLUIT_SPRONG = 4  # hoogstens een grote terts
+
+
+def fluit_speelbaar(stuk):
+    """Stemmeldingen voor een dwarsfluit-tegenstem: buiten C4-D5, of een sprong groter dan een grote terts
+    tussen aansluitende noten (over een rust heen telt niet: daar ademt de fluitist)."""
+    naam = stuk.get("tegenstemnaam", "")
+    naam = naam[0] if isinstance(naam, (tuple, list)) else naam
+    if "fluit" not in naam.lower() or not any("tegenstem" in sec for sec in stuk["secties"]):
+        return []
+    import zetter
+    noten = zetter.tijdlijn(stuk, "tegenstem")
+    uit = []
+    for on, end, m in noten:
+        if not FLUIT_BEREIK[0] <= m <= FLUIT_BEREIK[1]:
+            maat, tel = _maat_tel(stuk, on)
+            uit.append(f"maat {maat} tel {tel:g}: fluit {pn(m)} buiten C4-D5")
+    for (on1, end1, m1), (on2, end2, m2) in zip(noten, noten[1:]):
+        if end1 == on2 and abs(m2 - m1) > FLUIT_SPRONG:
+            maat, tel = _maat_tel(stuk, on2)
+            uit.append(f"maat {maat} tel {tel:g}: fluit springt {pn(m1)}-{pn(m2)} (groter dan een terts)")
+    return uit
+
+
 def _maat_tel(stuk, t):
     """Absolute tijd -> (maatnummer, tel) zoals de partituur telt."""
     t0 = Fraction(0)
@@ -166,6 +196,7 @@ def controleer_bron(b):
     alle = check(Score(xml, voice_identity=True))
     regels = [f for f in alle if f["code"] not in ZACHT]
     meldingen, waarschuwingen = stemcontrole(stuk)
+    meldingen += fluit_speelbaar(stuk)
     waarschuwingen += tegenstem_leidtonen(stuk)
     waarschuwingen += [f"maat {f['measure']} tel {f['beat']:g}: {f['code']} {f['note']} ({f['staff']}): {f['detail']}"
                        for f in alle if f["code"] in ZACHT]

@@ -10,6 +10,7 @@ Per sectie:
     "1" .. "4"   pianozetting: bovenbalk 1+2 (sopraan, alt), onderbalk 3+4 (tenor, bas).
                  "1" mag ontbreken: dan speelt de sopraan precies de melodie.
     "tekst"      lijst tekstregels bij de melodie
+    "tegentekst" optioneel: tekstregels bij de tegenstem (bijv. vrouwen tegenover mannen)
 
 Notatie per stem:
 
@@ -24,7 +25,7 @@ Notatie per stem:
 Optioneel in een sectie: "opmaat" (eerste maat is een opmaat), "kop" (tekst boven de eerste maat),
 "tempo" (kwarten per minuut), "voltas" ({maatindex binnen sectie: "1."} of {maatindex: ("1.", aantal_maten)};
 meerdere keren als "1.2.3.4."), "teksten" ({maatindex: "D.S."}).
-Optioneel in STUK: "regels"/"paginas" (maatnummers met nieuwe regel/pagina; pagina's worden daarnaast
+Optioneel in STUK: "zangnaam"/"tegenstemnaam" (naam of (naam, afkorting), bijv. ("Zang 1", "Z.1")), "regels"/"paginas" (maatnummers met nieuwe regel/pagina; pagina's worden daarnaast
 automatisch uitgebalanceerd, zie balanceer_paginas()), "ondertitel", "componist",
 "spatium" (kleinere notenbalk, standaard 1.75), "linkerhand": "gebroken" (popballad: gebroken akkoorden in de linkerhand in plaats van tenor + bas, zie vul()),
 "begeleiding": "akkoorden" (maten met zang: rechts alleen akkoorden zonder melodie, links de bas; voor-, tussen- en
@@ -150,6 +151,37 @@ def sectie_maten(stuk, sec, ks):
     return stemmen, maatsoorten, lengtes
 
 
+def zet_tekst(stuk, sec, noten, tekst, soort):
+    """Hangt de lettergrepen van elke tekstregel aan de noten (overgebonden vervolgnoten en rusten overslaan)."""
+    pos = [0] * len(tekst)
+    koppel = {}
+    for n in noten:
+        if n.isRest or (n.tie and n.tie.type in ("stop", "continue")):
+            continue
+        for vi, greep in enumerate(tekst):
+            if pos[vi] >= len(greep):
+                continue
+            g = greep[pos[vi]]
+            pos[vi] += 1
+            if g is None:
+                continue
+            n.addLyric(g[0], lyricNumber=vi + 1)
+            koppel[id(n.lyrics[-1])] = g[1]
+    for vi, greep in enumerate(tekst):
+        if pos[vi] != len(greep):
+            raise ValueError(f"{stuk['titel']} / {sec.get('kop', '')}: {soort} {vi + 1} heeft {len(greep)} "
+                             f"lettergrepen, {pos[vi]} noten gebruikt")
+        vorig = False
+        for n in noten:
+            lyr = next((x for x in n.lyrics if x.number == vi + 1), None)
+            if lyr is None:
+                continue
+            verder = koppel[id(lyr)]
+            lyr.syllabic = {(False, False): "single", (False, True): "begin",
+                            (True, True): "middle", (True, False): "end"}[(vorig, verder)]
+            vorig = verder
+
+
 def bouw_sectie(stuk, sec, startnummer, laatste, vorige_maat, met_zang):
     """Geeft lijsten maten per balk: tegenstem (of None), zang, bovenbalk, onderbalk."""
     fifths = sec["toonsoort"]
@@ -209,36 +241,14 @@ def bouw_sectie(stuk, sec, startnummer, laatste, vorige_maat, met_zang):
                     n.tie = tie.Tie("start") if not (n.tie and n.tie.type == "stop") else tie.Tie("continue")
                     noten[k + 1].tie = tie.Tie("stop")
 
-    # tekst bij de melodie (zangbalk, of bij ontbreken daarvan de sopraan)
+    # tekst bij de melodie (zangbalk, of bij ontbreken daarvan de sopraan) en bij de tegenstem ("tegentekst")
     zb = balk_stemmen.index(["melodie"]) if met_zang else balk_stemmen.index(["1", "2"])
-    noten = [n for m in balken[zb] for n in m.voices[0].notesAndRests]
-    pos = [0] * len(tekst)
-    koppel = {}
-    for n in noten:
-        if n.isRest or (n.tie and n.tie.type in ("stop", "continue")):
-            continue
-        for vi, greep in enumerate(tekst):
-            if pos[vi] >= len(greep):
-                continue
-            g = greep[pos[vi]]
-            pos[vi] += 1
-            if g is None:
-                continue
-            n.addLyric(g[0], lyricNumber=vi + 1)
-            koppel[id(n.lyrics[-1])] = g[1]
-    for vi, greep in enumerate(tekst):
-        if pos[vi] != len(greep):
-            raise ValueError(f"{stuk['titel']} / {sec.get('kop', '')}: tekstregel {vi + 1} heeft {len(greep)} "
-                             f"lettergrepen, {pos[vi]} noten gebruikt")
-        vorig = False
-        for n in noten:
-            lyr = next((x for x in n.lyrics if x.number == vi + 1), None)
-            if lyr is None:
-                continue
-            verder = koppel[id(lyr)]
-            lyr.syllabic = {(False, False): "single", (False, True): "begin",
-                            (True, True): "middle", (True, False): "end"}[(vorig, verder)]
-            vorig = verder
+    plaatsen = [(zb, tekst, "tekstregel")]
+    if heeft_tegen and sec.get("tegentekst"):
+        plaatsen.append((balk_stemmen.index(["tegenstem"]), [lettergrepen(r) for r in sec["tegentekst"]],
+                         "tegentekstregel"))
+    for balk, regels, soort in plaatsen:
+        zet_tekst(stuk, sec, [n for m in balken[balk] for n in m.voices[0].notesAndRests], regels, soort)
 
     bovenste = balken[0]
     if sec.get("tempo"):
@@ -684,6 +694,14 @@ def akkoordbegeleiding(stuk, zang, boven, onder):
             if v.id != "2":
                 mo.remove(v)
         _enkel([mo])
+        # een tenor die vul() als samenklank bij de bas zette, valt weg: anders legt een hoge tenor de
+        # ondergrens van de rechterhand zo hoog dat er binnen LIGGING geen akkoord meer past
+        for c in list(mo.recurse().getElementsByClass(chord.Chord)):
+            laagste = min(c.notes, key=lambda x: x.pitch.midi)
+            n = note.Note(laagste.pitch, quarterLength=c.quarterLength)
+            n.tie = laagste.tie or c.tie
+            n.expressions = list(c.expressions)
+            c.activeSite.replace(c, n)
         bassen = [p.midi for n in mo.recurse().notes for p in n.pitches]
         # rechterhand: oude inhoud weg, akkoorden erin
         oud = list(mb.recurse().notesAndRests)
@@ -922,7 +940,9 @@ def bouw(stuk, met_zang=True):
     tegen.insert(0, instr)
     tegen.insert(0, clef.TrebleClef())
     zang = stream.Part()
-    zang.partName, zang.partAbbreviation = stuk.get("zangnaam", "Zang"), "Z."
+    # "zangnaam": naam of (naam, afkorting), bijv. ("Zang 1", "Z.1") naast een tegenstem "Zang 2"
+    zangnaam = stuk.get("zangnaam", "Zang")
+    zang.partName, zang.partAbbreviation = zangnaam if isinstance(zangnaam, tuple) else (zangnaam, "Z.")
     zang.insert(0, instrument.Soprano())
     zang.insert(0, clef.TrebleClef())
     boven, onder = stream.PartStaff(), stream.PartStaff()

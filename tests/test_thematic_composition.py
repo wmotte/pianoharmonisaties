@@ -245,6 +245,11 @@ class IntegrationTests(unittest.TestCase):
                 self.assertTrue(save_musicxml(a, xml, 7)["melody_voice_exact_after_export"])
                 parsed = converter.parse(xml)
                 if profile == "flute":
+                    fluit = sorted((n for n in a.notes if n.part == "flute"), key=lambda n: n.start)
+                    self.assertTrue(fluit)
+                    self.assertTrue(all(60 <= n.pitch <= 74 for n in fluit))  # C4-D5
+                    self.assertTrue(all(abs(y.pitch - x.pitch) <= 4 for x, y in zip(fluit, fluit[1:])
+                                        if abs(x.start + x.duration - y.start) < 1e-6))  # sprong hoogstens een terts
                     self.assertIsInstance(parsed.parts[-1].getInstrument(), instrument.Flute)
                     messages = list(mido.MidiFile(mid))
                     self.assertTrue(any(x.type == "program_change" and x.channel == 1 and x.program == 73 for x in messages))

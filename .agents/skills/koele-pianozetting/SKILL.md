@@ -119,7 +119,11 @@ Een zetting juist uitdunnen of vierstemmig maken: skill `vierstemmig-reduceren`.
   per akkoord van twee tellen van figuur naar de drukte van de zang (`_rh_figuur()`) en de linkerhand van
   gebroken figuur (`LH_FIGUREN`); meer afwisseling hoort daar, niet in losse bronnen. De linkerhand kiest per
   basnoot het octaaf dicht bij de vorige (C2–E3) en loopt in achtsten door waar de zang een tel stilstaat;
-  controleer de baslijn maat voor maat op sprongen. Gebruik dit ook als fluit of zangers de
+  controleer de baslijn maat voor maat op sprongen. Een tenor die `vul()` als samenklank bij de bas zette,
+  valt in de zangmaten weg (alleen de laagste noot blijft), zodat de rechterhand niet boven een hoge tenor hoeft.
+  Ligt de melodie te laag voor een vierstemmige zetting eronder (`geen ligging`/`geen regelgoede verbinding`
+  onder bijv. B3–G4), zet dan in die zangmaten `"1"` een octaaf hoger (voorbeeld:
+  `muziekgroep_25_oct/bron/opw_430.py`); de rechterhand speelt daar toch akkoorden. Gebruik dit ook als fluit of zangers de
   melodie al hebben. Maak zo'n variant als aparte bron (`<naam>_akkoorden.py`, bestandsnaam met `b`) naast het
   origineel; die kan STUK uit het origineel laden en alleen `"begeleiding"` en `"bestandsnaam"` overschrijven.
 - Uitgebreide versie (tussenspelen, eigen zetting per couplet, bovenstem): aparte bron die ROMP/tekst uit het
@@ -133,26 +137,29 @@ Een zetting juist uitdunnen of vierstemmig maken: skill `vierstemmig-reduceren`.
   septiem/leidtoon geven; los dat op in de bovenstem.
 - **Dwarsfluit** (variant `<naam>_fluit.py`, bestandsnaam `01b … (dwarsfluit)`): de bovenstem als
   `"tegenstem"` per sectie, en `STUK["tegenstemnaam"] = ("Dwarsfluit", "Fl.")`, zodat balk, MuseScore-kanaal en
-  klank fluit zijn (anders “Tegenstem” met zangklank). Ligging: in het octaaf van de piano-bovenstem
-  (ongeveer D4–E5), niet een octaaf hoger; de gebruiker vond B5–E6 te hoog. In het voorspel speelt de fluit de
-  piano-bovenstem in dezelfde ligging mee. Stijl (voorbeeld: `muziekgroep_25_oct/bron/psalm_62_fluit.py`):
-  De fluit is de **hoogste stem**: een leidtoon daarin (de terts van een majeurakkoord vóór het akkoord een
-  kwart hoger, ook bij tussendominanten zoals A → D in e) gaat stapsgewijs omhoog of blijft liggen, en springt
-  niet weg; afspringen mag alleen in een middenstem (Hooning 5e, A&S unit 6). De controle meldt het als
-  `LET OP … leidtoon … in tegenstem`. Zet de bas dan niet op dezelfde leidtoon (`A`, niet `A:C#`): bas en fluit
-  zouden samen cis–d maken, parallelle octaven, en de zetter meldt `geen regelgoede verbinding`. Voorbeeld:
-  psalm 62 maat 18–19, fluit b–cis | d–a boven A → Dsus4 D. Tweede voorbeeld, psalm 19 (fluit) maat 22–23:
-  fluit fis–g terwijl de melodie d–d′ springt boven D → G. Met een D-akkoord moet de piano-fis ook naar g
-  (octaven met de fluit) en past door de octaafsprong van de melodie geen enkele ligging; de oplossing is een
-  akkoord zonder fis op die tel (`Bm:D`, bas blijft d), zodat de leidtoon alleen in de fluit ligt. Algemeen:
-  laat de leidtoon in de fluit oplossen en geef de piano op die tel geen eigen leidtoon die dezelfde kant op
-  moet (grondligging in plaats van een slash-bas op de leidtoon, of een akkoord zonder die toon). De controle
-  (`tegenstem_leidtonen`) meldt elke fluitleidtoon die wegspringt; psalm 19 maat 8, 23 en 26 zijn zo hersteld.
-  Stijl per regel: afwisselend lange noten, een syncope (kwart + gepunteerde halve, of overgebonden over de maatstreep),
-  een korte kwartloop door akkoordtonen en een verbindingsnoot naar de volgende regel; op de lange slotnoot van
-  de melodie beweegt de fluit, en waar de melodie stijgt gaat de fluit vaak omlaag. Alleen halve en hele noten
-  klinkt te eenvoudig. De fluit telt mee in de zetting: een fluitnoot kan `geen regelgoede verbinding` geven,
-  ook een paar maten verderop; varieer dan de fluitnoten rond die plek.
+  klank fluit zijn (anders “Tegenstem” met zangklank). In het voorspel speelt de fluit de piano-bovenstem mee.
+  **Speelbaarheid (harde eis van de gebruiker):** bereik **C4–D5**, en tussen aansluitende noten **hoogstens een
+  terts** (grote terts); boven D5 en bij grotere sprongen kreeg de fluitist het lastig. Na een rust mag de fluit
+  elders inzetten. `controleer.py` (`fluit_speelbaar`) geeft buiten C4–D5 of bij een grotere sprong een
+  stemmelding, dus het stuk bouwt dan niet `ok`; de generator in `harmonizer/counterpoint.py` houdt dezelfde
+  grenzen aan (`FLUIT_LAAG`, `FLUIT_HOOG`, `FLUIT_SPRONG`). Grote intervallen los je op met een tussennoot
+  (akkoordtoon of doorgang), niet met een sprong. Voorbeelden: `muziekgroep_25_oct/bron/psalm_62_fluit.py` en
+  `psalm_19_fluit.py`.
+  Stijl: akkoordtonen, liefst boven de zang (in dit bereik vaak ook gelijk of eronder) en in tegenbeweging;
+  afwisselend lange noten, een syncope (kwart + gepunteerde halve, of overgebonden over de maatstreep), een korte
+  kwartloop en een verbindingsnoot naar de volgende regel; op de lange slotnoot van de melodie beweegt de fluit.
+  Een sus4 in de piano mag de fluit stapsgewijs meespelen (psalm 62 maat 14–15: b | a–g boven Esus4 → Em).
+  Alleen halve en hele noten klinkt te eenvoudig; veel herhaalde noten ook.
+  **Leidtoon in de fluit** (de terts van een majeurakkoord vóór het akkoord een kwart hoger, ook bij
+  tussendominanten zoals A → D in e): stapsgewijs omhoog of blijven liggen, niet wegspringen (Hooning 5e, A&S
+  unit 6); de controle meldt `LET OP … leidtoon … in tegenstem`. Zet de bas dan niet op dezelfde leidtoon (`A`,
+  niet `A:C#`): bas en fluit zouden samen cis–d maken (parallelle octaven, `geen regelgoede verbinding`).
+  Psalm 62 maat 18–19: fluit b–cis | d boven A → Dsus4 D. Moet de piano dezelfde leidtoon ook oplossen, kies dan
+  op die tel een akkoord zonder die toon (`Bm:D` in plaats van `D`), zodat de leidtoon alleen in de fluit ligt.
+  **Fluit en zang:** de fluit telt mee in de zetting; een fluitnoot kan `geen regelgoede verbinding` geven, ook
+  een paar maten verderop. Meldt `waarom.py` bij élke kandidaat `parallel`, kijk dan eerst naar fluit tegen zang:
+  gaan ze samen in octaven of kwinten (e–d boven e′–d′), of komen ze uit op dezelfde toon (b–a tegen g–a), dan
+  ligt de oplossing in de fluit, niet in de akkoorden.
 - Naspel tijdens de collecte: lang (12–16 maten) met herhaalteken en kop "Naspel – ad lib. herhalen
   (collecte)", daarna een slot van 3 maten met "rit.".
 
