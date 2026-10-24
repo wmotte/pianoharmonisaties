@@ -91,6 +91,10 @@ De [transcriptiehandleiding](docs/transcriptie.md) beschrijft de opties, handmat
 maatsoorten en toonsoorten. Daar staan ook de uitleg van de berekeningen en de extra
 installatiestap voor het optionele ByteDance-model.
 
+Orgelopnamen vragen een ander model en een andere opschoning, vanwege registers, 16'-pedaal en kerkgalm.
+De map [orgelimprovisaties/](orgelimprovisaties/README.md) zet een orgelopname om naar een partituur
+op drie balken: twee manualen en pedaal.
+
 ## De harmonie controleren en de begeleiding aanpassen
 
 Je kunt de partituren in `midi/` laten toetsen aan de regels van de klassieke koraalzetting:
@@ -164,4 +168,5 @@ en de scripts.
 | [Harmoniecontrole](docs/harmoniecontrole.md) | Regelcodes, muziektheoretische bronnen en beperkingen van de controle. |
 | [Begeleiding herzetten](docs/herzetten.md) | Binnenstemmen aanpassen, hypercorrectie en muzikale voorkeuren. |
 | [Stijlanalyse](stijlanalyse.md) | Vorm, harmonie en speelwijze in 49 opnamen, met de betrouwbaarheid van de metingen. |
+| [Orgelopnamen](orgelimprovisaties/README.md) | Orgelopnamen omzetten naar een partituur met manualen en pedaal, met een vergelijking van transcriptiemodellen. |
 | [Eigen zettingen](koele/README.md) | Liederen vanuit een tekstbron omzetten naar MuseScore en PDF met een eigen pianobegeleiding. |

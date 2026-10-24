@@ -7,7 +7,7 @@ staged=$(git diff --cached --name-only --diff-filter=ACMR)
 
 for pad in $staged; do
     case "$pad" in
-        muziekgroep_*/*|bariton/*|_prive/*|private_data/*)
+        muziekgroep_*/*|bariton/*|_prive/*|private_data/*|orgelimprovisaties/data/*)
             echo "pre-commit: privé-map, niet committen: $pad"
             fout=1
             ;;

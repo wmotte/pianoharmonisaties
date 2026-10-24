@@ -17,6 +17,11 @@ De sopraan van de piano is de melodie ("1" of "melodie"). Harde eisen bij het zo
 - septiem niet verdubbeld en dalend (of liggend) opgelost; leidtoon niet verdubbeld.
 Zachte kosten: weinig beweging in alt en tenor, geen verdubbelde terts in majeur, kwint liever aanwezig,
 geen verborgen kwint/octaaf in de buitenstemmen, geen overlap.
+
+Met "tenor_rechts": True in STUK speelt de linkerhand alleen de bas: de tenor moet dan in de rechterhand passen
+(hoogstens een octaaf onder de melodie en niet onder F3). De zetter lost het stuk eerst gewoon op en houdt in de
+tweede ronde de akkoorden en de gekozen bassen vast; alleen alt en tenor (en zo nodig het octaaf van de bas)
+liggen anders.
 """
 
 from fractions import Fraction
@@ -30,6 +35,9 @@ BEREIK = {"B": (33, 60), "T": (45, 67), "A": (50, 74)}
 RH_MIN = 53  # F3: de laagste tenor die nog in de rechterhand past (maak_partituren.RH_MIN)
 RH_SPAN_KOST = 12  # zachte kosten als de tenor niet in de rechterhand past
 RH_SPAN_PER = 2.0  # extra per halve toon te ver
+BAS_OCTAAF = 10  # tenor_rechts: bas een octaaf verplaatst ten opzichte van de eerste ronde
+BAS_ANDERS = 25  # tenor_rechts: andere omkering dan in de eerste ronde (alleen als de bas niet is opgegeven)
+UNISONO = 8  # tenor_rechts: alt unisono met de melodie
 ZWAAR = 500  # zware zachte regel: septiem of leidtoon (bas, of alt als hoogste stem) lost niet stapsgewijs op
 
 
@@ -139,12 +147,19 @@ def klinkt(lijst, t, voor=False):
     return None
 
 
-def kandidaten(seg, S, teg):
+def kandidaten(seg, S, teg, rh=False, basvast=None):
+    """Liggingen (bas, tenor, alt) met kosten. rh: tenor verplicht in de rechterhand. basvast: de bas van de
+    eerste ronde; dezelfde toon kost niets, een octaaf hoger of lager kost BAS_OCTAAF en een andere omkering
+    van hetzelfde akkoord (grondtoon of terts, alleen zonder opgegeven bas) BAS_ANDERS."""
     akk = seg["akk"]
     s0 = klinkt(S, seg["on"])
     smin = min([m for on, end, m in S if on < seg["end"] and end > seg["on"]], default=None)
     smax = max([m for on, end, m in S if on < seg["end"] and end > seg["on"]], default=None)
     plafond = (smin - 1) if smin is not None else 76
+    # tenor_rechts: de alt mag unisono met een liggende melodietoon meegaan (dan grijpt de rechterhand twee tonen),
+    # zoals in het koraalboek; anders is bijv. Gmaj7 -> A onder f#' -> e' niet zonder parallellen te zetten
+    if rh and smin is not None and smin == smax == s0:
+        plafond = smin
     # septiem in de melodie aan het eind van het segment (ook als doorgang): dan niet ook in de piano,
     # anders lossen beide naar dezelfde toon op (parallelle octaven) of blijft de piano-septiem hangen
     s_pcs = {m % 12 for on, end, m in S if on < seg["end"] and end > seg["on"]}
@@ -156,9 +171,14 @@ def kandidaten(seg, S, teg):
     for b in range(*BEREIK["B"]):
         if b % 12 not in bassen:
             continue
-        for t in range(max(b + 1, BEREIK["T"][0]), min(BEREIK["T"][1], b + 12) + 1):
+        if basvast is not None and b % 12 == basvast % 12 and b not in (basvast, basvast - 12, basvast + 12):
+            continue
+        # met de bas alleen in de linkerhand hoeven tenor en bas niet binnen een octaaf te blijven
+        for t in range(max(b + 1, BEREIK["T"][0]), min(BEREIK["T"][1], b + (24 if rh else 12)) + 1):
             if t % 12 not in akk.alle:
                 continue
+            if rh and smax is not None and smax - t > 12:
+                continue  # onder F3 mag wel (zie RH_SPAN_KOST hieronder), maar de greep blijft een octaaf
             for a in range(max(t + 1, BEREIK["A"][0]), min(BEREIK["A"][1], t + 12, plafond) + 1):
                 if a % 12 not in akk.alle:
                     continue
@@ -177,6 +197,10 @@ def kandidaten(seg, S, teg):
                 if pcs.count(seg["lt"]) > 1 or (seg["lt"] in s_pcs and seg["lt"] in pcs[:3]):
                     continue  # leidtoon van de toonaard nooit verdubbeld (LT2), ook niet met een doorgang in de melodie
                 k = bassen[b % 12] * (2.5 if seg["dur"] >= 4 else 1)
+                if a == s0:
+                    k += UNISONO
+                if basvast is not None and b != basvast:
+                    k += BAS_OCTAAF if b % 12 == basvast % 12 else BAS_ANDERS
                 if akk.kwint is not None and akk.kwint not in pcs:
                     k += 2.5
                 if akk.terts is not None and pcs.count(akk.terts) > 1:
@@ -284,6 +308,20 @@ def zet_stuk(stuk):
     segs = segmenten(stuk)
     S = tijdlijn(stuk, "1")
     teg = tijdlijn(stuk, "tegenstem")
+    keuze = los_op(stuk, segs, S, teg)
+    if stuk.get("tenor_rechts"):
+        keuze = los_op(stuk, segs, S, teg, rh=True, bassen=[k[0] if k else None for k in keuze])
+    # "=" neemt de ligging van het vorige akkoord over
+    for i, seg in enumerate(segs):
+        if seg["sym"] == "=":
+            keuze[i] = keuze[i - 1]
+            seg["akk"] = segs[i - 1]["akk"]
+    schrijf(stuk, segs, keuze)
+    return stuk
+
+
+def los_op(stuk, segs, S, teg, rh=False, bassen=None):
+    """Kortste pad over de liggingen; per segment (bas, tenor, alt) of None (rust, "=")."""
     lagen = []  # per segment: dict staat -> (kosten, vorige staat)
     vorige_echte = None
     for i, seg in enumerate(segs):
@@ -293,10 +331,10 @@ def zet_stuk(stuk):
         if seg["sym"] == "=":
             lagen.append("=")
             continue
-        kand = kandidaten(seg, S, teg)
+        kand = kandidaten(seg, S, teg, rh, bassen[i] if bassen else None)
         if not kand:
             raise ValueError(f"{stuk['titel']}: geen ligging voor {seg['sym']} in sectie {seg['sec'] + 1} "
-                             f"maat {seg['maat'] + 1}")
+                             f"maat {seg['maat'] + 1}" + (" met de tenor in de rechterhand" if rh else ""))
         laag = {}
         if vorige_echte is None:
             for st, k in kand:
@@ -314,7 +352,8 @@ def zet_stuk(stuk):
                 laag[st] = beste
             if all(v[0] == INF for v in laag.values()):
                 raise ValueError(f"{stuk['titel']}: geen regelgoede verbinding naar {seg['sym']} in sectie "
-                                 f"{seg['sec'] + 1} maat {seg['maat'] + 1}")
+                                 f"{seg['sec'] + 1} maat {seg['maat'] + 1}"
+                                 + (" met de tenor in de rechterhand" if rh else ""))
         lagen.append(laag)
         vorige_echte = (laag, seg)
         # een rust breekt de keten niet: de verbinding loopt van het laatste klinkende akkoord
@@ -329,13 +368,7 @@ def zet_stuk(stuk):
             st = min(laag, key=lambda s: laag[s][0])
         keuze[i] = st
         st = laag[st][1]
-    # "=" neemt de ligging van het vorige akkoord over
-    for i, seg in enumerate(segs):
-        if seg["sym"] == "=":
-            keuze[i] = keuze[i - 1]
-            seg["akk"] = segs[i - 1]["akk"]
-    schrijf(stuk, segs, keuze)
-    return stuk
+    return keuze
 
 
 def noot(m, akk, dur, tie_naar_volgende):

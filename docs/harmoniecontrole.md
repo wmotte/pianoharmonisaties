@@ -42,7 +42,13 @@ Voor alt en tenor kiest het de verbinding met de kleinste verplaatsing.
 Het controleert geen verbindingen over een rust waarin alle stemmen zwijgen.
 
 Het akkoordlabel komt uit `analyse_stijl.label_chord`. De voortekening bepaalt de toonsoort per maat.
-Voor de modus gebruikt het programma een schatting volgens Krumhansl.
+Voor de modus vergelijkt het programma majeur, mineur en dorisch volgens Krumhansl.
+Andere modi worden niet afzonderlijk herkend. De voortekening alleen bepaalt dus niet welke toon als leidtoon geldt.
+
+Bij een bron met twee expliciete stemmen per pianobalk kan een script `Score(path, voice_identity=True)`
+gebruiken. Die optie behoudt de genoteerde S/A/T/B-identiteit, ook bij unisono's. Het bovenstaande CLI-commando
+gebruikt de hoogte-indeling. Een andere balkverdeling, bijvoorbeeld drie stemmen rechts, vraagt een
+afzonderlijke stemcontrole.
 
 ## Regelcodes in de partituur
 
@@ -75,7 +81,9 @@ In mineur schrijft de controle de verhoogde zesde en zevende trap met een kruis.
 De sopraan valt buiten `N9`, omdat een add9-label daar meestal ontstaat door een doorgangsnoot.
 `OMV` is optioneel omdat voorspel en naspel op de piano bewust buiten het bereik van zangstemmen kunnen komen.
 
-De octaafverdubbeling van de bas in de linkerhand telt niet als parallel octaaf (`P8`).
+Bij de hoogte-indeling behandelt het programma een parallel octaaf tussen de twee laagste
+linkerhandnoten als pianistische basverdubbeling. Dit is een heuristiek die ook echte tenor-bas-octaven
+kan missen. Bij vaste stemidentiteit geldt deze uitzondering niet: zelfstandige tenor en bas worden getoetst.
 Het programma geeft per noot en code maar één melding.
 Een aangehouden noot wordt dus niet bij elke nieuwe samenklank opnieuw gemeld.
 
@@ -107,10 +115,14 @@ De controle op het dalen van de none (`N9`) volgt Schouten, hoofdstuk 22.
 
 ## Bronnen van de regels en de 3-5-8-regel
 
-De 3-5-8-regel is hier een geheugensteun voor een vierstemmige drieklank in grondligging: de grondtoon
-ligt in de bas, met daarboven een terts (3), kwint (5) en octaaf (8). Een voorbeeld is C–E–G–C.
-De C klinkt daarin tweemaal. Dat heet verdubbelen. Gewoonlijk verdubbel je de grondtoon.
-De terts moet aanwezig zijn, want die bepaalt of het akkoord majeur of mineur is.
+In de 3-5-8-benadering beschrijft het cijfer de relatie tussen melodie en bas: een terts, kwint of octaaf,
+ook in samengestelde ligging. Bij een drieklank in grondligging is de bas de grondtoon en heeft de
+melodie respectievelijk de terts, kwint of grondtoon. Het cijfer is geen opsomming van alle akkoordtonen.
+
+Een melodie-bas-terts bewijst bovendien geen grondligging: D–F♯ kan passen bij D majeur in grondligging
+of bij Bm/D. Bepaal daarom het volledige akkoord en de omkering apart. Een becijferde `6` duidt een
+sextakkoord aan, geen voorschrift dat de melodie een sext boven de bas moet liggen.
+Zie [Psalmharmonisatie](psalmharmonisatie.md) voor de stijlkeuze, sextreeksen en bronverantwoording.
 
 Bij het verbinden van akkoorden gelden ook regels voor de afzonderlijke stemmen. Twee stemmen mogen
 bijvoorbeeld niet samen van de ene reine kwint naar de volgende bewegen. Hetzelfde geldt voor octaven
@@ -119,8 +131,8 @@ Voor de buitenstemmen, sopraan en bas, geldt bovendien: als ze in dezelfde richt
 of octaaf bewegen, moet de sopraan stapsgewijs gaan. Springt de sopraan, dan heet dat een verborgen
 kwint of octaaf.
 
-De codes bij deze controles staan in de tabel hierboven. De leerboeken hieronder gebruiken de naam
-*3-5-8-regel* niet. Ze behandelen wel de opbouw van akkoorden en de regels voor stemvoering waarop
+De codes bij deze controles staan in de tabel hierboven. Het programma heeft geen aparte controle op de
+volledige methode van Matter en Molenaar. De leerboeken hieronder behandelen de opbouw van akkoorden en de regels voor stemvoering waarop
 de controles in `harmonie_regels.py` en de zettingen in `koele/zetter.py` zijn gebaseerd.
 Daarbij zijn er verschillen tussen de boeken en het programma.
 
@@ -156,8 +168,10 @@ Leidtonen mogen bij Jeppesen nooit worden verdubbeld. Dat geldt ook voor verhoog
 modale muziek, zoals cis in dorisch en fis in mixolydisch. Het slotakkoord heeft een grote terts
 of laat de terts weg.
 
-Het programma controleert niet al deze voorschriften. Het toetst niet op grote sextsprongen,
-dalende kleine sextsprongen of reeksen van meer dan vier parallelle tertsen of sexten.
+Het programma controleert niet al deze voorschriften. Het toetst niet op grote sextsprongen of
+dalende kleine sextsprongen. Een stilistische beperking van lange reeksen parallelle tertsen of sexten
+betreft intervallen tussen twee stemmen. Dit is geen verbod op opeenvolgende sextakkoorden en geen
+algemene regel voor alle psalm- of pianozettingen. Het programma telt zulke reeksen niet.
 
 ### Hennie Schouten: intervallen en hun oplossing
 

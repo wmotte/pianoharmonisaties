@@ -7,9 +7,22 @@ description: Een rijke zetting (orgel-, piano- of koorbewerking met vijf of meer
 
 **Met zo min mogelijk noten een maximum aan klanksuggestie.**
 
-Vereenvoudigen is iets anders dan noten weghalen tot de regels kloppen. Een luisteraar vult zelf aan. Als je C en B♭ speelt, hoor je C7. Twee tonen na elkaar op een blokfluit suggereren al een samenklank. Een goede reductie laat daarom de tonen staan die het akkoord *tot dit akkoord maken*. Wat het oor zelf aanvult, mag weg.
+Vereenvoudigen is iets anders dan noten weghalen tot de regels kloppen. Een luisteraar vult zelf aan. C en B♭ kunnen in hun harmonische context C7 suggereren, maar bepalen zonder terts niet zelfstandig het akkoordtype. Twee tonen na elkaar op een blokfluit kunnen al een samenklank suggereren. Een goede reductie laat daarom de tonen staan die het akkoord *tot dit akkoord maken*. Wat het oor zelf aanvult, mag weg.
 
 Een regelcontrole zegt of de stemvoering klopt, maar niet welke toon het meest zegt. Die afweging is het eigenlijke werk van deze skill.
+
+## Stijl en stemidentiteit
+
+Bepaal bij een beoordeling eerst de stijl en de stem die de melodie draagt. Een strikte 3-5-8-oefening,
+een modale koraalzetting en een gekleurde pianobegeleiding vragen verschillende harmonische grenzen.
+Zie [docs/psalmharmonisatie.md](../../../docs/psalmharmonisatie.md) voor 3-5-8, sextakkoorden,
+fauxbourdon en de bronnen. Parallelle tertsen of sexten tussen twee stemmen zijn niet hetzelfde als
+opeenvolgende sextakkoorden. Een reeks sextakkoorden vraagt controle van alle stemmenparen, geen automatisch verbod.
+
+Volg bij bestaande vierstemmigheid de genoteerde stemmen, ook bij unisono's en een melodie in alt of tenor.
+Voor twee expliciete stemmen per balk kan dat met `Score(path, voice_identity=True)`. De gewone
+hoogte-indeling kan bij een unisono twee zelfstandige stemmen samenvoegen. Bij drie stemmen rechts,
+kruisende stemmen of een andere balkverdeling is afzonderlijke controle nodig.
 
 ## 1. Wat vast ligt
 
@@ -32,7 +45,7 @@ Weglaten gaat in deze volgorde (bovenaan valt het eerst weg):
 6. de terts
 7. **kleurtonen**: verminderde of overmatige kwint, kleine of grote none, sext, de overmatige sext, chromatische tonen. Die laat je alleen weg met een expliciete reden in de verantwoording.
 
-De volgorde is een standaard, geen wet. De toets is de vraag hierboven. Bij Gø7 (G–B♭–D♭–F) zegt de D♭ meer dan de terts B♭: zonder B♭ blijft het half-verminderd, zonder D♭ wordt het een gewoon Gm7.
+De volgorde is een standaard, geen wet. De toets is de vraag hierboven. Bij Gø7 (G–B♭–D♭–F) kan de D♭ in de gegeven context meer zeggen dan de terts B♭. Zonder B♭ blijft G–D♭–F een onvolledige samenklank die het halfverminderde akkoord kan suggereren. Zonder D♭ resteert G–B♭–F, dat ook als een onvolledig Gm7 kan klinken.
 
 | Akkoord | Minimale kern (wat moet klinken) | Eerst weg |
 |---|---|---|
@@ -96,4 +109,4 @@ Een regelcontrole kiest A, want die heeft geen meldingen. Een musicus kiest B. `
 Hetzelfde principe, alleen strenger:
 
 - **Drie stemmen:** melodie, bas en één binnenstem die per akkoord de karakteristieke toon neemt: meestal de terts, bij dominanten de septiem, bij kleurakkoorden de kleurtoon.
-- **Twee stemmen** (bijvoorbeeld melodie-instrument met bas, of een leerlingversie): de bas neemt grondtonen. De tweede stem, of de melodie zelf, zet per akkoord het tekenende interval neer, liefst de tritonus of de septiem, zo nodig na elkaar in plaats van tegelijk.
+- **Twee stemmen** (bijvoorbeeld melodie-instrument met bas, of een leerlingversie): bij reductie blijft de oorspronkelijke bas behouden, inclusief omkeringen (§1). Bij een nieuwe zetting kan een grondtoonbas een eenvoudig uitgangspunt zijn. Melodie en bas suggereren samen de functie. Gebruik tritonus of septiem alleen waar die in de bron en stijl passen.

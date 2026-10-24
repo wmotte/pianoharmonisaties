@@ -242,3 +242,7 @@ __marimo__/
 /harmonie_correctie.md
 /harmonie_correctie.json
 /code_review.md
+
+# Orgelimprovisaties: opnamen, transcripties en meetresultaten (auteursrecht, niet committen) en modelomgevingen.
+/orgelimprovisaties/data/
+/orgelimprovisaties/.venv-*/

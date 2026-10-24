@@ -28,7 +28,7 @@ het pad naar MuseScore staat bovenaan `maak_partituren.py`.
 | Script | Doel |
 |---|---|
 | `maak_partituren.py` | Bouwt MusicXML, MuseScore-bestand en PDF en draait alle controles: regels, stemcontrole, greep, grijze rusten en opmaak. Exitcode 1 bij problemen. Opties: `--alleen-xml`, `--zonder-controle`. Na het renderen worden de regels over de pagina’s in balans gebracht. |
-| `zetter.py` | Zet alt, tenor en bas bij een gegeven akkoordenreeks. Parallellen, overlap, grote sprongen en verborgen kwinten zijn harde eisen; de oplossing van septiem en leidtoon weegt zwaar mee. Zachte kosten houden de tenor binnen het bereik van de rechterhand. |
+| `zetter.py` | Zet alt, tenor en bas bij een gegeven akkoordenreeks. Parallellen, overlap, grote sprongen en verborgen kwinten zijn harde eisen; de oplossing van septiem en leidtoon weegt zwaar mee. Zachte kosten houden de tenor binnen het bereik van de rechterhand. Met `"tenor_rechts": True` in de bron is dat een harde eis: de linkerhand speelt dan alleen de bas, met dezelfde akkoorden en zo veel mogelijk dezelfde bassen. |
 | `controleer.py` | Regel- en stemcontrole per bron, ook los te draaien. Zachte codes uit `harmonie_regels.ZACHT` verschijnen als `LET OP` en keuren de zetting niet af. |
 | `greep.py` | Speelbaarheid: geen hand grijpt meer dan een octaaf. |
 | `opmaak.py` | Lay-out: geen regel met één uitgerekte maat, geen te korte laatste regel, pagina’s in balans met hoogstens één regel verschil. Leest positie en breedte per maat uit de MuseScore-export. |

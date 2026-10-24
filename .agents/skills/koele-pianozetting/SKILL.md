@@ -11,6 +11,16 @@ Gereedschap staat in `koele/` (getrackt, zie `koele/README.md`); de liederen zel
 `koele/maak_partituren.py` (bronnotatie) en `koele/zetter.py` (akkoordnotatie).
 Een zetting juist uitdunnen of vierstemmig maken: skill `vierstemmig-reduceren`.
 
+## Stijl en bronbeoordeling
+- Bepaal eerst of de opdracht een eigen Koele-achtige begeleiding, een strikte 3-5-8-oefening of een
+  beoordeling van een bestaande koraalzetting is. De kleurdoelen hieronder gelden voor de eigen
+  pianobegeleiding. Leg ze niet op aan een historische bron of een oefening met alleen grondliggingen.
+- Lees bij 3-5-8, sextakkoorden en historische psalmzettingen
+  [docs/psalmharmonisatie.md](../../../docs/psalmharmonisatie.md). Een 3 boven de bas bewijst geen
+  grondligging. Parallelle sexten zijn geen parallelle kwinten en twee sextakkoorden zijn niet op zichzelf fout.
+- Beoordeel een bron zonder haar te herharmoniseren. Behoud de oorspronkelijke stemidentiteit en geef
+  per melding aan of het een stemvoeringsprobleem, stijlkeuze of notatieprobleem is.
+
 ## Privacy — altijd
 - Bladmuziek, bijlagen en bronnen zijn auteursrechtelijk/privé en de repo is openbaar: zet een nieuwe liedmap
   direct in `.gitignore` (zoals `/muziekgroep_11_oct/`). Nooit committen of pushen.
@@ -82,7 +92,8 @@ Een zetting juist uitdunnen of vierstemmig maken: skill `vierstemmig-reduceren`.
 - **Harmonisch ritme**: in 4/4 en 2/2 meestal 2 akkoorden per maat; hele maten alleen bij stilstand of slot.
 - **Baslijn**: doorgaande bassen (`C G:B Am`, `F C:E Dm`); kwartsext alleen cadenserend.
 - **Cadensen afwisselen**; herhaalde regels de tweede keer anders harmoniseren. Canon: elke regel hetzelfde schema.
-- **Bedrieglijk slot (V → VI)**: VI in grondligging, de leidtoon stijgt naar de grondtoon van VI. Zonder opgegeven bas
+- **Bedrieglijk slot (V → VI)**: VI in grondligging, de leidtoon stijgt naar de tonica, die de terts van VI is
+  (in C: G → Am, b → c). Zonder opgegeven bas
   wijkt `zetter.py` stilzwijgend uit naar de tertsbas (sextakkoord, kostenpost 12) als de grondligging duurder is;
   dat zie je terug als `D5`/`T2` in de controle. Forceer dan de bas (`Gm:G`) en geef het volgende akkoord zo nodig
   ook een bas (`Eb:Bb`) voor een lopende baslijn. Voorbeeld: `muziekgroep_25_oct/bron/gezang_320.py`, maat 14.
@@ -99,6 +110,10 @@ Een zetting juist uitdunnen of vierstemmig maken: skill `vierstemmig-reduceren`.
 - **Voller dan Koeles kale zetting**: `vul()` in maak_partituren.py (alleen partituur, niet in de controle).
 
 ## Speelbaarheid (harde eis van de gebruiker)
+- Een verplaatsing van de tenor naar de rechterhand verandert alleen de balk en handtoewijzing zolang
+  toonhoogte, duur en stemidentiteit gelijk blijven. Toets deze versie opnieuw, ook bij overbindingen.
+  Een octaafverplaatsing of andere verdubbeling verandert de zetting en vraagt een nieuwe controle op
+  parallellen. Een LH-greep binnen een octaaf kan door herhaalde sprongen toch onprettig spelen.
 - Per hand hoogstens een octaaf. Gewenst patroon (gebruiker): **links de bas, rechts drie noten** (melodie +
   alt + tenor). Twee lagen zorgen daarvoor:
   - `zetter.py` rekent per ligging zachte kosten (`RH_SPAN_KOST`, `RH_SPAN_PER`) als de tenor meer dan een
@@ -205,7 +220,8 @@ Een zetting juist uitdunnen of vierstemmig maken: skill `vierstemmig-reduceren`.
   balk 2: 5, 6…). `nabewerk()` hernummert per maat; nieuwe stemmen altijd via die route laten lopen.
 - Spatium werkt alleen via `<spatium>` in `score_style.mss` binnen de .mscz (`ruim_bereik()` doet dat).
 - `transponeer.py` laat herstellingstekens (`n`) vallen: controleer na transponeren elke `Fn4` e.d. en zet ze terug.
-- De regelcontrole kent geen modi: per voortekening kiest ze groot of mineur (Krumhansl). D-mixolydisch met één
+- De regelcontrole schat per voortekening groot, mineur of dorisch (Krumhansl), maar herkent niet alle modi.
+  D-mixolydisch met één
   kruis leest als G groot, dus fis telt als leidtoon (D → G is dan V → I): vermijd verdubbelde fissen en laat
   een fis in de bas stapsgewijs naar g gaan; de zetter behandelt de terts van elk majeurakkoord dat een kwart
   omhoog gaat als leidtoon in de bas, ook bij tussendominanten. Zet in modale psalmen `"toonaard"` op de

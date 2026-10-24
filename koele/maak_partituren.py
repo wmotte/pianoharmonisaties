@@ -28,6 +28,7 @@ meerdere keren als "1.2.3.4."), "teksten" ({maatindex: "D.S."}).
 Optioneel in STUK: "zangnaam"/"tegenstemnaam" (naam of (naam, afkorting), bijv. ("Zang 1", "Z.1")), "regels"/"paginas" (maatnummers met nieuwe regel/pagina; pagina's worden daarnaast
 automatisch uitgebalanceerd, zie balanceer_paginas()), "ondertitel", "componist",
 "spatium" (kleinere notenbalk, standaard 1.75), "linkerhand": "gebroken" (popballad: gebroken akkoorden in de linkerhand in plaats van tenor + bas, zie vul()),
+"tenor_rechts": True (linkerhand alleen de bas, sopraan, alt en tenor rechts binnen een octaaf; zie zetter.py),
 "begeleiding": "akkoorden" (maten met zang: rechts alleen akkoorden zonder melodie, links de bas; voor-, tussen- en
 naspel houden de melodie, zie akkoordbegeleiding()).
 
@@ -432,11 +433,11 @@ def _voeg(stem, y):
         stem.replace(e, akk)
 
 
-def vul(boven, onder, gebroken=False):
+def vul(boven, onder, gebroken=False, tenor_rechts=False):
     """Vollere, speelbare pianozetting (alleen voor de partituur, niet voor de regelcontrole).
 
     De rechterhand neemt de tenor erbij (melodie + alt + tenor, binnen een octaaf) en de linkerhand houdt de
-    bas; die bas krijgt bij frasebegin en -slot, op hele maten en in de slotcadens een octaaf eronder (Koele:
+    bas (met tenor_rechts=True ook onder F3: de zetter heeft de tenor dan al binnen een octaaf gelegd); die bas krijgt bij frasebegin en -slot, op hele maten en in de slotcadens een octaaf eronder (Koele:
     LH-octaven vooral aan regeleinden en in het slot). Een tenornoot die niet in de rechterhand past (meer
     dan een octaaf onder de melodie, of onder F3) komt als samenklank bij de bas in de linkerhand. Een
     liggende noot tegenover een bewegende stem wordt in overbonden noten gedeeld. Elke hand grijpt hoogstens
@@ -469,7 +470,7 @@ def vul(boven, onder, gebroken=False):
             hoog = sop_max(mb.offset + y0, mb.offset + y1)
             if hoog is None:
                 hoog = max((x.pitch.midi for x in boven), default=None)
-            past = (hoog is not None and hoog - y.pitch.midi <= SPAN and y.pitch.midi >= RH_MIN
+            past = (hoog is not None and hoog - y.pitch.midi <= SPAN and (tenor_rechts or y.pitch.midi >= RH_MIN)
                     and all(x.pitch.midi > y.pitch.midi for x in boven))
             plan.append([mo, alt, bas, y, past])
             alles = alles and past
@@ -1005,7 +1006,7 @@ def bouw(stuk, met_zang=True):
         if stuk.get("handverdeling"):
             pas_handverdeling_toe(boven, onder, stuk["handverdeling"])
         else:
-            vul(boven, onder, gebroken=stuk.get("linkerhand") == "gebroken")
+            vul(boven, onder, gebroken=stuk.get("linkerhand") == "gebroken", tenor_rechts=stuk.get("tenor_rechts", False))
         if stuk.get("begeleiding") == "akkoorden":
             akkoordbegeleiding(stuk, zang, boven, onder)
         gitaarakkoorden(stuk, boven)

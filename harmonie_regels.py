@@ -469,8 +469,10 @@ def check(sc: Score, omvang: bool = False, *, include_ids: bool = False) -> list
                         code = "P1"
                     else:
                         code = "P8" if i1 == i2 else "AP8"
-                    # octaafverdubbeling van de bas in de linkerhand is pianistisch en telt niet
-                    if {sa2, sb2} == {"B", "T"} and ra2.staff == "L" and rb2.staff == "L" and i2 == 12 and i1 == 12:
+                    # Zonder stemidentiteit geldt een LH-basoctaaf als pianistische verdubbeling.
+                    # Een expliciete tenor en bas blijven zelfstandige stemmen.
+                    if ra2.voice is None and rb2.voice is None and {sa2, sb2} == {"B", "T"} \
+                            and ra2.staff == "L" and rb2.staff == "L" and i2 == 12 and i1 == 12:
                         continue
                 else:
                     continue
@@ -513,7 +515,8 @@ def check(sc: Score, omvang: bool = False, *, include_ids: bool = False) -> list
             if r2.on != v.on or r1.midi == r2.midi:
                 continue
             for h in v.notes:  # liggende noten die door deze stem gekruist worden
-                if h.on < v.on and h is not r2 and h in v1.notes and (r1.midi < h.midi) != (r2.midi < h.midi) and r2.midi != h.midi:
+                if h.on < v.on and h is not r2 and h in v1.notes \
+                        and (r1.midi - h.midi) * (r2.midi - h.midi) < 0:
                     add(r2, "KR", v, f"{s2} kruist liggende {h.spitch.nameWithOctave}")
         # leidtoon in buitenstem bij V(7)/vii -> I
         root1, name1, sc1 = v1.label
